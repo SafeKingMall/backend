@@ -38,15 +38,15 @@ public class SecurityConfig {
 
                 .and()
                 .redirectionEndpoint()
-                .baseUri("/oauth2/callback/*")
+                .baseUri("/oauth2/callback/*");
 
-                .and()
-                .userInfoEndpoint()
-                .userService()
-
-                .and()
-                .successHandler()
-                .failureHandler();
+//                .and()
+//                .userInfoEndpoint()
+//                .userService()
+//
+//                .and()
+//                .successHandler()
+//                .failureHandler()
 
         return http.build();
     }
