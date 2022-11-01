@@ -5,30 +5,39 @@ import com.safeking.shop.domain.user.domain.entity.OAuthProvider;
 
 import java.util.Map;
 
-// TODO 데이터 확인 후 구현
 public class KakaoUserInfo extends OAuth2UserInfo {
+
+    private static final OAuthProvider PROVIDER = OAuthProvider.KAKAO;
 
     public KakaoUserInfo(Map<String, Object> userAttributes) {
         super(userAttributes);
     }
 
     @Override
-    public Long getOAuthId() {
-        return null;
+    public String getOAuthId() {
+        return this.userAttributes.get("id").toString();
     }
 
     @Override
     public String getName() {
-        return null;
+        Map<String, Object> properties = (Map<String, Object>) this.userAttributes.get("properties");
+        if (properties == null) {
+            return null;
+        }
+        return (String) properties.get("nickname");
     }
 
     @Override
     public String getEmail() {
-        return null;
+        Map<String, Object> kakaoAccount = (Map<String, Object>) this.userAttributes.get("kakao_account");
+        if (kakaoAccount == null) {
+            return null;
+        }
+        return  (String) kakaoAccount.get("email");
     }
 
     @Override
     public OAuthProvider getProvider() {
-        return null;
+        return PROVIDER;
     }
 }

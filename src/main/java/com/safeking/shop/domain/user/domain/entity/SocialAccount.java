@@ -20,16 +20,17 @@ public class SocialAccount extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private Long oauthId;
+    private String oauthId;
 
     private String email;
 
     private String name;
 
+    @Enumerated(EnumType.STRING)
     private OAuthProvider provider;
 
     @Builder
-    public SocialAccount(Long oauthId, String email, String name, OAuthProvider provider) {
+    public SocialAccount(String oauthId, String email, String name, OAuthProvider provider) {
         this.oauthId = oauthId;
         this.email = email;
         this.name = name;

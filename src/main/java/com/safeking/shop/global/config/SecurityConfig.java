@@ -1,5 +1,7 @@
 package com.safeking.shop.global.config;
 
+import com.safeking.shop.global.security.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
+import com.safeking.shop.global.security.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
 import com.safeking.shop.global.security.oauth2.repository.OAuth2AuthorizationRequestRepository;
 import com.safeking.shop.global.security.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,8 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthorizationRequestRepository oAuth2AuthorizationRequestRepository;
+    private final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
+    private final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -44,11 +48,11 @@ public class SecurityConfig {
 
                 .and()
                 .userInfoEndpoint()
-                .userService(customOAuth2UserService);
-//
-//                .and()
-//                .successHandler()
-//                .failureHandler()
+                .userService(customOAuth2UserService)
+
+                .and()
+                .successHandler(customOAuth2AuthenticationSuccessHandler)
+                .failureHandler(customOAuth2AuthenticationFailureHandler);
 
         return http.build();
     }

@@ -32,8 +32,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .getUserInfoEndpoint()
                 .getUserNameAttributeName();
         Map<String, Object> userAttributes = oAuth2User.getAttributes();
-        OAuth2UserInfo oAuthUserInfo = OAuth2UserInfoFactory.getOAuthUserInfo(registrationId, userAttributes);
 
+        OAuth2UserInfo oAuthUserInfo = OAuth2UserInfoFactory.getOAuthUserInfo(registrationId, userAttributes);
         MemberAuthenticationInfo memberAuthenticationInfo = oAuth2UserAccountService.saveOrUpdateSocialAccount(oAuthUserInfo);
 
         return new UserIdOAuth2User(
