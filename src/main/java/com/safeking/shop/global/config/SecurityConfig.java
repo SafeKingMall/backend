@@ -1,6 +1,7 @@
 package com.safeking.shop.global.config;
 
 import com.safeking.shop.global.security.oauth2.repository.OAuth2AuthorizationRequestRepository;
+import com.safeking.shop.global.security.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthorizationRequestRepository oAuth2AuthorizationRequestRepository;
 
     @Bean
@@ -38,11 +40,11 @@ public class SecurityConfig {
 
                 .and()
                 .redirectionEndpoint()
-                .baseUri("/oauth2/callback/*");
+                .baseUri("/oauth2/callback/*")
 
-//                .and()
-//                .userInfoEndpoint()
-//                .userService()
+                .and()
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService);
 //
 //                .and()
 //                .successHandler()
