@@ -16,7 +16,7 @@ public class NormalAccount extends BaseTimeEntity {
     @Column(name = "normal_account_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "member_id")
     private Member member;
 

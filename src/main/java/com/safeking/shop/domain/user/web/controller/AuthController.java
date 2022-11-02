@@ -42,6 +42,12 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request,
                                HttpServletResponse response) {
+        /*
+        TODO
+            로그인이 되어 있는 상태에서 또 진행하면 AccessToken이 또 발급됨.
+            RefreshToken은 서버에서 관리하지만 AccessToken은 블랙리스트에 등록하지 않는 이상 관리하지 않음.
+            보안상 문제가 될 수 있다..
+        */
         UserAuthInfo userAuthInfo = normalAccountQueryService.getUserAuthInfoByLoginIdAndPassword(
                 request.getLoginId(),
                 request.getPassword()

@@ -4,8 +4,8 @@ import java.util.stream.Stream;
 
 public enum Role {
 
-    ACTIVE_USER("ROLE_USER", "모든 유저 기능 이용 가능한 유저 권한"),
-    TEMP_USER("ROLE_TEMP", "인증 정보 입력만 가능한 임시 유저 권한"),
+    USER("ROLE_USER", "모든 유저 기능 이용 가능한 유저 권한"),
+    TEMP("ROLE_TEMP", "인증 정보 입력만 가능한 임시 유저 권한"),
     ADMIN("ROLE_ADMIN", "관리자 권한"),
     ;
 
