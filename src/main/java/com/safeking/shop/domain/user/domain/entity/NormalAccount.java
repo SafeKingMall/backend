@@ -2,6 +2,7 @@ package com.safeking.shop.domain.user.domain.entity;
 
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,20 +16,22 @@ public class NormalAccount extends BaseTimeEntity {
     @Column(name = "normal_account_id")
     private Long id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     private String loginId;
 
     private String pasword;
 
     private String email;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    public NormalAccount(String loginId, String pasword, String email, Member member) {
+    @Builder
+    public NormalAccount(String loginId, String pasword, String email) {
         this.loginId = loginId;
         this.pasword = pasword;
         this.email = email;
-        this.member = member;
+
+        this.member = new Member(MemberAccountType.NORMAL);
     }
 }
