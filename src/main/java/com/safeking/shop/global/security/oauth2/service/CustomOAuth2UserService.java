@@ -1,7 +1,5 @@
 package com.safeking.shop.global.security.oauth2.service;
 
-import com.safeking.shop.domain.user.domain.entity.MemberStatus;
-import com.safeking.shop.global.security.role.Role;
 import com.safeking.shop.global.security.oauth2.service.domain.MemberAuthenticationInfo;
 import com.safeking.shop.global.security.oauth2.service.domain.OAuth2UserAccountService;
 import com.safeking.shop.global.security.oauth2.user.OAuth2UserInfo;
@@ -38,9 +36,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         return new UserIdOAuth2User(
                 memberAuthenticationInfo.getMemberId(),
-                memberAuthenticationInfo.getStatus() == MemberStatus.ACTIVATE
-                        ? Role.ACTIVE_USER
-                        : Role.TEMP_USER,
+                memberAuthenticationInfo.getStatus(),
                 userAttributes,
                 userNameAttributeName
         );

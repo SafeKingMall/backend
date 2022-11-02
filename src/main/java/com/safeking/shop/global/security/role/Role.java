@@ -1,5 +1,7 @@
 package com.safeking.shop.global.security.role;
 
+import java.util.stream.Stream;
+
 public enum Role {
 
     ACTIVE_USER("ROLE_USER", "모든 유저 기능 이용 가능한 유저 권한"),
@@ -21,5 +23,12 @@ public enum Role {
 
     public String getDescription() {
         return description;
+    }
+
+    public static Role roleValueToRole(String roleValue) {
+        return Stream.of(values())
+                .filter(role -> role.getRoleValue().equals(roleValue))
+                .findFirst()
+                .orElse(null);
     }
 }

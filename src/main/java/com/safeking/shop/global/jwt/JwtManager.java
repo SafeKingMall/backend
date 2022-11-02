@@ -1,7 +1,9 @@
 package com.safeking.shop.global.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.global.security.role.Role;
+import com.safeking.shop.global.security.role.RoleFactory;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -50,7 +52,8 @@ public class JwtManager {
         return new JwtToken(accessTokenValue, expiry);
     }
 
-    public JwtToken createAccessToken(Long userId, Role role) {
+    public JwtToken createAccessToken(Long userId, MemberStatus status) {
+        Role role = RoleFactory.getRoleByMemberStatus(status);
         return createAccessToken(userId, role.getRoleValue());
     }
 

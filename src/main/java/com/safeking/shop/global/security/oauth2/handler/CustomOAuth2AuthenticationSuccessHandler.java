@@ -43,18 +43,20 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
                 .collect(Collectors.joining(","));
 
         JwtToken accessToken = jwtManager.createAccessToken(userIdOAuth2User.getUserId(), authorities);
+
         JwtToken refreshToken = jwtManager.createRefreshToken();
+        Duration refreshTokenExpiryDuration = Duration.between(Instant.now(), refreshToken.getExpiry());
         jwtRepository.addRefreshToken(
                 userIdOAuth2User.getUserId(),
                 refreshToken.getToken(),
-                Duration.between(Instant.now(), refreshToken.getExpiry())
+                refreshTokenExpiryDuration
         );
 
         CookieUtils.addCookie(
                 response,
                 CookieUtils.COOKIE_NAME_REFRESH_TOKEN,
                 refreshToken.getToken(),
-                (int) Duration.between(Instant.now(), refreshToken.getExpiry()).getSeconds()
+                (int) refreshTokenExpiryDuration.getSeconds()
         );
 
         String redirectUri = CookieUtils.getCookie(request, CookieUtils.COOKIE_NAME_REDIRECT_URI)
@@ -63,7 +65,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
 
         String targetUri = UriComponentsBuilder.fromUriString(redirectUri)
                 .queryParam("token", accessToken.getToken())
-                .queryParam("additional-auth-required", userIdOAuth2User.requiredAdditionalAuth())
+                .queryParam("additional-auth-required", userIdOAuth2User.getStatus().isAdditionalAuthRequired())
                 .build().toUriString();
 
         oAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);

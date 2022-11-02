@@ -16,4 +16,8 @@ public enum MemberStatus {
     public String getDescription() {
         return description;
     }
+
+    public boolean isAdditionalAuthRequired() {
+        return this == TEMP;
+    }
 }
