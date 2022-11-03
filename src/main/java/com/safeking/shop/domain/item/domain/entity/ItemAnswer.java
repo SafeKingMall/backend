@@ -13,7 +13,8 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemAnswer extends BaseTimeEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_answer_id")
     private Long id;
 
@@ -26,5 +27,23 @@ public class ItemAnswer extends BaseTimeEntity {
     private ItemQuestion target;
 
     private String contents;
+
+    public static ItemAnswer createItemAnswer(Admin admin, ItemQuestion target, String contents) {
+        ItemAnswer itemAnswer = new ItemAnswer();
+
+        itemAnswer.admin = admin;
+
+        itemAnswer.contents = contents;
+
+        itemAnswer.target = target;
+
+        target.addItemAnswer(itemAnswer);
+
+        return itemAnswer;
+    }
+
+    public void update(String contents){
+        this.contents=contents;
+    }
 
 }

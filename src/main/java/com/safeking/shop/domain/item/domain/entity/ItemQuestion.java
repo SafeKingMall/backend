@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,6 +31,9 @@ public class ItemQuestion extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member writer;
 
+    @OneToOne(mappedBy = "target",cascade = CascadeType.ALL,orphanRemoval = true)
+    private ItemAnswer itemAnswer;
+
     public static ItemQuestion createItemQuestion(String title, String contents, Item item, Member writer) {
 
         ItemQuestion itemQuestion = new ItemQuestion();
@@ -42,6 +47,10 @@ public class ItemQuestion extends BaseTimeEntity {
         itemQuestion.writer = writer;
 
         return itemQuestion;
+    }
+
+    public void addItemAnswer(ItemAnswer itemAnswer){
+        this.itemAnswer=itemAnswer;
     }
 
     public void update(String title,String contents){
