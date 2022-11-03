@@ -24,4 +24,18 @@ public class CategoryItem extends BaseTimeEntity {
     @JoinColumn(name ="category_id" )
     private Category category;
 
+
+    public CategoryItem(Category category,Item item) {
+        this.category = category;
+        this.item=item;
+    }
+
+    public void update(Category category){
+        this.category=category;
+    }
+
+    public void addItem(Item item){
+        this.item=item;
+    }
+
 }
