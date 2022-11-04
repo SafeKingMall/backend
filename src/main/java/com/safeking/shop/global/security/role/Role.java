@@ -1,0 +1,34 @@
+package com.safeking.shop.global.security.role;
+
+import java.util.stream.Stream;
+
+public enum Role {
+
+    USER("ROLE_USER", "모든 유저 기능 이용 가능한 유저 권한"),
+    TEMP("ROLE_TEMP", "인증 정보 입력만 가능한 임시 유저 권한"),
+    ADMIN("ROLE_ADMIN", "관리자 권한"),
+    ;
+
+    private final String roleValue;
+    private final String description;
+
+    Role(String value, String description) {
+        this.roleValue = value;
+        this.description = description;
+    }
+
+    public String getRoleValue() {
+        return roleValue;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public static Role roleValueToRole(String roleValue) {
+        return Stream.of(values())
+                .filter(role -> role.getRoleValue().equals(roleValue))
+                .findFirst()
+                .orElse(null);
+    }
+}
