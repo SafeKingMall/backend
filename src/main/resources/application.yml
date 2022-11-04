@@ -1,3 +1,10 @@
 spring:
-  config:
-    additional-location: config/
+  profiles:
+    active: local
+    group:
+      local:
+        - oauth
+      dev:
+        - oauth
+      prod:
+        - oauth

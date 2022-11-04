@@ -28,4 +28,16 @@ public class OrderItem extends BaseTimeEntity {
 
     private int count;
 
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.changeOrderItem(item, orderPrice, count);
+
+        return orderItem;
+    }
+
+    public void changeOrderItem(Item item, int orderPrice, int count) {
+        this.item = item;
+        this.orderPrice = orderPrice;
+        this.count = count;
+    }
 }
