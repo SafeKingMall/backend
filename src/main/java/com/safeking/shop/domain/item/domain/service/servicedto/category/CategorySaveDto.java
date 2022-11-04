@@ -4,6 +4,10 @@ import lombok.Data;
 
 @Data
 public class CategorySaveDto {
-    private Long id;
+
     private String name;
+
+    public CategorySaveDto(String name) {
+        this.name = name;
+    }
 }
