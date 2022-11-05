@@ -14,5 +14,5 @@ public interface OrderService {
     //List<Order> findOrders(); //주문 다건 조회
     void cancel(List<Long> ids); //주문 취소
     Long order(OrderOrderDto orderOrderDto, DeliveryCreateDto deliveryCreateDto); //주문
-    Long update(OrderOrderDto orderOrderDto, DeliveryCreateDto deliveryCreateDto); //주문 정보 수정
+    Long updateOrder(OrderOrderDto orderOrderDto, DeliveryCreateDto deliveryCreateDto); //주문 정보 수정
 }
