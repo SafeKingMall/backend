@@ -20,6 +20,10 @@ public class OrderItem extends BaseTimeEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    /**
+     * 양방향 관계로 설정
+     * OrderItem 이 연관관계의 주인으로 설정(외래키가 있는 곳이기 때문)
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
@@ -39,5 +43,13 @@ public class OrderItem extends BaseTimeEntity {
         this.item = item;
         this.orderPrice = orderPrice;
         this.count = count;
+    }
+
+    /**
+     * 상품 취소시
+     * 상품에 있는 재고 증가
+     */
+    public void cancel() {
+        getItem().addItemQuantity(count);
     }
 }

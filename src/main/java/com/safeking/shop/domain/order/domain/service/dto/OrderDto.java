@@ -5,16 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class OrderOrderDto {
+public class OrderDto {
     private Long memberId;
     private String userId;
     private String oauthId;
     private OAuthProvider provider;
     private Long itemId;
     private String memo;
+    private int count;
 
     @Builder
-    public OrderOrderDto(Long memberId, String userId, String oauthId, OAuthProvider provider, Long itemId, String memo) {
+    public OrderDto(Long memberId, String userId, String oauthId, OAuthProvider provider, Long itemId, String memo) {
         this.memberId = memberId;
         this.userId = userId;
         this.oauthId = oauthId;

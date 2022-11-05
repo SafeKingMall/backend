@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class DeliveryCreateDto {
+public class DeliveryDto {
     private String receiver;
     private String phoneNumber;
     private String address;
@@ -16,7 +16,9 @@ public class DeliveryCreateDto {
     private LocalDateTime shippingEndDate;
 
     @Builder
-    public DeliveryCreateDto(String receiver, String phoneNumber, String address, DeliveryStatus status, LocalDateTime shippingStartDate, LocalDateTime shippingEndDate) {
+    public DeliveryDto(String receiver, String phoneNumber,
+                             String address, DeliveryStatus status,
+                             LocalDateTime shippingStartDate, LocalDateTime shippingEndDate) {
         this.receiver = receiver;
         this.phoneNumber = phoneNumber;
         this.address = address;
