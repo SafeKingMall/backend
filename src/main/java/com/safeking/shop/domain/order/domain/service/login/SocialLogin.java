@@ -20,11 +20,8 @@ public class SocialLogin implements LoginBehavior {
     }
 
     @Override
-    public LoginDto login() {
+    public SocialAccount login() {
         Optional<SocialAccount> findMember = socialAccountRepository.findByOauthIdAndProviderFetchMember(oauthId, provider);
-        Optional<LoginDto> loginDto = findMember.map(m -> new LoginDto(m.getMember().getId()));
-
-        return loginDto.orElseThrow(
-                () -> new LoginException("해당 회원이 없습니다."));
+        return findMember.orElseThrow(() -> new LoginException("해당 회원이 없습니다."));
     }
 }

@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.common;
+package com.safeking.shop.domain.admin.common;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

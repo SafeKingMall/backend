@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.order.domain.entity;
 
-import com.safeking.shop.domain.common.BaseTimeEntity;
+import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
@@ -54,14 +54,14 @@ public class Order extends BaseTimeEntity {
     @Column(length = 50)
     private String memo;
 
-    public static Order createOrder(Member member, Delivery delivery, OrderStatus status, String memo) {
+    public static Order createOrder(Member member, Object loginMember, Delivery delivery, OrderStatus status, String memo) {
         Order order = new Order();
-        order.changeOrder(member, delivery, status, memo);
+        order.changeOrder(member, loginMember, delivery, status, memo);
 
         return order;
     }
 
-    public void changeOrder(Member member, Delivery delivery, OrderStatus status, String memo) {
+    public void changeOrder(Member member, Object loginMember, Delivery delivery, OrderStatus status, String memo) {
         this.member = member;
         this.delivery = delivery;
         this.status = status;

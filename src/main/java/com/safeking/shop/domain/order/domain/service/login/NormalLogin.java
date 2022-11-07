@@ -16,11 +16,8 @@ public class NormalLogin implements LoginBehavior {
     }
 
     @Override
-    public LoginDto login() {
+    public NormalAccount login() {
         Optional<NormalAccount> findMember = normalAccountRepository.findByLoginIdFetchMember(loginId);
-        Optional<LoginDto> loginDto = findMember.map(m -> new LoginDto(m.getMember().getId()));
-
-        return loginDto.orElseThrow(
-                () -> new LoginException("해당 회원이 없습니다."));
+        return findMember.orElseThrow(() -> new LoginException("회원이 없습니다."));
     }
 }

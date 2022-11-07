@@ -51,14 +51,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Long order(OrderDto orderDto, DeliveryDto deliveryDto) {
 
-        // 회원 조회
-        if(orderDto.getUserId() != null) {
-            setLoginBehavior(new NormalLogin(normalAccountRepository, orderDto.getUserId()));
-        } else {
-            setLoginBehavior(new SocialLogin(socialAccountRepository, orderDto.getOauthId(), orderDto.getProvider()));
-        }
-        LoginDto loginMember = loginBehavior.login();
-
         // 상품 조회
         Optional<Item> findItem = itemRepository.findById(orderDto.getItemId());
         Item item = findItem.orElseThrow(() -> new ItemException("상품이 없습니다."));
@@ -76,8 +68,15 @@ public class OrderServiceImpl implements OrderService {
         OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), orderDto.getCount());
         item.removeItemQuantity(orderDto.getCount());
 
-        // 주문 생성
+        // 회원 조회
+        if(orderDto.getUserId() != null) {
+            setLoginBehavior(new NormalLogin(normalAccountRepository, orderDto.getUserId()));
+        } else {
+            setLoginBehavior(new SocialLogin(socialAccountRepository, orderDto.getOauthId(), orderDto.getProvider()));
+        }
 
+        Object loginMember = loginBehavior.login();
+        // 주문 생성
 
         return null;
     }
@@ -88,7 +87,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     //로그인 방식 변경
-    void setLoginBehavior(LoginBehavior loginBehavior) {
+    private void setLoginBehavior(LoginBehavior loginBehavior) {
         this.loginBehavior = loginBehavior;
+    }
+
+    private LoginBehavior getLoginBehavior() {
+        return this.loginBehavior;
     }
 }

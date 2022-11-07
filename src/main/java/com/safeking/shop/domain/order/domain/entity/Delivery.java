@@ -1,13 +1,12 @@
 package com.safeking.shop.domain.order.domain.entity;
 
-import com.safeking.shop.domain.common.BaseTimeEntity;
+import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity @Getter

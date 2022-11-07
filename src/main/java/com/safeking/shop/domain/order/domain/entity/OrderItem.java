@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.order.domain.entity;
 
-import com.safeking.shop.domain.common.BaseTimeEntity;
+import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -51,5 +51,10 @@ public class OrderItem extends BaseTimeEntity {
      */
     public void cancel() {
         getItem().addItemQuantity(count);
+    }
+
+    public void changeOrder(Order order) {
+        this.order = order;
+        order.getOrderItems().add(this);
     }
 }
