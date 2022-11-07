@@ -16,8 +16,11 @@ public class ItemPhoto extends BaseTimeEntity {
     @Column(name = "item_photo_id")
     private Long id;
 
+    private String fileName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
+
 
 }

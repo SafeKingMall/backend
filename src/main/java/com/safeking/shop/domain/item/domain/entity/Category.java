@@ -2,6 +2,7 @@ package com.safeking.shop.domain.item.domain.entity;
 
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,8 +16,15 @@ public class Category extends BaseTimeEntity {
     @Column(name = "category_id")
     private Long id;
 
-    private int depth;
+//    private int depth;
 
     private String name;
 
+    public Category(String name){
+        this.name=name;
+    }
+
+    public void updateName(String name) {
+        this.name=name;
+    }
 }
