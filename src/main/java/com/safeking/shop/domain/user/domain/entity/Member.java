@@ -18,7 +18,15 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberAccountType type;
 
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status;
+
     public Member(MemberAccountType type) {
         this.type = type;
+        this.status = MemberStatus.TEMP;
+    }
+
+    public void updateActivateMember() {
+        this.status = MemberStatus.ACTIVATE;
     }
 }

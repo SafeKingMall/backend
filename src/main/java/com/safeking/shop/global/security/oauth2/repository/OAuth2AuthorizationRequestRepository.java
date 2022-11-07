@@ -28,6 +28,7 @@ public class OAuth2AuthorizationRequestRepository implements AuthorizationReques
         // OAuth2 로그인 요청 정보
         CookieUtils.addCookie(response, CookieUtils.COOKIE_NAME_OAUTH2_AUTHORIZATION_REQUEST, CookieUtils.serialize(authorizationRequest), cookieAge);
         // OAuth2 로그인 성공시 redirect 할 uri
+        // TODO redirect_uri 없을시 Error
         CookieUtils.addCookie(response, CookieUtils.COOKIE_NAME_REDIRECT_URI, request.getParameter("redirect_uri"), cookieAge);
     }
 
