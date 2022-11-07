@@ -13,6 +13,7 @@ plugins {
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
+
 group = 'com.safeking'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
