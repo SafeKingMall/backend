@@ -1,6 +1,6 @@
-package com.safeking.shop.domain.user.domain.service.auth;
+package com.safeking.shop.global.auth;
 
-import com.safeking.shop.domain.user.domain.entity.auth.PrincipalDetails;
+import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ public class PrincipalDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     /**
-     * POST로 /login요청시 작동한다.
      * username을 바탕으로 member를 가져와서 비밀번호와 아이디를 대조해서 로그인을 진행*/
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

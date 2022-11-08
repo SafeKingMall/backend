@@ -3,9 +3,10 @@ package com.safeking.shop.global.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.cos.jwt.config.auth.PrincipalDetails;
-import com.cos.jwt.model.User;
-import com.cos.jwt.repository.UserRepository;
+import com.safeking.shop.global.auth.PrincipalDetails;
+import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,37 +19,42 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository) {
         super(authenticationManager);
-        this.userRepository=userRepository;
+        this.memberRepository=memberRepository;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 //        super.doFilterInternal(request, response, chain);
-        System.out.println("인증이나 권한이 필요한 주소 요청");
+        log.info("JwtAuthorizationFilter 실행");
         
         String jwtHeader=request.getHeader("Authorization");
-        System.out.println("jwtHeader = " + jwtHeader);
 
         if(jwtHeader==null||!jwtHeader.startsWith("Bearer")){
             chain.doFilter(request,response);//다른 필터는 타되 다 타면 종료
             return;
         }
+
         String jwToken=request.getHeader("Authorization").replace("Bearer ","");
-        String username= JWT.require(Algorithm.HMAC512("cos")).build()
+
+        String username= JWT.require(Algorithm.HMAC512("safeKing")).build()
                 .verify(jwToken).getClaim("username").asString();
 
         if(username!=null){
-            System.out.println("username 정상");
-            User userEntity = userRepository.findByUsername(username);
-            PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
+
+            Member member = memberRepository.findByUsername(username).orElseThrow();
+
+            PrincipalDetails principalDetails = new PrincipalDetails(member);
+
             Authentication authentication
                     = new UsernamePasswordAuthenticationToken(principalDetails, null,principalDetails.getAuthorities());
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         }

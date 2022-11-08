@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.user.domain.entity.auth;
+package com.safeking.shop.global.auth;
 
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.Getter;

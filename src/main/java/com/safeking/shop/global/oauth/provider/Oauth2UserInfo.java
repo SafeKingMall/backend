@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.user.domain.entity.provider;
+package com.safeking.shop.global.oauth.provider;
 
 public interface Oauth2UserInfo {
     String getProviderId();

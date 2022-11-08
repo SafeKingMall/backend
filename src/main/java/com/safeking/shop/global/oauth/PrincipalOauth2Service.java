@@ -1,11 +1,12 @@
-package com.safeking.shop.domain.user.domain.service.oauth;
+package com.safeking.shop.global.oauth;
 
-import com.safeking.shop.domain.user.domain.entity.auth.PrincipalDetails;
+import com.safeking.shop.global.auth.PrincipalDetails;
+import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
-import com.safeking.shop.domain.user.domain.entity.provider.FaceBookUserInfo;
-import com.safeking.shop.domain.user.domain.entity.provider.GoogleUserInfo;
-import com.safeking.shop.domain.user.domain.entity.provider.NaverUserInfo;
-import com.safeking.shop.domain.user.domain.entity.provider.Oauth2UserInfo;
+import com.safeking.shop.global.oauth.provider.FaceBookUserInfo;
+import com.safeking.shop.global.oauth.provider.GoogleUserInfo;
+import com.safeking.shop.global.oauth.provider.NaverUserInfo;
+import com.safeking.shop.global.oauth.provider.Oauth2UserInfo;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,8 +63,8 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
         String email = oauth2UserInfo.getEmail();//구글이 준 email
         String role = "ROLE_USER";
 
-        OauthMember oauthMember = null;
-        if (memberRepository.findByUsername(username).orElse(null) == null) {
+        Member oauthMember = memberRepository.findByUsername(username).orElse(null);
+        if (oauthMember == null) {
             oauthMember = OauthMember.builder()
                     .username(username)
                     .password(password)
@@ -74,8 +75,7 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
                     .build();
             memberRepository.save(oauthMember);
         } else {
-            //수정
-            log.info("로그인을 한 적이 있다.");
+            log.info("Oauth 를 톤해 회원가입을 한 적이 있다.");
         }
         return new PrincipalDetails(oauthMember,oAuth2User.getAttributes());
     }

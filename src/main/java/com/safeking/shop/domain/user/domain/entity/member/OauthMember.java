@@ -1,18 +1,16 @@
 package com.safeking.shop.domain.user.domain.entity.member;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Setter
+@Getter
 @DiscriminatorValue("Oauth")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OauthMember extends Member{
-
+    /**
+     * 소셜 로그인 회원 가입 유저*/
     private String provider;
     private String providerId;
 
