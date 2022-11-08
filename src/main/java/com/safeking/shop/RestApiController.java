@@ -21,14 +21,7 @@ public class RestApiController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberRepository memberRepository;
 
-    @GetMapping("/home")
-    public String home(){
-        return "<h1>home</h1>";
-    }
-    @PostMapping("/home")
-    public String post(){
-        return "<h1>token</h1>";
-    }
+    //임시 join 컨트롤러
     @PostMapping("/join")
     public String join(@RequestBody Member member){
         member.setPassword(bCryptPasswordEncoder.encode(member.getPassword()));
@@ -37,6 +30,7 @@ public class RestApiController {
         return "회원가입 완료";
     }
 
+    //권한 처리 확인 용 임시 controller
     @GetMapping("/api/v1/user")
     public String user(){
         return "user";
@@ -52,7 +46,7 @@ public class RestApiController {
 
     @GetMapping("/auth/success")
     public ResponseEntity<?> signinSuccess(HttpServletResponse response) {
-
+        //임시로 log 를 찍음
         log.info("JWT 토큰= {}",response.getHeader("Authorization"));
 
         return ResponseEntity.ok("ok");

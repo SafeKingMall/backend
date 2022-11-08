@@ -52,8 +52,7 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
 
             oauth2UserInfo = new NaverUserInfo((Map) oAuth2User.getAttributes().get("response"));
         } else {
-            //수정
-            log.info("우리는 구글과 네이버와 페이스북만 지원해요");
+            //추가 고민 중
         }
 
         String provider = oauth2UserInfo.getProvider();

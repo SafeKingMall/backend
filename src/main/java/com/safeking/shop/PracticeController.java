@@ -8,6 +8,7 @@ public class PracticeController {
 
     @GetMapping("/")
     public String practice(){
+        //Oauth 확인 용 controller
         return "loginForm";
     }
 
