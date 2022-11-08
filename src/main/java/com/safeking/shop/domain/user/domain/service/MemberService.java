@@ -5,6 +5,7 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
 import com.safeking.shop.domain.user.domain.service.dto.MemberUpdateDto;
+import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,14 @@ import javax.transaction.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final CustomBCryPasswordEncoder encoder;
 
     public Long join(GeneralSingUpDto singUpDto){
         log.info("회원 가입");
 
         GeneralMember generalMember = GeneralMember.builder()
                 .username(singUpDto.getUsername())
-                .password(singUpDto.getPassword())
+                .password(encoder.encode(singUpDto.getPassword()))
                 .email(singUpDto.getEmail())
                 .roles("ROLE_USER")
                 .build();
