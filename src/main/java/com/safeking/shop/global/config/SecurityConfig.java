@@ -87,7 +87,7 @@ public class SecurityConfig{
                         response.addHeader("Authorization","Bearer "+jwtToken);
 
                         //토큰을 발행 후에 forward
-                        String targetUrl = "/auth/success";
+                        String targetUrl = "/api/v1/auth/success";
                         RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
                         dis.forward(request, response);
                     }

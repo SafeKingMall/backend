@@ -22,13 +22,13 @@ public class RestApiController {
     private final MemberRepository memberRepository;
 
     //임시 join 컨트롤러
-    @PostMapping("/join")
-    public String join(@RequestBody Member member){
-        member.setPassword(bCryptPasswordEncoder.encode(member.getPassword()));
-        member.setRoles("ROLE_USER");
-        memberRepository.save(member);
-        return "회원가입 완료";
-    }
+//    @PostMapping("/join")
+//    public String join(@RequestBody Member member){
+//        member.setPassword(bCryptPasswordEncoder.encode(member.getPassword()));
+//        member.setRoles("ROLE_USER");
+//        memberRepository.save(member);
+//        return "회원가입 완료";
+//    }
 
     //권한 처리 확인 용 임시 controller
     @GetMapping("/api/v1/user")
@@ -44,12 +44,12 @@ public class RestApiController {
         return "admin";
     }
 
-    @GetMapping("/auth/success")
-    public ResponseEntity<?> signinSuccess(HttpServletResponse response) {
-        //임시로 log 를 찍음
-        log.info("JWT 토큰= {}",response.getHeader("Authorization"));
-
-        return ResponseEntity.ok("ok");
-    }
+//    @GetMapping("/auth/success")
+//    public ResponseEntity<?> signinSuccess(HttpServletResponse response) {
+//        //임시로 log 를 찍음
+//        log.info("JWT 토큰= {}",response.getHeader("Authorization"));
+//
+//        return ResponseEntity.ok("ok");
+//    }
 
 }

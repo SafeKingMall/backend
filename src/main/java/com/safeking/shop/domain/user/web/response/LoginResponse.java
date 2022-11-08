@@ -8,5 +8,4 @@ import lombok.Getter;
 public class LoginResponse {
 
     private String token;
-    private boolean additionalAuthRequired;
 }
