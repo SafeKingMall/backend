@@ -17,7 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.servlet.RequestDispatcher;
@@ -88,6 +90,14 @@ public class SecurityConfig{
                         String targetUrl = "/auth/success";
                         RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
                         dis.forward(request, response);
+                    }
+                    }
+                )
+                .failureHandler(new AuthenticationFailureHandler() {
+                    @Override
+                    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+                                                        AuthenticationException exception) throws IOException, ServletException {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                     }
                 })
         ;
