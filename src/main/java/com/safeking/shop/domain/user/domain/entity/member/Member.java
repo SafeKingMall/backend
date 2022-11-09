@@ -1,6 +1,7 @@
 package com.safeking.shop.domain.user.domain.entity.member;
 
 import com.safeking.shop.domain.common.BaseTimeEntity;
+import com.safeking.shop.domain.user.domain.entity.Address;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,11 @@ public class Member extends BaseTimeEntity {
     private String username;
     private String password;
     private String email;
-    private String roles; //ROLE_USER, ROLE_ADMIN
+    private String roles; //ROLE_USER
+
+    private String phoneNumber;
+    @Embedded
+    private Address address;
 
     public List<String> getRoleList(){
         if(this.roles.length()>0){

@@ -50,7 +50,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     = new UsernamePasswordAuthenticationToken(member.getUsername(), member.getPassword());
 
             //3. loadByUsername을 실행
-
                 Authentication authentication
                         = authenticationManager.authenticate(authenticationToken);
                 PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();

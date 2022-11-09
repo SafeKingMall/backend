@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Getter
+//스프링 시큐리티 세션안에 Authenticate 영역
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private Member member;

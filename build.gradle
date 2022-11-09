@@ -54,7 +54,10 @@ dependencies {
 
     //querydsl 추가
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"}
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+}
 
 test {
     useJUnitPlatform()

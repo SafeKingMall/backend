@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
+//권한처리시 사용되는 필터
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private MemberRepository memberRepository;
@@ -54,7 +55,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
             Authentication authentication
                     = new UsernamePasswordAuthenticationToken(principalDetails, null,principalDetails.getAuthorities());
-
+            //시큐리티 세션=> 권한처리
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         }

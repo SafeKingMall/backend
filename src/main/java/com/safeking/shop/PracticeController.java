@@ -7,12 +7,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@RestController
+@Controller
 @Slf4j
 public class PracticeController {
 
@@ -23,6 +24,7 @@ public class PracticeController {
     }
     @GetMapping(value = "/error",produces =
             MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     public ResponseEntity<ErrorResult> error(){
         log.info("/error");
         ErrorResult errorResult = new ErrorResult("error", "error");

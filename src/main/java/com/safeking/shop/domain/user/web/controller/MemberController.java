@@ -26,7 +26,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberQueryService memberQueryService;
 
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest){
 
         GeneralSingUpDto generalSingUpDto = signUpRequest.toServiceDto();
