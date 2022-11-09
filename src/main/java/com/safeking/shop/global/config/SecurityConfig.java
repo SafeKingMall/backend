@@ -2,8 +2,10 @@ package com.safeking.shop.global.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.auth.PrincipalDetails;
+import com.safeking.shop.global.exhandler.ErrorResult;
 import com.safeking.shop.global.oauth.PrincipalOauth2Service;
 import com.safeking.shop.global.jwt.JwtAuthenticationFilter;
 import com.safeking.shop.global.jwt.JwtAuthorizationFilter;
@@ -11,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +25,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -84,20 +91,29 @@ public class SecurityConfig{
                                 .withClaim("username", principalDetails.getMember().getUsername())
                                 .sign(Algorithm.HMAC512("safeKing"));
 
+
                         response.addHeader("Authorization","Bearer "+jwtToken);
 
                         //토큰을 발행 후에 forward
-                        String targetUrl = "/api/v1/auth/success";
+                        String targetUrl = "/auth/success";
                         RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
-                        dis.forward(request, response);
-                    }
+                        dis.forward(request, response);}
                     }
                 )
                 .failureHandler(new AuthenticationFailureHandler() {
                     @Override
                     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                                         AuthenticationException exception) throws IOException, ServletException {
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+
+                        ObjectMapper om = new ObjectMapper();
+
+                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        response.setCharacterEncoding("UTF-8");
+
+                        ErrorResult errorResult = new ErrorResult("oauth2_access", "소셜 로그인에 실패하셨습니다");
+
+                        om.writeValue(response.getWriter(),errorResult);
                     }
                 })
         ;

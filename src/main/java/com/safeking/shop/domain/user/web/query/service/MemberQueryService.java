@@ -4,6 +4,7 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.web.query.repository.MemberQueryRepository;
 import com.safeking.shop.domain.user.web.query.service.dto.MemberInfo;
+import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class MemberQueryService {
     public MemberInfo showMyPage(Long id){
         return memberQueryRepository
                 .findMemberById(id).map(MemberInfo::new)
-                .orElseThrow();
+                .orElseThrow(()->new MemberNotFoundException("member not found"));
     }
 
 

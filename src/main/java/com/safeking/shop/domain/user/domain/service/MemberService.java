@@ -6,6 +6,7 @@ import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
 import com.safeking.shop.domain.user.domain.service.dto.MemberUpdateDto;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
+import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class MemberService {
     public void updateMemberInfo(Long id,MemberUpdateDto memberUpdateDto){
         log.info("회원 정보 수정");
 
-        Member member = memberRepository.findById(id).orElseThrow();
+        Member member = memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("member not found"));
 
         member.updateMemberInfo(memberUpdateDto.getPassword(), memberUpdateDto.getEmail());
     }

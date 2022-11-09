@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,21 +30,12 @@ public class MemberController {
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest){
 
         GeneralSingUpDto generalSingUpDto = signUpRequest.toServiceDto();
-
         memberService.join(generalSingUpDto);
 
         return new ResponseEntity<>("signUp success",HttpStatus.OK);
     }
 
-    @GetMapping("/success")
-    public ResponseEntity<String> signInSuccess(HttpServletResponse response) {
-        //임시로 log 를 찍음
-        log.info("JWT 토큰= {}",response.getHeader("Authorization"));
 
-        String authorization = response.getHeader("Authorization");
-
-        return new ResponseEntity<>(authorization, HttpStatus.OK);
-    }
 
 
 }

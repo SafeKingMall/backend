@@ -4,10 +4,16 @@ package com.safeking.shop.global.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.oauth2.sdk.ErrorObject;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.safeking.shop.global.exception.MemberNotFoundException;
+import com.safeking.shop.global.exhandler.ErrorResult;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,16 +31,18 @@ import java.util.Date;
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private ObjectMapper om;
 
 
     //로그인 시에 실행이 되는 필터
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("attemptAuthentication 실행");
 
         try {
             // 1. username,password를 받아서
-            ObjectMapper om = new ObjectMapper();
+            om = new ObjectMapper();
             Member member=om.readValue(request.getInputStream(), Member.class);
 
             // 2. 바탕으로 토큰을 만들어서
@@ -42,18 +50,28 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     = new UsernamePasswordAuthenticationToken(member.getUsername(), member.getPassword());
 
             //3. loadByUsername을 실행
-            Authentication authentication
-                    = authenticationManager.authenticate(authenticationToken);
 
-            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+                Authentication authentication
+                        = authenticationManager.authenticate(authenticationToken);
+                PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
-            log.info("principalDetails.name={}",principalDetails.getMember().getUsername());
+                log.info("principalDetails.name={}",principalDetails.getMember().getUsername());
 
-            return authentication;
+                return authentication;
 
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
+
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding("UTF-8");
+
+            ErrorResult errorResult = new ErrorResult("jwt_token_access", e.getMessage());
+
+            om.writeValue(response.getWriter(),errorResult);
+        }catch (IOException e){
             throw new RuntimeException(e);
         }
+        return null;
     }
 
     @Override
