@@ -1,5 +1,6 @@
 package com.safeking.shop.domain.order.domain.service;
 
+import com.safeking.shop.domain.exception.LoginException;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
@@ -17,6 +18,8 @@ import com.safeking.shop.domain.order.domain.service.login.LoginDto;
 import com.safeking.shop.domain.order.domain.service.dto.OrderDto;
 import com.safeking.shop.domain.order.domain.service.login.NormalLogin;
 import com.safeking.shop.domain.order.domain.service.login.SocialLogin;
+import com.safeking.shop.domain.user.domain.entity.Member;
+import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.NormalAccountRepository;
 import com.safeking.shop.domain.user.domain.repository.SocialAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final DeliveryRepository deliveryRepository;
     private final ItemRepository itemRepository;
     private final OrderItemRepository orderItemRepository;
+    private final MemberRepository memberRepository;
     private LoginBehavior loginBehavior;
 
     @Override
@@ -55,6 +59,11 @@ public class OrderServiceImpl implements OrderService {
         Optional<Item> findItem = itemRepository.findById(orderDto.getItemId());
         Item item = findItem.orElseThrow(() -> new ItemException("상품이 없습니다."));
 
+        //회원 조회
+        Optional<Member> findMember = memberRepository.findById(orderDto.getMemberId());
+        Member member = findMember.orElseThrow(() -> new LoginException("회원이 없습니다."));
+
+
         // 배송 정보 생성
         Delivery delivery = Delivery.createDelivery(deliveryDto.getReceiver(),
                 deliveryDto.getPhoneNumber(),
@@ -66,19 +75,12 @@ public class OrderServiceImpl implements OrderService {
 
         // 주문상품 생성
         OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), orderDto.getCount());
-        item.removeItemQuantity(orderDto.getCount());
 
-        // 회원 조회
-        if(orderDto.getUserId() != null) {
-            setLoginBehavior(new NormalLogin(normalAccountRepository, orderDto.getUserId()));
-        } else {
-            setLoginBehavior(new SocialLogin(socialAccountRepository, orderDto.getOauthId(), orderDto.getProvider()));
-        }
-
-        Object loginMember = loginBehavior.login();
         // 주문 생성
+        Order order = Order.createOrder(member, delivery, orderItem);
+        Order completeOrder = orderRepository.save(order);
 
-        return null;
+        return completeOrder.getId();
     }
 
     @Override

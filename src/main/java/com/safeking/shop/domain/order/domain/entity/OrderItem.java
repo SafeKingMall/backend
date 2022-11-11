@@ -43,6 +43,7 @@ public class OrderItem extends BaseTimeEntity {
         this.item = item;
         this.orderPrice = orderPrice;
         this.count = count;
+        item.removeItemQuantity(count); //재고 감소
     }
 
     /**

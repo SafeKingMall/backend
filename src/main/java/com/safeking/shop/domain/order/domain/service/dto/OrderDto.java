@@ -11,16 +11,14 @@ public class OrderDto {
     private String oauthId;
     private OAuthProvider provider;
     private Long itemId;
-    private String memo;
     private int count;
 
     @Builder
-    public OrderDto(Long memberId, String userId, String oauthId, OAuthProvider provider, Long itemId, String memo) {
+    public OrderDto(Long memberId, String userId, String oauthId, OAuthProvider provider, Long itemId) {
         this.memberId = memberId;
         this.userId = userId;
         this.oauthId = oauthId;
         this.provider = provider;
         this.itemId = itemId;
-        this.memo = memo;
     }
 }

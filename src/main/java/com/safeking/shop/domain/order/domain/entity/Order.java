@@ -28,14 +28,6 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "social_account_id")
-    private SocialAccount socialAccount;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "normal_account_id")
-    private NormalAccount normalAccount;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
@@ -54,18 +46,26 @@ public class Order extends BaseTimeEntity {
     @Column(length = 50)
     private String memo;
 
-    public static Order createOrder(Member member, Object loginMember, Delivery delivery, OrderStatus status, String memo) {
+    public static Order createOrder(Member member, Delivery delivery, String memo, List<OrderItem> orderItems) {
         Order order = new Order();
-        order.changeOrder(member, loginMember, delivery, status, memo);
+        order.changeOrder(member, delivery, memo, orderItems);
 
         return order;
     }
 
-    public void changeOrder(Member member, Object loginMember, Delivery delivery, OrderStatus status, String memo) {
+    public void changeOrder(Member member, Delivery delivery, String memo, List<OrderItem> orderItems) {
         this.member = member;
         this.delivery = delivery;
-        this.status = status;
+        this.status = OrderStatus.COMPLETE;
         this.memo = memo;
+        for(OrderItem orderItem : orderItems) {
+            changeOrderItem(orderItem);
+        }
+    }
+
+    private void changeOrderItem(OrderItem orderItem) {
+        this.orderItems.add(orderItem);
+        orderItem.changeOrder(this);
     }
 
     /**
