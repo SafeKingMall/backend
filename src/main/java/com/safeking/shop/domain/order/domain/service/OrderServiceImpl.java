@@ -1,6 +1,5 @@
 package com.safeking.shop.domain.order.domain.service;
 
-import com.safeking.shop.domain.exception.LoginException;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
@@ -8,17 +7,14 @@ import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.exception.ItemException;
+import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
-import com.safeking.shop.domain.order.domain.service.dto.DeliveryDto;
-import com.safeking.shop.domain.order.domain.service.dto.OrderCancelDto;
+import com.safeking.shop.domain.order.domain.service.dto.cancel.CancelDto;
+import com.safeking.shop.domain.order.domain.service.dto.order.OrderItemDto;
 import com.safeking.shop.domain.order.domain.service.login.LoginBehavior;
-import com.safeking.shop.domain.order.domain.service.login.LoginDto;
-import com.safeking.shop.domain.order.domain.service.dto.OrderDto;
-import com.safeking.shop.domain.order.domain.service.login.NormalLogin;
-import com.safeking.shop.domain.order.domain.service.login.SocialLogin;
-import com.safeking.shop.domain.user.domain.entity.Member;
+import com.safeking.shop.domain.order.domain.service.dto.order.OrderDto;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.NormalAccountRepository;
 import com.safeking.shop.domain.user.domain.repository.SocialAccountRepository;
@@ -26,7 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +41,13 @@ public class OrderServiceImpl implements OrderService {
     private final MemberRepository memberRepository;
     private LoginBehavior loginBehavior;
 
+    /**
+     * 주문 취소
+     */
     @Override
-    public void cancel(OrderCancelDto orderCancelDto) {
-        orderCancelDto.getIds()
+    public void cancel(CancelDto cancelDto) {
+        cancelDto.getCancelOrderDtos()
+                .stream().map(dto -> dto.getId())
                 .forEach((id) -> {
                     Optional<Order> findOrder = orderRepository.findById(id);
                     Order order = findOrder.orElseThrow(() -> new OrderException("주문이 없습니다."));
@@ -52,41 +55,87 @@ public class OrderServiceImpl implements OrderService {
                 });
     }
 
+    /**
+     * 주문 로직
+     */
     @Override
-    public Long order(OrderDto orderDto, DeliveryDto deliveryDto) {
+    public Long order(OrderDto orderDto) {
 
-        // 상품 조회
-        Optional<Item> findItem = itemRepository.findById(orderDto.getItemId());
-        Item item = findItem.orElseThrow(() -> new ItemException("상품이 없습니다."));
+        //상품 조회
+        List<Item> items = findItems(orderDto.getOrderItemDtos());
 
         //회원 조회
-        Optional<Member> findMember = memberRepository.findById(orderDto.getMemberId());
-        Member member = findMember.orElseThrow(() -> new LoginException("회원이 없습니다."));
+        //==jwt 사용하여 조회==
 
+        // 배송 정보 생성 및 저장
+        Delivery delivery = createDelivery(orderDto);
 
-        // 배송 정보 생성
-        Delivery delivery = Delivery.createDelivery(deliveryDto.getReceiver(),
-                deliveryDto.getPhoneNumber(),
-                deliveryDto.getAddress(),
-                deliveryDto.getStatus(),
-                deliveryDto.getShippingStartDate(),
-                deliveryDto.getShippingEndDate());
-        deliveryRepository.save(delivery);
-
-        // 주문상품 생성
-        OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), orderDto.getCount());
+        // 주문상품 생성 및 저장
+        List<OrderItem> orderItems = createOrderItems(orderDto, items);
 
         // 주문 생성
-        Order order = Order.createOrder(member, delivery, orderItem);
-        Order completeOrder = orderRepository.save(order);
-
-        return completeOrder.getId();
-    }
-
-    @Override
-    public Long updateOrder(OrderDto orderOrderDto, DeliveryDto deliveryCreateDto) {
+        //Order order = Order.createOrder(new Member(), delivery, orderDto.getMemo(), orderItems);
         return null;
     }
+
+    /**
+     * 배송 정보 생성 및 저장
+     */
+    private Delivery createDelivery(OrderDto orderDto) {
+        //배송 정보 생성
+        Delivery delivery = Delivery.createDelivery(orderDto.getReceiver(), orderDto.getPhoneNumber(),
+                orderDto.getAddress(), DeliveryStatus.PREPARATION, orderDto.getOrderDeliveryDto().getMemo());
+        //배송 정보 저장
+        deliveryRepository.save(delivery);
+
+        return delivery;
+    }
+
+    /**
+     * 주문상품 생성 및 저장
+     */
+    private List<OrderItem> createOrderItems(OrderDto orderDto, List<Item> items) {
+
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        //Client에서 받은 items(orderDto.getItemDtos())와 DB에서 조회한 items의 크기가 일치한지 확인
+        if(items.size() != orderDto.getOrderItemDtos().size()) {
+            throw new ItemException("해당 상품에 대한 정보가 없습니다. 관리자에게 문의 하세요.");
+        }
+
+        for(int i = 0; i < items.size(); i++) {
+            //주문상품 생성
+            OrderItem orderItem = OrderItem.createOrderItem(items.get(i),
+                    items.get(i).getPrice(),
+                    orderDto.getOrderItemDtos().get(i).getCount());
+            //주문상품 저장
+            orderItemRepository.save(orderItem);
+            orderItems.add(orderItem);
+        }
+
+        return orderItems;
+    }
+
+    /**
+     * 상품 조회
+     */
+    private List<Item> findItems(List<OrderItemDto> orderItemDtos) {
+
+        Optional<Item> findItemsOptional;
+        List<Item> items = new ArrayList<>();
+
+        List<Long> itemIds = orderItemDtos.stream()
+                .map(OrderItemDto::getId)
+                .collect(Collectors.toList());
+
+        for(Long id : itemIds) {
+            findItemsOptional = itemRepository.findById(id);
+            items.add(findItemsOptional.orElseThrow(() -> new ItemException("상품이 없습니다.")));
+        }
+
+        return items;
+    }
+
 
     //로그인 방식 변경
     private void setLoginBehavior(LoginBehavior loginBehavior) {

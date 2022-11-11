@@ -72,8 +72,9 @@ public class Order extends BaseTimeEntity {
      * 주문 취소
      */
     public void cancel() {
-        if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)) {
-            throw new OrderException("배송완료된 상품은 취소가 불가합니다.");
+        if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)
+                || delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
+            throw new OrderException("배송중이거나 배송완료된 상품은 취소가 불가합니다.");
         }
 
         this.status = OrderStatus.CANCEL;

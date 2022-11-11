@@ -21,26 +21,32 @@ public class Delivery extends BaseTimeEntity {
     private String phoneNumber;
     private String address;
     private DeliveryStatus status;
+    private String memo;
     private LocalDateTime shippingStartDate;
     private LocalDateTime shippingEndDate;
 
     public static Delivery createDelivery(String receiver, String phoneNumber,
                                           String address, DeliveryStatus status,
-                                          LocalDateTime shippingStartDate, LocalDateTime shippingEndDate) {
+                                          String memo) {
         Delivery delivery = new Delivery();
-        delivery.changeDelivery(receiver, phoneNumber, address, status, shippingStartDate, shippingEndDate);
+        delivery.changeDelivery(receiver, phoneNumber, address, status, memo, LocalDateTime.now());
 
         return delivery;
     }
 
     public void changeDelivery(String receiver, String phoneNumber,
                                String address, DeliveryStatus status,
-                               LocalDateTime shippingStartDate, LocalDateTime shippingEndDate) {
+                               String memo,
+                               LocalDateTime shippingStartDate) {
         this.receiver = receiver;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.status = status;
+        this.memo = memo;
         this.shippingStartDate = shippingStartDate;
-        this.shippingEndDate = shippingEndDate;
+    }
+
+    public void changeDeliveryStatus(DeliveryStatus status) {
+        this.status = status;
     }
 }
