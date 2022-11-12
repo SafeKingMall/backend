@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.user.web.request;
+package com.safeking.shop.domain.user.web.request.signup;
 
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
 import lombok.AllArgsConstructor;

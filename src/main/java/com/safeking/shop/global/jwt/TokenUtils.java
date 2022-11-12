@@ -18,6 +18,7 @@ public class TokenUtils {
     public static final String AUTH_HEADER = "Authorization";
     public static final String REFRESH_HEADER = "refresh-token";
     public static final String BEARER = "Bearer ";
+    private static final String PRIVATE_KEY="safeKing";
     private final RefreshTokenRepository refreshTokenRepository;
 
     public TokenUtils(RefreshTokenRepository refreshTokenRepository) {
@@ -29,7 +30,7 @@ public class TokenUtils {
     }
     public static String verify(String token){
 
-        return JWT.require(Algorithm.HMAC512("safeKing")).build()
+        return JWT.require(Algorithm.HMAC512(PRIVATE_KEY)).build()
                 .verify(token).getClaim("username").asString();
 
     }
@@ -42,7 +43,7 @@ public class TokenUtils {
                 .withExpiresAt(getLifeTime(tokenType))
                 .withClaim("id", principalDetails.getMember().getId())
                 .withClaim("username", principalDetails.getMember().getUsername())
-                .sign(Algorithm.HMAC512("safeKing"));
+                .sign(Algorithm.HMAC512(PRIVATE_KEY));
         log.info("token= {} ",token);
         return token;
     }
