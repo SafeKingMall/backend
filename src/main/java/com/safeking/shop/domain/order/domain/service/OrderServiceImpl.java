@@ -12,6 +12,7 @@ import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.domain.service.dto.cancel.CancelDto;
+import com.safeking.shop.domain.order.domain.service.dto.cancel.CancelOrderDtos;
 import com.safeking.shop.domain.order.domain.service.dto.order.OrderItemDto;
 import com.safeking.shop.domain.order.domain.service.login.LoginBehavior;
 import com.safeking.shop.domain.order.domain.service.dto.order.OrderDto;
@@ -47,7 +48,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void cancel(CancelDto cancelDto) {
         cancelDto.getCancelOrderDtos()
-                .stream().map(dto -> dto.getId())
+                .stream()
+                .map(CancelOrderDtos::getId)
                 .forEach((id) -> {
                     Optional<Order> findOrder = orderRepository.findById(id);
                     Order order = findOrder.orElseThrow(() -> new OrderException("주문이 없습니다."));
