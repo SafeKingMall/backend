@@ -74,6 +74,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     .error(error)
                     .build();
 
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             generateResponseData(response, loginErrorResponse);
         }catch (IOException e){
             throw new RuntimeException(e);
@@ -82,7 +83,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        //401에러??--> csrf토큰이 없어서??
         log.info("일반로그인 user 에게 JWT 토큰 발행");
         Tokens tokens = tokenUtils.createTokens(authResult);
 
@@ -100,10 +100,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     private void generateResponseData(HttpServletResponse response, LoginResponse responseData) throws IOException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-
         om.writeValue(response.getWriter(), responseData);
     }
 }
