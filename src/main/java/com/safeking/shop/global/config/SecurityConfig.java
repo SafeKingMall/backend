@@ -1,40 +1,19 @@
 package com.safeking.shop.global.config;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-import com.safeking.shop.global.auth.PrincipalDetails;
-import com.safeking.shop.global.exhandler.ErrorResult;
-import com.safeking.shop.global.oauth.PrincipalOauth2Service;
-import com.safeking.shop.global.jwt.JwtAuthenticationFilter;
-import com.safeking.shop.global.jwt.JwtAuthorizationFilter;
+import com.safeking.shop.global.jwt.TokenUtils;
+import com.safeking.shop.global.jwt.filter.JwtAuthenticationFilter;
+import com.safeking.shop.global.jwt.filter.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Date;
 
 @Configuration
 @EnableWebSecurity
@@ -45,7 +24,9 @@ public class SecurityConfig{
     private final CorsConfig corsConfig;
     private final MemberRepository memberRepository;
 
-    private final PrincipalOauth2Service oauth2Service;
+    private final TokenUtils tokenUtils;
+
+//    private final PrincipalOauth2Service oauth2Service;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -56,7 +37,7 @@ public class SecurityConfig{
                 .formLogin().disable()
                 .httpBasic().disable()
 
-                .apply(new MyCustomDsl())
+                .apply(new MyCustomDsl(tokenUtils))
 
                 .and()
                 .authorizeRequests()
@@ -71,63 +52,21 @@ public class SecurityConfig{
                 .access("hasRole('ROLE_ADMIN')")
 
                 .anyRequest().permitAll()
-
-                .and()
-                .oauth2Login()
-                .userInfoEndpoint()
-                .userService(oauth2Service)
-                .and()
-                .successHandler(new AuthenticationSuccessHandler() {
-                    @Override
-                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        log.info("OauthLogin user 에게 JWT 토큰 발행");
-
-                        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-
-                        String jwtToken = JWT.create()
-                                .withSubject(principalDetails.getUsername())
-                                .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 10)))
-                                .withClaim("id", principalDetails.getMember().getId())
-                                .withClaim("username", principalDetails.getMember().getUsername())
-                                .sign(Algorithm.HMAC512("safeKing"));
-
-
-                        response.addHeader("Authorization","Bearer "+jwtToken);
-
-                        //토큰을 발행 후에 forward
-                        String targetUrl = "/auth/success";
-                        RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
-                        dis.forward(request, response);}
-                    }
-                )
-                .failureHandler(new AuthenticationFailureHandler() {
-                    @Override
-                    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                                        AuthenticationException exception) throws IOException, ServletException {
-
-                        ObjectMapper om = new ObjectMapper();
-
-                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                        response.setCharacterEncoding("UTF-8");
-
-                        ErrorResult errorResult = new ErrorResult("oauth2_access", "소셜 로그인에 실패하셨습니다");
-
-                        om.writeValue(response.getWriter(),errorResult);
-                    }
-                })
         ;
         return httpSecurity.build();
 
     }
+    @RequiredArgsConstructor
     public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+        private final TokenUtils tokenUtils;
+
         @Override
         public void configure(HttpSecurity http) throws Exception {
 
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http
                     .addFilter(corsConfig.corsFilter())
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager,tokenUtils))
                     .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository))
             ;
 

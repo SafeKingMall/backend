@@ -24,9 +24,9 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         this.member=member;
     }
     //Oauth 유저인경우
-    public PrincipalDetails(Member member, Map<String,Object> attributes){
-        this.member=member;
-        this.attributes=attributes;
+    public PrincipalDetails( Member member, Map<String,Object> attributes ){
+        this.member= member;
+        this.attributes= attributes;
     }
 
     public Map<String, Object> getAttributes() {

@@ -30,5 +30,9 @@ public class PracticeController {
         ErrorResult errorResult = new ErrorResult("error", "error");
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST );
     }
+    @GetMapping("/jwt")
+    public String jwt(){
+        return "jwt";
+    }
 
 }

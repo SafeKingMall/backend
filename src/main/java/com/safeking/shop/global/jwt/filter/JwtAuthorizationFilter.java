@@ -1,4 +1,4 @@
-package com.safeking.shop.global.jwt;
+package com.safeking.shop.global.jwt.filter;
 
 
 import com.auth0.jwt.JWT;
@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.safeking.shop.global.jwt.TokenUtils.*;
+
 @Slf4j
 //권한처리시 사용되는 필터
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -35,14 +37,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 //        super.doFilterInternal(request, response, chain);
         log.info("JwtAuthorizationFilter 실행, 인증이 필요");
         
-        String jwtHeader=request.getHeader("Authorization");
+        String jwtHeader=request.getHeader(AUTH_HEADER);
 
         if(jwtHeader==null||!jwtHeader.startsWith("Bearer")){
             chain.doFilter(request,response);//다른 필터는 타되 다 타면 종료
             return;
         }
 
-        String jwToken=request.getHeader("Authorization").replace("Bearer ","");
+        String jwToken=request.getHeader(AUTH_HEADER).replace(BEARER,"");
+
+
 
         String username= JWT.require(Algorithm.HMAC512("safeKing")).build()
                 .verify(jwToken).getClaim("username").asString();

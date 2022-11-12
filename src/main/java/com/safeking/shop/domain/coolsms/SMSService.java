@@ -25,7 +25,7 @@ public class SMSService {
         params.put("to", clientPhoneNumber);
         params.put("from", "01082460887");
         params.put("type", "sms");
-        params.put("text", "SAFEKING의 인증번호는 [" + numStr + "] 입니다.");
+        params.put("text", "김선주님! SAFEKING의 인증번호는 [" + numStr + "] 입니다.");
 
         coolsms.send(params); // 메시지 전송
 

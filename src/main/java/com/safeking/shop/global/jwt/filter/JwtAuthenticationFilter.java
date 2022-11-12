@@ -1,14 +1,13 @@
-package com.safeking.shop.global.jwt;
+package com.safeking.shop.global.jwt.filter;
 
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.oauth2.sdk.ErrorObject;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.safeking.shop.global.exception.MemberNotFoundException;
 import com.safeking.shop.global.exhandler.ErrorResult;
+import com.safeking.shop.global.jwt.TokenUtils;
+import com.safeking.shop.global.jwt.Tokens;
+import com.safeking.shop.global.jwt.refreshToken.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +24,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
+
+import static com.safeking.shop.global.jwt.TokenUtils.*;
 
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final TokenUtils tokenUtils;
     private ObjectMapper om;
+
 
 
     //로그인 시에 실행이 되는 필터
@@ -78,16 +80,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         log.info("successfulAuthentication 실행");
 
-        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
-
         log.info("일반로그인 user 에게 JWT 토큰 발행");
-        String jwtToken = JWT.create()
-                .withSubject(principalDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 100)))
-                .withClaim("id", principalDetails.getMember().getId())
-                .withClaim("username", principalDetails.getMember().getUsername())
-                .sign(Algorithm.HMAC512("safeKing"));
+        Tokens tokens = tokenUtils.createTokens(authResult);
 
-        response.addHeader("Authorization","Bearer "+jwtToken);
+        response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
+        response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
     }
 }
