@@ -59,8 +59,6 @@ public class MemberController {
 
         return ResponseEntity.ok().body(signUpResponse);
     }
-    /**
-     * 소셜로그인 구현 중*/
 
     @PostMapping("/oauth/{registrationId}")
     public ResponseEntity<OauthResponse> jwtCreate(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {
