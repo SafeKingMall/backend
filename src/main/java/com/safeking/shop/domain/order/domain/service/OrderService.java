@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.order.domain.service;
 
-import com.safeking.shop.domain.order.domain.service.dto.cancel.CancelDto;
+import com.safeking.shop.domain.order.web.dto.request.cancel.CancelDto;
 import com.safeking.shop.domain.order.domain.service.dto.order.OrderDto;
 
 public interface OrderService {

@@ -10,14 +10,13 @@ import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
-import com.safeking.shop.domain.order.domain.service.dto.cancel.CancelDto;
-import com.safeking.shop.domain.order.domain.service.dto.cancel.CancelOrderDtos;
+import com.safeking.shop.domain.order.web.dto.request.cancel.CancelDto;
+import com.safeking.shop.domain.order.web.dto.request.cancel.CancelOrderDtos;
 import com.safeking.shop.domain.order.domain.service.dto.order.OrderDeliveryDto;
 import com.safeking.shop.domain.order.domain.service.dto.order.OrderDto;
 import com.safeking.shop.domain.order.domain.service.dto.order.OrderItemDto;
 import com.safeking.shop.domain.user.domain.entity.Member;
 import com.safeking.shop.domain.user.domain.entity.MemberAccountType;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -99,15 +98,15 @@ class OrderServiceImplTest {
                 new Admin("dlwlrma", "1234"));
         OrderItem orderItem = OrderItem.createOrderItem(item, 3000, 1);
         Order order = Order.createOrder(new Member(MemberAccountType.NORMAL), delivery, orderDto.getMemo(), List.of(orderItem));
+        orderRepository.save(order);
 
         CancelDto cancelDto = new CancelDto();
         CancelOrderDtos cancelOrderDtos = new CancelOrderDtos();
-        cancelOrderDtos.setId(1L);
+        cancelOrderDtos.setId(order.getId());
         cancelDto.setCancelOrderDtos(List.of(cancelOrderDtos));
 
         //when
         deliveryRepository.save(delivery);
-        orderRepository.save(order);
 
         //then
         assertThrows(OrderException.class, () -> orderService.cancel(cancelDto));
@@ -142,15 +141,15 @@ class OrderServiceImplTest {
                 new Admin("dlwlrma", "1234"));
         OrderItem orderItem = OrderItem.createOrderItem(item, 3000, 1);
         Order order = Order.createOrder(new Member(MemberAccountType.NORMAL), delivery, orderDto.getMemo(), List.of(orderItem));
+        orderRepository.save(order);
 
         CancelDto cancelDto = new CancelDto();
         CancelOrderDtos cancelOrderDtos = new CancelOrderDtos();
-        cancelOrderDtos.setId(1L);
+        cancelOrderDtos.setId(order.getId());
         cancelDto.setCancelOrderDtos(List.of(cancelOrderDtos));
 
         //when
         deliveryRepository.save(delivery);
-        orderRepository.save(order);
 
         //then
         assertThrows(OrderException.class, () -> orderService.cancel(cancelDto));
