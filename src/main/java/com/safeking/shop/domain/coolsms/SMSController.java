@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +19,7 @@ public class SMSController {
     private final SMSService smsService;
 
     @PostMapping
-    public ResponseEntity<SMSResponse> sendCodeToClient(@RequestBody SMSRequest smsRequest) throws CoolsmsException {
+    public ResponseEntity<SMSResponse> sendCodeToClient(@RequestBody @Validated SMSRequest smsRequest) throws CoolsmsException {
 
         String code = smsService.sendCodeToClient(smsRequest.getClientPhoneNumber());
 

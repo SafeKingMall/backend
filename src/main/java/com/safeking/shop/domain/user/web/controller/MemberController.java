@@ -25,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +45,7 @@ public class MemberController {
     private final TokenUtils tokenUtils;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponse> signUp(@RequestBody SignUpRequest signUpRequest){
+    public ResponseEntity<SignUpResponse> signUp(@RequestBody @Validated SignUpRequest signUpRequest){
 
         GeneralSingUpDto generalSingUpDto = signUpRequest.toServiceDto();
         memberService.join(generalSingUpDto);
