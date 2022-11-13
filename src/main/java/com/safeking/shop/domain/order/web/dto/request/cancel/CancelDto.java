@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class CancelDto {
     @JsonProperty("orders")
-    List<CancelOrderDtos> cancelOrderDtos;
+    List<CancelOrderDtos> orders;
 }

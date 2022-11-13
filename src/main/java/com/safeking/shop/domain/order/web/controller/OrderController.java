@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
 
+    /**
+     * 주문 취소
+     */
     @DeleteMapping("/order")
-    public ResponseDto cancel(@RequestBody CancelDto cancelDto, BindingResult bindingResult) {
-        log.info("CancelDtos={}", cancelDto.getCancelOrderDtos());
+    public ResponseDto cancel(@RequestBody CancelDto cancelDto) {
         orderService.cancel(cancelDto);
 
         ResponseDto responseDto = new ResponseDto();

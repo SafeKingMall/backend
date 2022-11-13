@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.web.OrderConst;
+import com.safeking.shop.domain.order.web.controller.OrderController;
 import com.safeking.shop.global.response.ResponseDto;
 import com.safeking.shop.global.response.ResponseError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class OrderExceptionController {
 
@@ -18,15 +21,12 @@ public class OrderExceptionController {
      * @return
      */
     @ExceptionHandler(OrderException.class)
-    public ResponseDto orderCancel(OrderException e) {
+    public ResponseDto cancelOrder(OrderException e) {
 
         ResponseDto responseDto = new ResponseDto();
         ResponseError responseError = new ResponseError();
 
-        if(e.getMessage().contains("배송 중이거나 배송완료된")) {
-            responseError.setCode(2001);
-        }
-        responseError.setCode(2000);
+        responseError.setCode(extractedErrorCode(e));
         responseError.setMessage(e.getMessage());
 
         responseDto.setCode(HTTPResponse.SC_FORBIDDEN);
@@ -35,5 +35,17 @@ public class OrderExceptionController {
         responseDto.setError(responseError);
 
         return responseDto;
+    }
+
+    private int extractedErrorCode(OrderException e) {
+        if(e.getMessage().contains(OrderConst.ORDER_CANCEL_DELIVERY_DONE)) {
+            return 2001;
+        } else if(e.getMessage().contains(OrderConst.ORDER_MODIFY_FAIL)) {
+            return 2002;
+        } else if(e.getMessage().contains(OrderConst.ORDER_MODIFY_DELIVERY_DONE)) {
+            return 2003;
+        }
+
+        return 2000;
     }
 }

@@ -12,17 +12,20 @@ import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
+import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelDto;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelOrderDtos;
 import com.safeking.shop.domain.order.domain.service.dto.order.OrderItemDto;
 import com.safeking.shop.domain.order.domain.service.login.LoginBehavior;
 import com.safeking.shop.domain.order.domain.service.dto.order.OrderDto;
+import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoDto;
 import com.safeking.shop.domain.user.domain.entity.Member;
 import com.safeking.shop.domain.user.domain.entity.MemberAccountType;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.NormalAccountRepository;
 import com.safeking.shop.domain.user.domain.repository.SocialAccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,18 +53,18 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void cancel(CancelDto cancelDto) {
-        cancelDto.getCancelOrderDtos()
+        cancelDto.getOrders()
                 .stream()
                 .map(CancelOrderDtos::getId)
                 .forEach((id) -> {
                     Optional<Order> findOrder = orderRepository.findById(id);
-                    Order order = findOrder.orElseThrow(() -> new OrderException("주문이 없습니다."));
+                    Order order = findOrder.orElseThrow(() -> new OrderException(OrderConst.ORDER_NONE));
                     order.cancel();
                 });
     }
 
     /**
-     * 주문 로직
+     * 주문
      */
     @Override
     public Long order(OrderDto orderDto) {
@@ -81,6 +84,26 @@ public class OrderServiceImpl implements OrderService {
         // 주문 생성
         //Order order = Order.createOrder(new Member(), delivery, orderDto.getMemo(), orderItems);
         return null;
+    }
+
+    /**
+     * 주문 정보 수정
+     */
+    @Override
+    public Long modifyOrder(ModifyInfoDto modifyInfoDto) {
+        Optional<Order> findOrderOptional = orderRepository.findById(modifyInfoDto.getOrder().getId());
+        Order findOrder = findOrderOptional.orElseThrow(() -> new OrderException(OrderConst.ORDER_NONE));
+
+        Delivery delivery = findOrder.getDelivery();
+
+        delivery.changeDelivery(modifyInfoDto.getDelivery().getReceiver(),
+                modifyInfoDto.getDelivery().getPhoneNumber(),
+                modifyInfoDto.getDelivery().getAddress(),
+                modifyInfoDto.getDelivery().getMemo());
+
+        findOrder.changeMemo(modifyInfoDto.getOrder().getMemo());
+
+        return findOrder.getId();
     }
 
     /**

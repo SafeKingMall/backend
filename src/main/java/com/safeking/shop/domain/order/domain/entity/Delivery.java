@@ -49,4 +49,11 @@ public class Delivery extends BaseTimeEntity {
     public void changeDeliveryStatus(DeliveryStatus status) {
         this.status = status;
     }
+
+    public void changeDelivery(String receiver, String phoneNumber, String address, String memo) {
+        this.receiver = receiver;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.memo = memo;
+    }
 }

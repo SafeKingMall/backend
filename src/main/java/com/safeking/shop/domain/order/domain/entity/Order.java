@@ -4,6 +4,7 @@ import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
+import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.user.domain.entity.Member;
 import com.safeking.shop.domain.user.domain.entity.NormalAccount;
 import com.safeking.shop.domain.user.domain.entity.SocialAccount;
@@ -74,12 +75,16 @@ public class Order extends BaseTimeEntity {
     public void cancel() {
         if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)
                 || delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
-            throw new OrderException("배송중이거나 배송완료된 상품은 취소가 불가합니다.");
+            throw new OrderException(OrderConst.ORDER_CANCEL_DELIVERY_DONE);
         }
 
         this.status = OrderStatus.CANCEL;
 
         //주문상품을 취소
         orderItems.forEach(OrderItem::cancel);
+    }
+
+    public void changeMemo(String memo) {
+        this.memo = memo;
     }
 }
