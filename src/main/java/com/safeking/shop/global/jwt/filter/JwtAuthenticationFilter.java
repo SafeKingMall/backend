@@ -65,10 +65,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 return authentication;
 
         } catch (RuntimeException e) {
-            Error error = new Error("로그인에 실패하였습니다.", 401);
+            Error error = new Error("로그인에 실패하였습니다.", 1000);
 
             LoginResponse loginErrorResponse = LoginResponse.builder()
-                    .code(0)
+                    .code(401)
                     .message("")
                     .data(new Data(Data.DEFAULT))
                     .error(error)

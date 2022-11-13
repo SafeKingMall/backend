@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
@@ -11,12 +12,10 @@ import javax.persistence.*;
 @DiscriminatorValue("General")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuperBuilder
 public class GeneralMember extends Member{
     /**
      * 일반 회원가입 유저*/
-    @Builder
-    public GeneralMember(Long id, String name,String username, String password, String email, String roles) {
-        super(id, name,username, password, email, roles);
-    }
+
 
 }

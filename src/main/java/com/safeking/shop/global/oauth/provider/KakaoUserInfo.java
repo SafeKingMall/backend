@@ -2,11 +2,10 @@ package com.safeking.shop.global.oauth.provider;
 
 import java.util.Map;
 
-public class FaceBookUserInfo implements Oauth2UserInfo{
+public class KakaoUserInfo implements Oauth2UserInfo {
     private Map<String,Object>attributes;
-
-    public FaceBookUserInfo(Map<String, Object> attributes) {
-        this.attributes = attributes;
+    public KakaoUserInfo(Map<String, Object> attributes) {
+        this.attributes=attributes;
     }
 
     @Override
@@ -16,7 +15,7 @@ public class FaceBookUserInfo implements Oauth2UserInfo{
 
     @Override
     public String getProvider() {
-        return "google";
+        return "naver";
     }
 
     @Override

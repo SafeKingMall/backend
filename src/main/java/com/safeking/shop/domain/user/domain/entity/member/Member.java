@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Entity @Getter
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
@@ -46,12 +48,4 @@ public class Member extends BaseTimeEntity {
 
     }
 
-    protected Member(Long id, String name, String username, String password, String email, String roles) {
-        this.id = id;
-        this.name=name;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.roles = roles;
-    }
 }

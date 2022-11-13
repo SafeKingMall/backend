@@ -26,9 +26,12 @@ public class MemberService {
         log.info("회원 가입");
 
         GeneralMember generalMember = GeneralMember.builder()
+                .name(singUpDto.getName())
                 .username(singUpDto.getUsername())
                 .password(encoder.encode(singUpDto.getPassword()))
                 .email(singUpDto.getEmail())
+                .phoneNumber(singUpDto.getPhoneNumber())
+                .address(singUpDto.getAddress())
                 .roles("ROLE_USER")
                 .build();
 

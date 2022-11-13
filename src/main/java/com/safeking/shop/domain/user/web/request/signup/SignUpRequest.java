@@ -1,5 +1,6 @@
 package com.safeking.shop.domain.user.web.request.signup;
 
+import com.safeking.shop.domain.user.domain.entity.Address;
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,12 @@ public class SignUpRequest {
     private String username;
     private String password;
     private String email;
+    private String phoneNumber;
+
+    private String city;
+    private String street;
+    private String zipcode;
+
 
     public GeneralSingUpDto toServiceDto(){
         return GeneralSingUpDto.builder()
@@ -19,6 +26,8 @@ public class SignUpRequest {
                 .username(username)
                 .password(password)
                 .email(email)
+                .phoneNumber(phoneNumber)
+                .address(new Address(city,street,zipcode))
                 .build();
     }
 }
