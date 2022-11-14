@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion;
 
-import com.safeking.shop.domain.user.domain.entity.Member;
+import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.Builder;
 import lombok.Data;
 

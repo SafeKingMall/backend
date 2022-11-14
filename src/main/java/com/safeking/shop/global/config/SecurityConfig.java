@@ -1,80 +1,75 @@
 package com.safeking.shop.global.config;
 
-import com.safeking.shop.global.jwt.JwtManager;
-import com.safeking.shop.global.jwt.JwtRepository;
-import com.safeking.shop.global.security.filter.JwtAuthenticationFilter;
-import com.safeking.shop.global.security.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
-import com.safeking.shop.global.security.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
-import com.safeking.shop.global.security.oauth2.repository.OAuth2AuthorizationRequestRepository;
-import com.safeking.shop.global.security.oauth2.service.CustomOAuth2UserService;
-import com.safeking.shop.global.security.role.Role;
+import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.global.jwt.TokenUtils;
+import com.safeking.shop.global.jwt.filter.JwtAuthenticationFilter;
+import com.safeking.shop.global.jwt.filter.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+@Slf4j
+public class SecurityConfig{
 
-    private final JwtManager jwtManager;
-    private final JwtRepository jwtRepository;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2AuthorizationRequestRepository oAuth2AuthorizationRequestRepository;
-    private final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
-    private final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler;
+    private final CorsConfig corsConfig;
+    private final MemberRepository memberRepository;
 
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtManager, jwtRepository);
-    }
+    private final TokenUtils tokenUtils;
+
+//    private final PrincipalOauth2Service oauth2Service;
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> {
-            web.ignoring().antMatchers("/h2-console/**");
-        };
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity.addFilterBefore(new MyFilter3(), SecurityContextHolderFilter.class);
+        httpSecurity.csrf().disable();
+        httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .formLogin().disable()
                 .httpBasic().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                .apply(new MyCustomDsl(tokenUtils))
 
                 .and()
-                .oauth2Login()
-                .authorizationEndpoint()
-                .baseUri("/oauth2/authorization/**")
-                .authorizationRequestRepository(oAuth2AuthorizationRequestRepository)
-
-                .and()
-                .redirectionEndpoint()
-                .baseUri("/oauth2/callback/*")
-
-                .and()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService)
-
-                .and()
-                .successHandler(customOAuth2AuthenticationSuccessHandler)
-                .failureHandler(customOAuth2AuthenticationFailureHandler)
-
-                .and()
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        http
                 .authorizeRequests()
-                .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers("/api/v1/test/temp").hasRole(Role.TEMP.name())
-                .antMatchers("/api/v1/test/active").hasRole(Role.USER.name())
-                .antMatchers("/api/v1/test/admin").hasRole(Role.ADMIN.name());
 
-        return http.build();
+                .antMatchers("/api/v1/user/**")
+                .access("hasRole('ROLE_USER')or hasRole('ROLE_MANAGER')or hasRole('ROLE_ADMIN')")
+
+                .antMatchers("/api/v1/manager/**")
+                .access("hasRole('ROLE_MANAGER')or hasRole('ROLE_ADMIN')")
+
+                .antMatchers("/api/v1/admin/**")
+                .access("hasRole('ROLE_ADMIN')")
+
+                .anyRequest().permitAll()
+        ;
+        return httpSecurity.build();
+
+    }
+    @RequiredArgsConstructor
+    public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+        private final TokenUtils tokenUtils;
+
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+
+            AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+            http
+                    .addFilter(corsConfig.corsFilter())
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager,tokenUtils))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository))
+            ;
+
+        }
     }
 }
