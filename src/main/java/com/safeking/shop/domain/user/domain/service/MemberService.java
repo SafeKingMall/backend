@@ -39,6 +39,11 @@ public class MemberService {
         return generalMember.getId();
     }
 
+    public boolean idDuplicationCheck(String username){
+        //id를 사용가능하다면  true
+        return memberRepository.findByUsername(username).orElse(null) == null;
+    }
+
     public void updateMemberInfo(Long id,MemberUpdateDto memberUpdateDto){
         log.info("회원 정보 수정");
 

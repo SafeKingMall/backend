@@ -6,7 +6,9 @@ import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
+import com.safeking.shop.domain.user.web.request.idDuplication.IdDuplicationRequest;
 import com.safeking.shop.domain.user.web.request.signup.SignUpRequest;
+import com.safeking.shop.domain.user.web.response.idDuplication.IdDuplicationResponse;
 import com.safeking.shop.domain.user.web.response.oauth.OauthResponse;
 import com.safeking.shop.domain.user.web.response.signup.Data;
 import com.safeking.shop.domain.user.web.response.signup.SignUpResponse;
@@ -58,6 +60,27 @@ public class MemberController {
                 .build();
 
         return ResponseEntity.ok().body(signUpResponse);
+    }
+
+    @PostMapping("/id/duplication")
+    public ResponseEntity<IdDuplicationResponse> idDuplicationCheck(@RequestBody @Validated IdDuplicationRequest idDuplicationRequest){
+
+        boolean idAvailable=true;
+        String message=IdDuplicationResponse.SUCCESS_MESSAGE;
+
+        if(!memberService.idDuplicationCheck(idDuplicationRequest.getUsername())){
+            idAvailable=false;
+            message=IdDuplicationResponse.FAIL_MESSAGE;
+        }
+
+        return ResponseEntity.ok()
+                .body(IdDuplicationResponse.builder()
+                        .code(200)
+                        .message(message)
+                        .data(new com.safeking.shop.domain.user.web.response.idDuplication.Data(idAvailable))
+                        .error(new Error())
+                        .build());
+
     }
 
     @PostMapping("/oauth/{registrationId}")
