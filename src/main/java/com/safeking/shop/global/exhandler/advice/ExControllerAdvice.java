@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.safeking.shop.domain.user.web.response.signup.SignUpResponse;
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.exception.MemberNotFoundException;
-import com.safeking.shop.global.exhandler.ErrorResult;
+import com.safeking.shop.global.exhandler.response.ErrorResponse;
 import com.safeking.shop.global.jwt.exception.RefreshTokenNotFoundException;
 import com.safeking.shop.global.jwt.response.refresh.Data;
 import com.safeking.shop.global.jwt.response.refresh.RefreshTokenResponse;
@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,12 +25,32 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExControllerAdvice {
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResult> illegalExHandler(IllegalArgumentException e){
-        log.error("[exceptionHandler] ex",e);
+    public ResponseEntity<ErrorResponse> illegalExHandler(IllegalArgumentException e){
+        log.error("[illegalExHandler] ex",e);
 
-        ErrorResult errorResult = new ErrorResult("BAD", e.getMessage());
         return ResponseEntity
-                .badRequest().body(errorResult);
+                .badRequest().body(
+                        ErrorResponse.builder()
+                                .code(0)
+                                .message(e.getMessage())
+                                .data(new com.safeking.shop.global.exhandler.response.Data(""))
+                                .error(new Error(e.getMessage(),1000))
+                                .build()
+                );
+    }
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> usernameNotFoundExHandler(UsernameNotFoundException e){
+        log.error("[usernameNotFoundExHandler] ex",e);
+
+
+        return new ResponseEntity<>(
+                ErrorResponse.builder()
+                        .code(0)
+                        .message(e.getMessage())
+                        .data(new com.safeking.shop.global.exhandler.response.Data(""))
+                        .error(new Error(e.getMessage(),1000))
+                        .build(),HttpStatus.NOT_FOUND
+        );
     }
     @ExceptionHandler
     public ResponseEntity<RefreshTokenResponse> refreshTokenNotFoundExHandler(RefreshTokenNotFoundException e){
@@ -46,6 +67,7 @@ public class ExControllerAdvice {
 
         return new ResponseEntity<>(refreshTokenResponse, HttpStatus.FORBIDDEN);
     }
+
     @ExceptionHandler
     public ResponseEntity<SignUpResponse> processValidationError(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
@@ -71,10 +93,10 @@ public class ExControllerAdvice {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
-    public ErrorResult exHandler(Exception e){
+    public Error exHandler(Exception e){
         log.error("[exceptionHandler] ex",e);
 
-        return new ErrorResult("EX","내부오류");
+        return new Error("EX",5000);
     }
 
 }

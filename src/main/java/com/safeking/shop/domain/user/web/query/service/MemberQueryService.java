@@ -1,24 +1,22 @@
 package com.safeking.shop.domain.user.web.query.service;
 
+import com.safeking.shop.domain.coolsms.SMSService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-import com.safeking.shop.domain.user.web.query.repository.MemberQueryRepository;
-import com.safeking.shop.domain.user.web.query.service.dto.MemberInfo;
-import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class MemberQueryService {
 
-    private final MemberQueryRepository memberQueryRepository;
 
-    public MemberInfo showMyPage(Long id){
-        return memberQueryRepository
-                .findMemberById(id).map(MemberInfo::new)
-                .orElseThrow(()->new MemberNotFoundException("member not found"));
-    }
+
+
 
 
 }

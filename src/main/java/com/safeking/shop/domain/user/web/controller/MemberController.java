@@ -1,15 +1,22 @@
 package com.safeking.shop.domain.user.web.controller;
 
 import com.auth0.jwt.JWT;
+import com.safeking.shop.domain.coolsms.SMSService;
+import com.safeking.shop.domain.coolsms.request.SMSCode;
+import com.safeking.shop.domain.coolsms.response.SMSResponse;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
 import com.safeking.shop.domain.user.web.request.idDuplication.IdDuplicationRequest;
+import com.safeking.shop.domain.user.web.request.idFind.IdFindRequest;
+import com.safeking.shop.domain.user.web.request.passwordFind.PWFindRequest;
 import com.safeking.shop.domain.user.web.request.signup.SignUpRequest;
+import com.safeking.shop.domain.user.web.response.IdFind.IdFindResponse;
 import com.safeking.shop.domain.user.web.response.idDuplication.IdDuplicationResponse;
 import com.safeking.shop.domain.user.web.response.oauth.OauthResponse;
+import com.safeking.shop.domain.user.web.response.passwordFind.PWFindResponse;
 import com.safeking.shop.domain.user.web.response.signup.Data;
 import com.safeking.shop.domain.user.web.response.signup.SignUpResponse;
 import com.safeking.shop.global.Error;
@@ -21,6 +28,7 @@ import com.safeking.shop.global.oauth.provider.KakaoUserInfo;
 import com.safeking.shop.global.oauth.provider.Oauth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,6 +53,8 @@ public class MemberController {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder encoder;
     private final TokenUtils tokenUtils;
+
+    private final SMSService smsService;
 
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponse> signUp(@RequestBody @Validated SignUpRequest signUpRequest){
@@ -80,11 +90,53 @@ public class MemberController {
                         .data(new com.safeking.shop.domain.user.web.response.idDuplication.Data(idAvailable))
                         .error(new Error())
                         .build());
-
     }
 
+    @PostMapping("/id/find")
+    public ResponseEntity<IdFindResponse> idFind(@RequestBody @Validated IdFindRequest request){
+
+        int code=400;
+        String message=IdFindResponse.FAIL_MESSAGE;
+        String username= com.safeking.shop.domain.user.web.response.IdFind.Data.message;
+        HttpStatus httpStatus=HttpStatus.BAD_REQUEST;
+
+        if(smsService.checkCode(request.getCode())){
+            code=200;
+            httpStatus=HttpStatus.OK;
+            message=IdFindResponse.SUCCESS_MESSAGE;
+            username  = memberRepository
+                    .findByPhoneNumber(request.getClientPhoneNumber())
+                    .orElseThrow(() -> new IllegalArgumentException("핸드폰 번호와 일치하는 회원 정보가 없습니다."))
+                    .getUsername();
+
+        }
+
+        return new ResponseEntity<>(
+                IdFindResponse.builder()
+                        .code(code)
+                        .message(message)
+                        .data(new com.safeking.shop.domain.user.web.response.IdFind.Data(username))
+                        .error(new Error())
+                        .build(),httpStatus);
+    }
+
+    @PostMapping("/temporaryPassword")
+    public ResponseEntity<PWFindResponse> sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest) throws CoolsmsException {
+        memberService.sendTemporaryPassword(pwFindRequest.getUsername());
+
+        return ResponseEntity.ok().body(
+                PWFindResponse.builder()
+                        .code(200)
+                        .message(PWFindResponse.SUCCESS_MESSAGE)
+                        .data(new com.safeking.shop.domain.user.web.response.passwordFind.Data(""))
+                        .error(new Error())
+                        .build()
+        );
+    }
+
+
     @PostMapping("/oauth/{registrationId}")
-    public ResponseEntity<OauthResponse> jwtCreate(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {
+    public ResponseEntity<OauthResponse> socialLogin(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {
 
         Oauth2UserInfo oauth2UserInfo = null;
 
