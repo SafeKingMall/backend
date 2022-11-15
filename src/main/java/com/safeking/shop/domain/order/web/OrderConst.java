@@ -2,6 +2,8 @@ package com.safeking.shop.domain.order.web;
 
 public class OrderConst {
     public static final String BLANK = "";
+    public static final String ORDER_ITEM_NONE = "해당 상품에 대한 정보가 없습니다.";
+    public static final String ORDER_MEMBER_NONE = "회원이 없습니다.";
     public static final String ORDER_SUCCESS = "주문 성공";
     public static final String ORDER_FAIL = "주문 실패";
     public static final String ORDER_NONE = "주문이 없습니다.";

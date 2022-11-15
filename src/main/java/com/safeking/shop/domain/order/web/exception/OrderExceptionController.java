@@ -35,12 +35,14 @@ public class OrderExceptionController {
     }
 
     private int extractedErrorCode(OrderException e) {
-        if(e.getMessage().equals(OrderConst.ORDER_CANCEL_DELIVERY_DONE)) {
+        if(e.getMessage().equals(OrderConst.ORDER_FAIL)) {
             return 2001;
-        } else if(e.getMessage().equals(OrderConst.ORDER_MODIFY_FAIL)) {
+        } else if(e.getMessage().equals(OrderConst.ORDER_CANCEL_DELIVERY_DONE)) {
             return 2002;
-        } else if(e.getMessage().equals(OrderConst.ORDER_MODIFY_DELIVERY_DONE)) {
+        } else if(e.getMessage().equals(OrderConst.ORDER_MODIFY_FAIL)) {
             return 2003;
+        } else if(e.getMessage().equals(OrderConst.ORDER_MODIFY_DELIVERY_DONE)) {
+            return 2004;
         }
 
         return 2000;

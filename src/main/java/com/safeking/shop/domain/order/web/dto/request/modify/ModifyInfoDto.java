@@ -1,7 +1,6 @@
 package com.safeking.shop.domain.order.web.dto.request.modify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.safeking.shop.domain.order.domain.service.dto.order.OrderDto;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

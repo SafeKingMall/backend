@@ -3,6 +3,7 @@ package com.safeking.shop.domain.order.domain.service;
 import com.safeking.shop.domain.admin.domain.entity.Admin;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.item.domain.entity.Item;
+import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
@@ -12,22 +13,19 @@ import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelDto;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelOrderDtos;
-import com.safeking.shop.domain.order.domain.service.dto.order.OrderDeliveryDto;
-import com.safeking.shop.domain.order.domain.service.dto.order.OrderDto;
-import com.safeking.shop.domain.order.domain.service.dto.order.OrderItemDto;
+import com.safeking.shop.domain.order.web.dto.request.order.OrderDeliveryDto;
+import com.safeking.shop.domain.order.web.dto.request.order.OrderDto;
+import com.safeking.shop.domain.order.web.dto.request.order.OrderItemDto;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoDeliveryDto;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoDto;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoOrderDto;
-import com.safeking.shop.domain.user.domain.entity.Member;
-import com.safeking.shop.domain.user.domain.entity.MemberAccountType;
+import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
+import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +42,48 @@ class OrderServiceImplTest {
     OrderRepository orderRepository;
     @Autowired
     DeliveryRepository deliveryRepository;
+    @Autowired
+    ItemRepository itemRepository;
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Test
+    @Transactional
+    void 주문() throws Exception {
+        //given
+        Member generalMember = GeneralMember.builder()
+                .name("아이유")
+                .username("dlwlrma")
+                .password("1234")
+                .build();
+
+        memberRepository.save(generalMember);
+
+        Item item = Item.createItem("안전모",
+                100,
+                "안전모 입니다.",
+                1000,
+                new Admin("admin", "1"));
+
+        itemRepository.save(item);
+
+        OrderDeliveryDto orderDeliveryDto = new OrderDeliveryDto();
+        orderDeliveryDto.setMemo("안전하게 배송해주세요.");
+        OrderItemDto orderItemDto = new OrderItemDto(item.getId(), 2);
+        OrderDto orderDto = new OrderDto(generalMember.getName(),
+                generalMember.getPhoneNumber(),
+                "서울시 강남구",
+                "납기일 준수 해주세요.",
+                List.of(orderItemDto),
+                orderDeliveryDto);
+
+        //when
+        Long orderId = orderService.order(generalMember, orderDto);
+        Optional<Order> findOrder = orderRepository.findById(orderId);
+
+        //then
+        assertThat(findOrder.get().getMember().getName()).isEqualTo("아이유");
+    }
 
     @Test
     @Transactional
@@ -61,7 +101,14 @@ class OrderServiceImplTest {
                 3000,
                 new Admin("dlwlrma", "1234"));
         OrderItem orderItem = OrderItem.createOrderItem(item, 3000, 1);
-        Order order = Order.createOrder(new Member(MemberAccountType.NORMAL), delivery, "납기일 준수해주세요.", List.of(orderItem));
+
+        Member generalMember = GeneralMember.builder()
+                .name("아이유")
+                .username("dlwlrma")
+                .password("1234")
+                .build();
+
+        Order order = Order.createOrder(generalMember, delivery, "납기일 준수해주세요.", List.of(orderItem));
         orderRepository.save(order);
 
         CancelDto cancelDto = new CancelDto();
@@ -105,7 +152,14 @@ class OrderServiceImplTest {
                 3000,
                 new Admin("dlwlrma", "1234"));
         OrderItem orderItem = OrderItem.createOrderItem(item, 3000, 1);
-        Order order = Order.createOrder(new Member(MemberAccountType.NORMAL), delivery, orderDto.getMemo(), List.of(orderItem));
+
+        Member generalMember = GeneralMember.builder()
+                .name("아이유")
+                .username("dlwlrma")
+                .password("1234")
+                .build();
+
+        Order order = Order.createOrder(generalMember, delivery, orderDto.getMemo(), List.of(orderItem));
         orderRepository.save(order);
 
         CancelDto cancelDto = new CancelDto();
@@ -147,8 +201,15 @@ class OrderServiceImplTest {
                 "안전모 입니다.",
                 3000,
                 new Admin("dlwlrma", "1234"));
+
+        Member generalMember = GeneralMember.builder()
+                .name("아이유")
+                .username("dlwlrma")
+                .password("1234")
+                .build();
+
         OrderItem orderItem = OrderItem.createOrderItem(item, 3000, 1);
-        Order order = Order.createOrder(new Member(MemberAccountType.NORMAL), delivery, orderDto.getMemo(), List.of(orderItem));
+        Order order = Order.createOrder(generalMember, delivery, orderDto.getMemo(), List.of(orderItem));
         orderRepository.save(order);
 
         CancelDto cancelDto = new CancelDto();
@@ -185,13 +246,19 @@ class OrderServiceImplTest {
                 DeliveryStatus.PREPARATION,
                 orderDto.getOrderDeliveryDto().getMemo());
 
+        Member generalMember = GeneralMember.builder()
+                .name("아이유")
+                .username("dlwlrma")
+                .password("1234")
+                .build();
+
         Item item = Item.createItem("안전모",
                 1,
                 "안전모 입니다.",
                 3000,
                 new Admin("dlwlrma", "1234"));
         OrderItem orderItem = OrderItem.createOrderItem(item, 3000, 1);
-        Order order = Order.createOrder(new Member(MemberAccountType.NORMAL), delivery, orderDto.getMemo(), List.of(orderItem));
+        Order order = Order.createOrder(generalMember, delivery, orderDto.getMemo(), List.of(orderItem));
         orderRepository.save(order);
 
         //when

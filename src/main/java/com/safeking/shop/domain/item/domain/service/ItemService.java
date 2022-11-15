@@ -61,6 +61,8 @@ public class ItemService {
 
         Item item = itemRepository.findById(id).orElseThrow();
 
+
+
         //item과 연관된 CategoryItem도 삭제
         categoryItemRepository.deleteByItem(item);
 
