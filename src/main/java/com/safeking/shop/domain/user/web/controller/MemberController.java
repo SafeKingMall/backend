@@ -53,17 +53,9 @@ public class MemberController {
     }
     @PutMapping("/user/update")
     public void update(@RequestBody @Validated UpdateRequest updateRequest, HttpServletRequest request){
-
         Long memberId = memberService.getIdFromUsername(getUsername(request));
 
-        System.out.println("memberId = " + memberId);
-
         memberService.updateMemberInfo(memberId,updateRequest.toServiceDto());
-
-        String name = updateRequest.toServiceDto().getName();
-
-        System.out.println("name = " + name);
-
     }
 
     @PostMapping("/id/duplication")

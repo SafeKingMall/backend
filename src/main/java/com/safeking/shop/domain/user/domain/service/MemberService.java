@@ -55,7 +55,7 @@ public class MemberService {
 
         Member member = memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("member not found"));
 
-        member.updateMemberInfo(member.getName(), memberUpdateDto.getPassword(), memberUpdateDto.getEmail(), memberUpdateDto.getPhoneNumber(),memberUpdateDto.getAddress());
+        member.updateMemberInfo(memberUpdateDto.getName(), memberUpdateDto.getPassword(), memberUpdateDto.getEmail(), memberUpdateDto.getPhoneNumber(),memberUpdateDto.getAddress());
     }
 
     public Long getIdFromUsername(String username){
