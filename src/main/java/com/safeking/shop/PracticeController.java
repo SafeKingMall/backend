@@ -1,6 +1,5 @@
 package com.safeking.shop;
 
-import com.safeking.shop.global.exhandler.ErrorResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,14 +21,14 @@ public class PracticeController {
         //Oauth 확인 용 controller
         return "loginForm";
     }
-    @GetMapping(value = "/error",produces =
-            MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public ResponseEntity<ErrorResult> error(){
-        log.info("/error");
-        ErrorResult errorResult = new ErrorResult("error", "error");
-        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST );
-    }
+//    @GetMapping(value = "/error",produces =
+//            MediaType.APPLICATION_JSON_VALUE)
+//    @ResponseBody
+//    public ResponseEntity<ErrorResult> error(){
+//        log.info("/error");
+////        ErrorResult errorResult = new ErrorResult("error", "error");
+////        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST );
+//    }
     @GetMapping("/jwt")
     public String jwt(){
         return "jwt";
