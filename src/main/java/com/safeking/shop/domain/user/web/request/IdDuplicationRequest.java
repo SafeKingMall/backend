@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.user.web.request.idDuplication;
+package com.safeking.shop.domain.user.web.request;
 
 import lombok.Data;
 

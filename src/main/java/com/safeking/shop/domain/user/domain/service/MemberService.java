@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.user.domain.service;
 
-import com.safeking.shop.domain.coolsms.SMSService;
+import com.safeking.shop.domain.coolsms.web.query.SMSService;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
@@ -55,7 +55,13 @@ public class MemberService {
 
         Member member = memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("member not found"));
 
-        member.updateMemberInfo(memberUpdateDto.getPassword(), memberUpdateDto.getEmail());
+        member.updateMemberInfo(member.getName(), memberUpdateDto.getPassword(), memberUpdateDto.getEmail(), memberUpdateDto.getPhoneNumber(),memberUpdateDto.getAddress());
+    }
+
+    public Long getIdFromUsername(String username){
+        return memberRepository.findByUsername(username)
+                .orElseThrow(()->new UsernameNotFoundException("회원을 찾을 수가 없습니다."))
+                .getId();
     }
 
     public void delete(Long id){

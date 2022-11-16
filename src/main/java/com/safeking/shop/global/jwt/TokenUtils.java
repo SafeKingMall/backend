@@ -3,6 +3,7 @@ package com.safeking.shop.global.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.safeking.shop.global.auth.PrincipalDetails;
+import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
 import com.safeking.shop.global.jwt.refreshToken.RefreshToken;
 import com.safeking.shop.global.jwt.refreshToken.RefreshTokenRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @Slf4j
@@ -33,6 +35,19 @@ public class TokenUtils {
         return JWT.require(Algorithm.HMAC512(PRIVATE_KEY)).build()
                 .verify(token).getClaim("username").asString();
 
+    }
+
+    public static String getUsername(HttpServletRequest request){
+        String jwtHeader=request.getHeader(AUTH_HEADER);
+
+        if(jwtHeader==null||!jwtHeader.startsWith("Bearer")){
+            throw new TokenNotFoundException("jwt 토큰이 없습니다.");
+        }
+
+        String jwToken=request.getHeader(AUTH_HEADER).replace(BEARER,"");
+
+        return JWT.require(Algorithm.HMAC512("safeKing")).build()
+                .verify(jwToken).getClaim("username").asString();
     }
 
     public String generate(Authentication authentication,TokenType tokenType){
