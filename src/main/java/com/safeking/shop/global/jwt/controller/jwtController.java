@@ -5,12 +5,11 @@ import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.Tokens;
-import com.safeking.shop.global.jwt.exception.RefreshTokenNotFoundException;
+import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
 import com.safeking.shop.global.jwt.refreshToken.RefreshToken;
 import com.safeking.shop.global.jwt.refreshToken.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,7 +37,7 @@ public class jwtController {
         RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken).orElse(null);
 
         if(refreshToken==null|findRefreshToken==null){
-            throw new RefreshTokenNotFoundException("Refresh Token 이 유효하지 않습니다.");
+            throw new TokenNotFoundException("Refresh Token 이 유효하지 않습니다.");
         }
 
         String username = verify(refreshToken);

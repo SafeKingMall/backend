@@ -1,7 +1,7 @@
 package com.safeking.shop.global.exhandler.advice;
 
 import com.safeking.shop.global.Error;
-import com.safeking.shop.global.jwt.exception.RefreshTokenNotFoundException;
+import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +32,10 @@ public class ExControllerAdvice {
                 new Error(1100,e.getMessage()),HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler
-    public ResponseEntity<Error> refreshTokenNotFoundExHandler(RefreshTokenNotFoundException e){
+    public ResponseEntity<Error> refreshTokenNotFoundExHandler(TokenNotFoundException e){
         log.error("[refreshTokenNotFoundExHandler] ex",e);
 
-        return new ResponseEntity<>(new Error(200,e.getMessage()), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new Error(1200,e.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler

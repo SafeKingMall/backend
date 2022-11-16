@@ -38,11 +38,12 @@ public class Member extends BaseTimeEntity {
         return new ArrayList<>();
     }
 
-    public void updateMemberInfo(String password,String email){
-
+    public void updateMemberInfo(String name,String password,String email,String phoneNumber,Address address){
+        this.name=name;
         this.password=password;
         this.email=email;
-
+        this.phoneNumber=phoneNumber;
+        this.address=address;
     }
 
     public void changePassword(String password){

@@ -6,10 +6,8 @@ import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
-import com.safeking.shop.domain.user.web.request.idDuplication.IdDuplicationRequest;
-import com.safeking.shop.domain.user.web.request.idFind.IdFindRequest;
-import com.safeking.shop.domain.user.web.request.passwordFind.PWFindRequest;
-import com.safeking.shop.domain.user.web.request.signup.SignUpRequest;
+import com.safeking.shop.domain.user.domain.service.dto.MemberUpdateDto;
+import com.safeking.shop.domain.user.web.request.*;
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.exception.MemberNotFoundException;
@@ -30,6 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
@@ -50,9 +49,21 @@ public class MemberController {
 
     @PostMapping("/signup")
     public void signUp(@RequestBody @Validated SignUpRequest signUpRequest) {
-        GeneralSingUpDto generalSingUpDto = signUpRequest.toServiceDto();
+        memberService.join(signUpRequest.toServiceDto());
+    }
+    @PutMapping("/user/update")
+    public void update(@RequestBody @Validated UpdateRequest updateRequest, HttpServletRequest request){
 
-        memberService.join(generalSingUpDto);
+        Long memberId = memberService.getIdFromUsername(getUsername(request));
+
+        System.out.println("memberId = " + memberId);
+
+        memberService.updateMemberInfo(memberId,updateRequest.toServiceDto());
+
+        String name = updateRequest.toServiceDto().getName();
+
+        System.out.println("name = " + name);
+
     }
 
     @PostMapping("/id/duplication")
