@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.user.domain.service;
 
-import com.safeking.shop.domain.coolsms.SMSService;
+import com.safeking.shop.domain.coolsms.web.query.SMSService;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;

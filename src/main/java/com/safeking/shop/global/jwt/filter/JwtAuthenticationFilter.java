@@ -7,8 +7,6 @@ import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.Tokens;
-import com.safeking.shop.global.jwt.response.login.Data;
-import com.safeking.shop.global.jwt.response.login.LoginResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -65,17 +63,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 return authentication;
 
         } catch (RuntimeException e) {
-            Error error = new Error("로그인에 실패하였습니다.", 1000);
-
-            LoginResponse loginErrorResponse = LoginResponse.builder()
-                    .code(401)
-                    .message("")
-                    .data(new Data(Data.DEFAULT))
-                    .error(error)
-                    .build();
+            Error errorResponse = new Error(1200, e.getMessage());
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            generateResponseData(response, loginErrorResponse);
+            generateResponseData(response, errorResponse);
         }catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -89,20 +80,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
         response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
 
-        LoginResponse loginErrorResponse = LoginResponse.builder()
-                .code(200)
-                .message(LoginResponse.SUCCESS_MESSAGE)
-                .data(new Data(Data.DEFAULT))
-                .error(new Error())
-                .build();
-
-        generateResponseData(response, loginErrorResponse);
     }
 
-    private void generateResponseData(HttpServletResponse response, LoginResponse responseData) throws IOException {
+    private void generateResponseData(HttpServletResponse response, Error errorResponse) throws IOException {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        om.writeValue(response.getWriter(), responseData);
+        om.writeValue(response.getWriter(), errorResponse);
     }
 }

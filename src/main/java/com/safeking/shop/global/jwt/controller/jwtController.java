@@ -2,15 +2,12 @@ package com.safeking.shop.global.jwt.controller;
 
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.Tokens;
 import com.safeking.shop.global.jwt.exception.RefreshTokenNotFoundException;
 import com.safeking.shop.global.jwt.refreshToken.RefreshToken;
 import com.safeking.shop.global.jwt.refreshToken.RefreshTokenRepository;
-import com.safeking.shop.global.jwt.response.refresh.Data;
-import com.safeking.shop.global.jwt.response.refresh.RefreshTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +31,7 @@ public class jwtController {
     private final TokenUtils tokenUtils;
 
     @GetMapping("/api/v1/refresh")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(HttpServletRequest request, HttpServletResponse response){
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response){
 
         String refreshToken=request.getHeader(REFRESH_HEADER);
 
@@ -59,14 +56,6 @@ public class jwtController {
             response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
 
         }
-        RefreshTokenResponse refreshTokenResponse = RefreshTokenResponse.builder()
-                .code(200)
-                .message(RefreshTokenResponse.SUCCESS_MESSAGE)
-                .data(new Data(Data.DEFAULT))
-                .error(new Error())
-                .build();
-
-        return ResponseEntity.ok().body(refreshTokenResponse);
 
     }
 
