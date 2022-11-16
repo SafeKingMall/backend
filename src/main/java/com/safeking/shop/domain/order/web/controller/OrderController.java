@@ -1,24 +1,27 @@
 package com.safeking.shop.domain.order.web.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.service.OrderService;
-import com.safeking.shop.domain.order.web.dto.request.order.OrderDto;
-import com.safeking.shop.domain.order.web.OrderConst;
-import com.safeking.shop.domain.order.web.dto.request.cancel.CancelDto;
-import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoDto;
+import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
+import com.safeking.shop.domain.order.web.dto.request.cancel.CancelRequest;
+import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoRequest;
+import com.safeking.shop.domain.order.web.dto.response.OrderBasicResponse;
+import com.safeking.shop.domain.order.web.dto.response.findorder.FindOrderResponse;
+import com.safeking.shop.domain.order.web.dto.response.findorder.OrderDeliveryResponse;
+import com.safeking.shop.domain.order.web.dto.response.findorder.OrderResponse;
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.safeking.shop.global.response.ResponseDto;
-import com.safeking.shop.global.response.ResponseError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import static com.safeking.shop.domain.order.web.OrderConst.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestController
@@ -32,58 +35,78 @@ public class OrderController {
      * 주문
      */
     @PostMapping("/order")
-    public ResponseDto order(@Valid @RequestBody OrderDto orderDto, HttpServletRequest request) {
+    public ResponseEntity<OrderBasicResponse> order(@Valid @RequestBody OrderRequest orderRequest, HttpServletRequest request) {
+
         //회원 검증
         Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+
         //주문
-        orderService.order(member, orderDto);
+        orderService.order(member, orderRequest);
 
-        ResponseDto responseDto = new ResponseDto();
-        ResponseError responseError = new ResponseError();
-
-        responseError.setResponseError(OrderConst.BLANK, 0);
-        responseDto.setResponse(HTTPResponse.SC_OK, OrderConst.ORDER_SUCCESS, new ObjectMapper(), responseError);
-
-        return responseDto;
-
+        return new ResponseEntity<>(new OrderBasicResponse(ORDER_SUCCESS), OK);
     }
 
     /**
      * 주문 취소
      */
-    @DeleteMapping("/order")
-    public ResponseDto cancel(@Valid @RequestBody CancelDto cancelDto, HttpServletRequest request) {
+    @PatchMapping("/order")
+    public ResponseEntity<OrderBasicResponse> cancel(@Valid @RequestBody CancelRequest cancelRequest, HttpServletRequest request) {
+
         //회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         //주문 취소
-        orderService.cancel(cancelDto);
+        orderService.cancel(cancelRequest);
 
-        ResponseDto responseDto = new ResponseDto();
-        ResponseError responseError = new ResponseError();
-
-        responseError.setResponseError(OrderConst.BLANK, 0);
-        responseDto.setResponse(HTTPResponse.SC_OK, OrderConst.ORDER_CANCEL_SUCCESS, new ObjectMapper(), responseError);
-
-        return responseDto;
+        return new ResponseEntity<>(new OrderBasicResponse(ORDER_CANCEL_SUCCESS), OK);
     }
+
     /**
      * 주문(배송) 정보 수정
      */
     @PutMapping("/order")
-    public ResponseDto modify(@Valid @RequestBody ModifyInfoDto modifyInfoDto, HttpServletRequest request) {
+    public ResponseEntity<OrderBasicResponse> modify(@Valid @RequestBody ModifyInfoRequest modifyInfoRequest, HttpServletRequest request) {
+
         //회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         //주문(배송) 정보 수정
-        Long orderId = orderService.modifyOrder(modifyInfoDto);
+        orderService.modifyOrder(modifyInfoRequest);
 
-        ResponseDto responseDto = new ResponseDto();
-        ResponseError responseError = new ResponseError();
+        return new ResponseEntity<>(new OrderBasicResponse(ORDER_MODIFY_SUCCESS), OK);
+    }
 
-        responseError.setResponseError(OrderConst.BLANK, 0);
-        responseDto.setResponse(HTTPResponse.SC_OK, OrderConst.ORDER_MODIFY_SUCCESS, new ObjectMapper(), responseError);
+    /**
+     * 주문(배송) 정보 조회
+     */
+    @GetMapping("/order")
+    public ResponseEntity<FindOrderResponse> find(@RequestParam Long orderId, HttpServletRequest request) {
 
-        return responseDto;
+        //회원 검증
+        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+
+        //주문(배송) 정보 조회(단건)
+        Order findOrder = orderService.findOrder(orderId);
+
+        //데이터 가공
+        OrderDeliveryResponse delivery = OrderDeliveryResponse.builder()
+                .receiver(findOrder.getDelivery().getReceiver())
+                .address(findOrder.getDelivery().getAddress())
+                .phoneNumber(findOrder.getDelivery().getPhoneNumber())
+                .memo(findOrder.getDelivery().getMemo())
+                .build();
+
+        OrderResponse order = OrderResponse.builder()
+                .id(findOrder.getId())
+                .memo(findOrder.getMemo())
+                .build();
+
+        FindOrderResponse orderResponse = FindOrderResponse.builder()
+                .message(ORDER_FIND_SUCCESS)
+                .order(order)
+                .delivery(delivery)
+                .build();
+
+        return new ResponseEntity<>(orderResponse, OK);
     }
 }

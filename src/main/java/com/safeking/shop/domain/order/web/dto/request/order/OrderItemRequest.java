@@ -6,11 +6,11 @@ import lombok.Data;
 
 @Data
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class OrderItemDto {
+public class OrderItemRequest {
     private Long id;
     private int count;
 
-    public OrderItemDto(Long id, int count) {
+    public OrderItemRequest(Long id, int count) {
         this.id = id;
         this.count = count;
     }

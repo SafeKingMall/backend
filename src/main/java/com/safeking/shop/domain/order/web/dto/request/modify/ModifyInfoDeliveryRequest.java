@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ModifyInfoDeliveryDto {
+public class ModifyInfoDeliveryRequest {
     @NotBlank(message = "받는 사람을 작성해주세요.")
     private String receiver;
     @NotBlank

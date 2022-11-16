@@ -9,22 +9,22 @@ import java.util.List;
 
 @Data
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class OrderDto {
+public class OrderRequest {
     private String receiver;
     private String phoneNumber;
     private String address;
     private String memo;
     @JsonProperty("items")
-    private List<OrderItemDto> orderItemDtos;
+    private List<OrderItemRequest> orderItemRequests;
     @JsonProperty("delivery")
-    private OrderDeliveryDto orderDeliveryDto;
+    private OrderDeliveryRequest orderDeliveryRequest;
 
-    public OrderDto(String receiver, String phoneNumber, String address, String memo, List<OrderItemDto> orderItemDtos, OrderDeliveryDto orderDeliveryDto) {
+    public OrderRequest(String receiver, String phoneNumber, String address, String memo, List<OrderItemRequest> orderItemRequests, OrderDeliveryRequest orderDeliveryRequest) {
         this.receiver = receiver;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.memo = memo;
-        this.orderItemDtos = orderItemDtos;
-        this.orderDeliveryDto = orderDeliveryDto;
+        this.orderItemRequests = orderItemRequests;
+        this.orderDeliveryRequest = orderDeliveryRequest;
     }
 }

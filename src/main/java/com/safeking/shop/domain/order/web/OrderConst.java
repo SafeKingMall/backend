@@ -13,8 +13,8 @@ public class OrderConst {
     public static final String ORDER_CANCEL_FAIL = "주문 취소 실패";
     public static final String ORDER_MODIFY_SUCCESS = "주문(배송) 정보 수정 성공";
     public static final String ORDER_MODIFY_FAIL = "주문(배송) 정보 수정 실패";
-    public static final String ORDER_MODIFY_FIND_SUCCESS = "주문(배송) 정보 조회 성공";
-    public static final String ORDER_MODIFY_FIND_FAIL = "주문(배송) 정보 조회 실패";
-    public static final String ORDER_DETAIL_SUCCESS = "주문 상세 조회 완료";
-    public static final String ORDER_DETAIL_FAIL = "주문 상세 조회 실패";
+    public static final String ORDER_FIND_SUCCESS = "주문(배송) 정보 조회 성공";
+    public static final String ORDER_FIND_FAIL = "주문(배송) 정보 조회 실패";
+    public static final String ORDER_DETAIL_FIND_SUCCESS = "주문 상세 조회 완료";
+    public static final String ORDER_DETAIL_FIND_FAIL = "주문 상세 조회 실패";
 }

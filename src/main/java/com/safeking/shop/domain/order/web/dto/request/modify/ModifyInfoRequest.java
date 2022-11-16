@@ -6,11 +6,11 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class ModifyInfoDto {
+public class ModifyInfoRequest {
     @NotNull
     @JsonProperty("order")
-    private ModifyInfoOrderDto order;
+    private ModifyInfoOrderRequest order;
     @NotNull
     @JsonProperty("delivery")
-    private ModifyInfoDeliveryDto delivery;
+    private ModifyInfoDeliveryRequest delivery;
 }

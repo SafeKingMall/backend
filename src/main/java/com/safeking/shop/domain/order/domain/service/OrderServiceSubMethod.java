@@ -9,8 +9,8 @@ import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.web.OrderConst;
-import com.safeking.shop.domain.order.web.dto.request.order.OrderDto;
-import com.safeking.shop.domain.order.web.dto.request.order.OrderItemDto;
+import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
+import com.safeking.shop.domain.order.web.dto.request.order.OrderItemRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +33,10 @@ public class OrderServiceSubMethod {
      * 배송 정보 생성 및 저장
      */
     @Transactional
-    public Delivery createDelivery(OrderDto orderDto) {
+    public Delivery createDelivery(OrderRequest orderRequest) {
         //배송 정보 생성
-        Delivery delivery = Delivery.createDelivery(orderDto.getReceiver(), orderDto.getPhoneNumber(),
-                orderDto.getAddress(), DeliveryStatus.PREPARATION, orderDto.getOrderDeliveryDto().getMemo());
+        Delivery delivery = Delivery.createDelivery(orderRequest.getReceiver(), orderRequest.getPhoneNumber(),
+                orderRequest.getAddress(), DeliveryStatus.PREPARATION, orderRequest.getOrderDeliveryRequest().getMemo());
         //배송 정보 저장
         deliveryRepository.save(delivery);
 
@@ -47,12 +47,12 @@ public class OrderServiceSubMethod {
      * 주문상품 생성
      */
     @Transactional
-    public List<OrderItem> createOrderItems(OrderDto orderDto, List<Item> items) {
+    public List<OrderItem> createOrderItems(OrderRequest orderRequest, List<Item> items) {
 
         List<OrderItem> orderItems = new ArrayList<>();
 
-        //Client에서 받은 items(orderDto.getItemDtos())와 DB에서 조회한 items의 크기가 일치한지 확인
-        if(items.size() != orderDto.getOrderItemDtos().size()) {
+        //Client에서 받은 items(orderRequest.getItemDtos())와 DB에서 조회한 items의 크기가 일치한지 확인
+        if(items.size() != orderRequest.getOrderItemRequests().size()) {
             throw new ItemException(OrderConst.ORDER_ITEM_NONE);
         }
 
@@ -60,7 +60,7 @@ public class OrderServiceSubMethod {
             //주문상품 생성
             OrderItem orderItem = OrderItem.createOrderItem(items.get(i),
                     items.get(i).getPrice(),
-                    orderDto.getOrderItemDtos().get(i).getCount());
+                    orderRequest.getOrderItemRequests().get(i).getCount());
             //주문상품 저장
             orderItems.add(orderItem);
         }
@@ -71,13 +71,13 @@ public class OrderServiceSubMethod {
     /**
      * 상품 조회
      */
-    public List<Item> findItems(List<OrderItemDto> orderItemDtos) {
+    public List<Item> findItems(List<OrderItemRequest> orderItemRequests) {
 
         Optional<Item> findItemsOptional;
         List<Item> items = new ArrayList<>();
 
-        List<Long> itemIds = orderItemDtos.stream()
-                .map(OrderItemDto::getId)
+        List<Long> itemIds = orderItemRequests.stream()
+                .map(OrderItemRequest::getId)
                 .collect(Collectors.toList());
 
         for(Long id : itemIds) {
