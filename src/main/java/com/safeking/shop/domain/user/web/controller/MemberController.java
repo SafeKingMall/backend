@@ -6,8 +6,13 @@ import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
+import com.safeking.shop.domain.user.domain.service.dto.MemberInfoDto;
 import com.safeking.shop.domain.user.domain.service.dto.MemberUpdateDto;
 import com.safeking.shop.domain.user.web.request.*;
+import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
+import com.safeking.shop.domain.user.web.request.signuprequest.AuthenticationInfo;
+import com.safeking.shop.domain.user.web.request.signuprequest.CriticalItems;
+import com.safeking.shop.domain.user.web.request.signuprequest.MemberInfo;
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.exception.MemberNotFoundException;
@@ -47,10 +52,36 @@ public class MemberController {
 
     private final SMSService smsService;
 
-    @PostMapping("/signup")
-    public void signUp(@RequestBody @Validated SignUpRequest signUpRequest) {
-        memberService.join(signUpRequest.toServiceDto());
+    @PostMapping("/signup/criticalItems")
+    public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
+
+        return memberService.addCriticalItems(criticalItems.toServiceDto());
+
     }
+    @PostMapping("/signup/authenticationInfo/{memberId}")
+    public Long signUpAuthenticationInfo(@PathVariable Long memberId,@RequestBody @Validated AuthenticationInfo authenticationInfo) {
+
+        return memberService.addAuthenticationInfo(memberId,authenticationInfo.toServiceDto());
+
+    }
+    @PostMapping("/signup/memberInfo/{memberId}")
+    public Long  signUpMemberInfo(@PathVariable Long memberId, @RequestBody @Validated MemberInfo memberInfo) {
+
+        return memberService.addMemberInfo(memberId,memberInfo.toServiceDto());
+
+    }
+
+    @PostMapping("/signup/agreementInfo/{memberId}")
+    public Long  signUpAgreementInfo(@PathVariable Long memberId, @RequestBody @Validated AgreementInfo agreementInfo) {
+
+        Boolean agreement=null;
+
+        agreement= agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
+
+        return memberService.changeMemoryToDB(memberId,agreement);
+
+    }
+
     @PutMapping("/user/update")
     public void update(@RequestBody @Validated UpdateRequest updateRequest, HttpServletRequest request){
         Long memberId = memberService.getIdFromUsername(getUsername(request));

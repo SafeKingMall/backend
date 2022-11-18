@@ -1,6 +1,7 @@
 package com.safeking.shop.global.exhandler.advice;
 
 import com.safeking.shop.global.Error;
+import com.safeking.shop.global.exception.MemberNotFoundException;
 import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,12 @@ public class ExControllerAdvice {
         log.error("[refreshTokenNotFoundExHandler] ex",e);
 
         return new ResponseEntity<>(new Error(1200,e.getMessage()), HttpStatus.FORBIDDEN);
+    }
+    @ExceptionHandler
+    public ResponseEntity<Error> MemberNotFoundExceptionExHandler(MemberNotFoundException e){
+        log.error("[MemberNotFoundExceptionExHandler] ex",e);
+
+        return new ResponseEntity<>(new Error(1223,e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler

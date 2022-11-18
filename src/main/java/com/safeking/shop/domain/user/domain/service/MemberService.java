@@ -4,8 +4,8 @@ import com.safeking.shop.domain.coolsms.web.query.SMSService;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
-import com.safeking.shop.domain.user.domain.service.dto.MemberUpdateDto;
+import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
+import com.safeking.shop.domain.user.domain.service.dto.*;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,25 +24,57 @@ import java.util.Random;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemoryMemberRepository memoryMemberRepository;
     private final CustomBCryPasswordEncoder encoder;
 
     private final SMSService smsService;
 
-    public Long join(GeneralSingUpDto singUpDto){
-        log.info("회원 가입");
+    public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
         GeneralMember generalMember = GeneralMember.builder()
-                .name(singUpDto.getName())
-                .username(singUpDto.getUsername())
-                .password(encoder.encode(singUpDto.getPassword()))
-                .email(singUpDto.getEmail())
-                .phoneNumber(singUpDto.getPhoneNumber())
-                .address(singUpDto.getAddress())
-                .roles("ROLE_USER")
+                .username(criticalItemsDto.getUsername())
+                .password(criticalItemsDto.getPassword())
+                .email(criticalItemsDto.getEmail())
                 .build();
 
-        memberRepository.save(generalMember);
+        memoryMemberRepository.save(generalMember);
+
         return generalMember.getId();
+    }
+
+    public Long addAuthenticationInfo(Long id,AuthenticationInfoDto authenticationInfoDto){
+
+        Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+
+        member.addAuthenticationInfo(authenticationInfoDto.getName(),authenticationInfoDto.getBirth(),authenticationInfoDto.getPhoneNumber());
+
+        return member.getId();
+    }
+
+    public Long changeMemoryToDB(Long id, Boolean agreement){
+
+        if(agreement!=true)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
+
+        Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+
+        //필요한 게 다 있는지 check하는 로직 추가
+
+        member.addAgreement(true);
+        member.changeId(null);
+        memberRepository.save(member);
+
+        memoryMemberRepository.delete(id);
+
+        return member.getId();
+    }
+
+
+    public Long addMemberInfo(Long id, MemberInfoDto memberInfoDto){
+        Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+
+        member.addMemberInfo(memberInfoDto.getCompanyName(),memberInfoDto.getCompanyRegistrationNumber(),memberInfoDto.getCorporateRegistrationNumber(),memberInfoDto.getRepresentativeName(),memberInfoDto.getAddress(),memberInfoDto.getContact());
+
+        return member.getId();
     }
 
     public boolean idDuplicationCheck(String username){
@@ -55,7 +87,6 @@ public class MemberService {
 
         Member member = memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("member not found"));
 
-        member.updateMemberInfo(memberUpdateDto.getName(), memberUpdateDto.getPassword(), memberUpdateDto.getEmail(), memberUpdateDto.getPhoneNumber(),memberUpdateDto.getAddress());
     }
 
     public Long getIdFromUsername(String username){

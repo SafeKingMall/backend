@@ -7,6 +7,7 @@ import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.Tokens;
+import com.safeking.shop.global.jwt.filter.dto.LoginRequestDto;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
             // 1. username,password 를 받아서
             om = new ObjectMapper();
-            Member member=om.readValue(request.getInputStream(), Member.class);
+            LoginRequestDto member=om.readValue(request.getInputStream(), LoginRequestDto.class);
 
             // 2. 바탕으로 토큰을 만들어서
             UsernamePasswordAuthenticationToken authenticationToken
