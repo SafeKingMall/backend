@@ -4,15 +4,16 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class MemoryMemberRepository {
-    private static Map<Long, Member> store = new HashMap<>(); //static 사용
-    private static long sequence = 0L; //static 사용
+    private static Map<Long, Member> store = new ConcurrentHashMap<>(); //static 사용
+    private static AtomicLong sequence = new AtomicLong();; //static 사용
 
     public Long save(Member member) {
-
-        member.changeId(++sequence);
+        member.changeId(sequence.incrementAndGet());
         store.put(member.getId(), member);
 
         return member.getId();
