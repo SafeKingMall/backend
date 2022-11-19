@@ -4,12 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
-import com.safeking.shop.global.jwt.refreshToken.RefreshToken;
-import com.safeking.shop.global.jwt.refreshToken.RefreshTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -21,11 +18,7 @@ public class TokenUtils {
     public static final String REFRESH_HEADER = "refresh-token";
     public static final String BEARER = "Bearer ";
     private static final String PRIVATE_KEY="safeKing";
-    private final RefreshTokenRepository refreshTokenRepository;
 
-    public TokenUtils(RefreshTokenRepository refreshTokenRepository) {
-        this.refreshTokenRepository = refreshTokenRepository;
-    }
     public static enum TokenType {
         access,
         refresh
@@ -64,10 +57,9 @@ public class TokenUtils {
     }
 
     public Tokens createTokens(Authentication authentication){
+
         String jwtToken = generate(authentication, TokenType.access);
         String refreshToken = generate(authentication, TokenType.refresh);
-
-        refreshTokenRepository.save(new RefreshToken(refreshToken,jwtToken));
 
         return new Tokens(jwtToken, refreshToken);
     }
