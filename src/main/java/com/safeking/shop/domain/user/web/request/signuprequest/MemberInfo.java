@@ -20,7 +20,6 @@ public class MemberInfo {
     private String companyRegistrationNumber;
 
     @Length(max = 50)
-    @NotEmpty(message = "빈 문자는 안됩니다.")
     private String corporateRegistrationNumber;
 
     @Length(max = 50)
@@ -39,7 +38,6 @@ public class MemberInfo {
     @NotEmpty(message = "빈 문자는 안됩니다.")
     private String detailedAddress;
 
-    @NotNull
     @Pattern(regexp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$", message = "10 ~ 11 자리의 숫자만 입력 가능합니다.")
     private String contact;
 

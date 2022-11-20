@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.user.domain.service;
 
-import com.safeking.shop.domain.coolsms.web.query.SMSService;
+import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
@@ -10,7 +10,6 @@ import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -54,19 +53,21 @@ public class MemberService {
 
     public Long changeMemoryToDB(Long id, Boolean agreement){
 
-        if(agreement!=true)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
+        try{
+            if(agreement!=true)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
 
-        Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+            Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
-        //필요한 게 다 있는지 check하는 로직 추가
+            member.addAgreement(true);
+            //필요한 게 다 있는지 check하는 로직 추가
+            if(!member.isCheckedItem())throw new IllegalArgumentException("필수 항목들을 모두 기입해주세요");
+            member.changeId(null);
+            memberRepository.save(member);
 
-        member.addAgreement(true);
-        member.changeId(null);
-        memberRepository.save(member);
-
-        memoryMemberRepository.delete(id);
-
-        return member.getId();
+            return member.getId();
+        }finally {
+            memoryMemberRepository.delete(id);
+        }
     }
 
 
@@ -80,7 +81,7 @@ public class MemberService {
 
     public boolean idDuplicationCheck(String username){
         //id를 사용가능하다면  true
-        return memberRepository.findByUsername(username).orElse(null) == null;
+        return memberRepository.findByUsername(username).orElse(null) == null & memoryMemberRepository.findDuplication(username);
     }
 
     public void updateMemberInfo(String username,MemberUpdateDto memberUpdateDto){
@@ -110,15 +111,15 @@ public class MemberService {
         // 추후 만들 예정
     }
 
-    public void sendTemporaryPassword(String username) throws CoolsmsException {
+    public String sendTemporaryPassword(String username){
         Member member = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("아이디와 일치하는 회원이 없습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("아이디와 일치하는 회원이 없습니다."));
 
         String temporaryPassword = createCode();
 
         member.changePassword(encoder.encode(temporaryPassword));
 
-        smsService.sendPasswordToClient(member.getPhoneNumber(),temporaryPassword);
+        return temporaryPassword;
     }
 
     private static String createCode() {

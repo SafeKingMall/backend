@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
-public class Member extends BaseTimeEntity {
+public abstract class Member extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -83,6 +83,29 @@ public class Member extends BaseTimeEntity {
         this.address=address;
         this.contact=contact;
 
+    }
+
+    public boolean isCheckedItem(){
+        return getPrerequisiteItem().stream().allMatch(item->item!=null);
+    }
+
+    private List<Object> getPrerequisiteItem() {
+        List<Object> prerequisiteItem =new ArrayList<>();
+
+        prerequisiteItem.add(this.name);
+        prerequisiteItem.add(this.birth);
+        prerequisiteItem.add(this.username);
+        prerequisiteItem.add(this.password);
+        prerequisiteItem.add(this.email);
+        prerequisiteItem.add(this.roles);
+        prerequisiteItem.add(this.phoneNumber);
+        prerequisiteItem.add(this.companyName);
+        prerequisiteItem.add(this.companyRegistrationNumber);
+        prerequisiteItem.add(this.representativeName);
+        prerequisiteItem.add(this.address);
+        prerequisiteItem.add(this.agreement);
+
+        return prerequisiteItem;
     }
 
     public void addAgreement(Boolean agreement){

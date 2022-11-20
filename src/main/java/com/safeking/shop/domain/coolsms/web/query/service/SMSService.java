@@ -1,9 +1,7 @@
-package com.safeking.shop.domain.coolsms.web.query;
+package com.safeking.shop.domain.coolsms.web.query.service;
 
 import com.safeking.shop.domain.coolsms.domain.entity.CoolSMS;
-import com.safeking.shop.domain.coolsms.domain.respository.CoolSmsRepository;
 import com.safeking.shop.domain.coolsms.domain.respository.SMSMemoryRepository;
-import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
@@ -26,7 +24,7 @@ public class SMSService {
 
 
     public String sendCodeToClient(String clientPhoneNumber) throws CoolsmsException {
-        String code = createCode(clientPhoneNumber);
+        String code = createCode(clientPhoneNumber).getCode();
 
         sendInformation(clientPhoneNumber, code, "code");
         return code;
@@ -41,6 +39,11 @@ public class SMSService {
         CoolSMS coolSMS = coolSmsRepository
                 .findByClientPhoneNumber(clientPhoneNumber)
                 .orElseThrow(() -> new MemberNotFoundException("휴대번호가 일치하지 않습니다. 휴대전화 인증을 처음부터 다시 해주세요"));
+        //3분이 지나면 삭제
+        if(coolSMS.isExpired()){
+            coolSmsRepository.delete(coolSMS.getId());
+            return false;
+        }
 
         if (coolSMS.getCode().equals(clientCode)) {
             coolSmsRepository.delete(coolSMS.getId());
@@ -52,7 +55,7 @@ public class SMSService {
     }
 
 
-    private String createCode(String clientPhoneNumber) {
+    private CoolSMS createCode(String clientPhoneNumber) {
         Random rand = new Random();
 
         String code = "";
@@ -63,8 +66,9 @@ public class SMSService {
         CoolSMS coolSMS = new CoolSMS(code, clientPhoneNumber);
         coolSmsRepository.save(coolSMS);
 
-        return coolSMS.getCode();
+        return coolSMS;
     }
+
 
     private static void sendInformation(String clientPhoneNumber, String information, String type) throws CoolsmsException {
         String text = type.equals("code") ? "SAFEKING의 인증번호는 " : "고객님의 임시 비밀번호는 ";

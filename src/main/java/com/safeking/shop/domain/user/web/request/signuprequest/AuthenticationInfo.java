@@ -16,7 +16,8 @@ public class AuthenticationInfo {
     @NotEmpty(message = "빈 문자는 안됩니다.")
     private String name;
 
-//    @Pattern(regexp = "/^(19[0-9][0-9]|20\\d{2})-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",message = "ex) 19971202")
+    @Length(max = 50)
+    @NotEmpty(message = "빈 문자는 안됩니다.")
     private String birth;
 
     @NotNull

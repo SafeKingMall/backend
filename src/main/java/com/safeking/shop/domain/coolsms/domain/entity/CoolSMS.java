@@ -6,22 +6,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
-@Entity
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CoolSMS {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "coolsms_id")
     private Long id;
     private String code;
     private String clientPhoneNumber;
 
+    private LocalDateTime createTime;
+
+    private LocalDateTime endTime;
+
+
     public CoolSMS(String code, String clientPhoneNumber) {
         this.code = code;
         this.clientPhoneNumber = clientPhoneNumber;
+        this.createTime=LocalDateTime.now();
+        this.endTime=LocalDateTime.now().plusMinutes(3);
+    }
+
+    public boolean isExpired(){
+        return this.endTime.isBefore(LocalDateTime.now());
     }
 
     public void changeId(Long id) {

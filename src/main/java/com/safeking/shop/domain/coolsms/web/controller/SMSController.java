@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.coolsms.web.controller;
 
-import com.safeking.shop.domain.coolsms.web.query.SMSService;
+import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.coolsms.web.request.PhoneNumber;
 import com.safeking.shop.domain.coolsms.web.request.SMSCode;
 import com.safeking.shop.global.Error;

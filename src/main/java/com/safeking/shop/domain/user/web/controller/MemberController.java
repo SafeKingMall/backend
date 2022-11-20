@@ -1,13 +1,10 @@
 package com.safeking.shop.domain.user.web.controller;
 
-import com.safeking.shop.domain.coolsms.web.query.SMSService;
+import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
-import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
-import com.safeking.shop.domain.user.domain.service.dto.MemberInfoDto;
-import com.safeking.shop.domain.user.domain.service.dto.MemberUpdateDto;
 import com.safeking.shop.domain.user.web.query.service.MemberQueryService;
 import com.safeking.shop.domain.user.web.request.*;
 import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
@@ -25,7 +22,6 @@ import com.safeking.shop.global.oauth.provider.KakaoUserInfo;
 import com.safeking.shop.global.oauth.provider.Oauth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -121,8 +117,8 @@ public class MemberController {
     }
 
     @PostMapping("/temporaryPassword")
-    public void sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest) throws CoolsmsException {
-        memberService.sendTemporaryPassword(pwFindRequest.getUsername());
+    public String  sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest){
+        return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
     }
 
 

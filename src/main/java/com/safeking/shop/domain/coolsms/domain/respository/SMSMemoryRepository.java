@@ -40,4 +40,10 @@ public class SMSMemoryRepository {
         return store.values().stream().filter(coolSMS -> coolSMS.getClientPhoneNumber().equals(clientPhoneNumber)).findFirst();
 
     }
+    public Optional<CoolSMS> findByCode(String code) {
+        return store.values().stream().filter(coolSMS -> coolSMS.getCode().equals(code)).findFirst();
+
+    }
+
+
 }
