@@ -105,6 +105,8 @@ public class MemberService {
                 .getId();
     }
 
+
+
     public void delete(Long id){
         log.info("delete");
 
