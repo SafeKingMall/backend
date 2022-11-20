@@ -24,6 +24,9 @@ public class Delivery extends BaseTimeEntity {
     private String memo;
     private LocalDateTime shippingStartDate;
     private LocalDateTime shippingEndDate;
+    private int cost;
+    private String company;
+    private String invoiceNumber;
 
     public static Delivery createDelivery(String receiver, String phoneNumber,
                                           String address, DeliveryStatus status,
@@ -55,5 +58,11 @@ public class Delivery extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.memo = memo;
+    }
+
+    public void changeDeliveryByAdmin(int cost, String company, String invoiceNumber) {
+        this.cost = cost;
+        this.company = company;
+        this.invoiceNumber = invoiceNumber;
     }
 }

@@ -79,8 +79,8 @@ public class OrderController {
     /**
      * 주문(배송) 정보 조회
      */
-    @GetMapping("/order")
-    public ResponseEntity<FindOrderResponse> find(@RequestParam Long orderId, HttpServletRequest request) {
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<FindOrderResponse> find(@PathVariable Long orderId, HttpServletRequest request) {
 
         //회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
@@ -88,7 +88,7 @@ public class OrderController {
         //주문(배송) 정보 조회(단건)
         Order findOrder = orderService.findOrder(orderId);
 
-        //데이터 가공
+        //응답 데이터
         OrderDeliveryResponse delivery = OrderDeliveryResponse.builder()
                 .receiver(findOrder.getDelivery().getReceiver())
                 .address(findOrder.getDelivery().getAddress())
