@@ -8,11 +8,13 @@ import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
 import com.safeking.shop.domain.user.domain.service.dto.MemberInfoDto;
 import com.safeking.shop.domain.user.domain.service.dto.MemberUpdateDto;
+import com.safeking.shop.domain.user.web.query.service.MemberQueryService;
 import com.safeking.shop.domain.user.web.request.*;
 import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
 import com.safeking.shop.domain.user.web.request.signuprequest.AuthenticationInfo;
 import com.safeking.shop.domain.user.web.request.signuprequest.CriticalItems;
 import com.safeking.shop.domain.user.web.request.signuprequest.MemberInfo;
+import com.safeking.shop.domain.user.web.response.MemberDetails;
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.exception.MemberNotFoundException;
@@ -46,6 +48,7 @@ import static com.safeking.shop.global.jwt.TokenUtils.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder encoder;
     private final TokenUtils tokenUtils;
@@ -56,8 +59,8 @@ public class MemberController {
     public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
 
         return memberService.addCriticalItems(criticalItems.toServiceDto());
-
     }
+
     @PostMapping("/signup/authenticationInfo/{memberId}")
     public Long signUpAuthenticationInfo(@PathVariable Long memberId,@RequestBody @Validated AuthenticationInfo authenticationInfo) {
 
@@ -82,11 +85,15 @@ public class MemberController {
 
     }
 
+
+    @GetMapping("/user/details")
+    public MemberDetails showMemberDetails(HttpServletRequest request){
+        return memberQueryService.showMemberDetails(TokenUtils.getUsername(request));
+    }
+
     @PutMapping("/user/update")
     public void update(@RequestBody @Validated UpdateRequest updateRequest, HttpServletRequest request){
-        Long memberId = memberService.getIdFromUsername(getUsername(request));
-
-        memberService.updateMemberInfo(memberId,updateRequest.toServiceDto());
+        memberService.updateMemberInfo(TokenUtils.getUsername(request),updateRequest.toServiceDto());
     }
 
     @PostMapping("/id/duplication")

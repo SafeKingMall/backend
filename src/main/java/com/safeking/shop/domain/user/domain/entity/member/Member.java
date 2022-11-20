@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
-public abstract class Member extends BaseTimeEntity {
+public class Member extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -52,12 +52,15 @@ public abstract class Member extends BaseTimeEntity {
         this.id = id;
     }
 
-    public void addCriticalItems(String username, String password, String email){
-
-        this.username=username;
-        this.password=password;
-        this.email=email;
-
+    public void updateInfo(String name, String birth, String representativeName, String phoneNumber, String companyRegistrationNumber, String corporateRegistrationNumber, Address address){
+        this.name = name;
+        this.username = username;
+        this.birth = birth;
+        this.representativeName = representativeName;
+        this.phoneNumber = phoneNumber;
+        this.companyRegistrationNumber = companyRegistrationNumber;
+        this.corporateRegistrationNumber = corporateRegistrationNumber;
+        this.address = address;
     }
     public void addAuthenticationInfo(String name,String birth,String phoneNumber){
 

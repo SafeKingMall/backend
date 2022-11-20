@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class MemoryMemberRepository {
     private static Map<Long, Member> store = new ConcurrentHashMap<>(); //static 사용
-    private static AtomicLong sequence = new AtomicLong();; //static 사용
+    private static AtomicLong sequence = new AtomicLong(0);; //static 사용
 
     public Long save(Member member) {
         member.changeId(sequence.incrementAndGet());

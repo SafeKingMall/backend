@@ -6,21 +6,25 @@ import lombok.Data;
 
 @Data
 public class MemberUpdateDto {
-    private Long id;
     private String name;
-    private String password;
-    private String email;
+    private String birth;
+
+    private String representativeName;
+
     private String phoneNumber;
+
+    private String companyRegistrationNumber;
+    private String corporateRegistrationNumber;
     private Address address;
 
     @Builder
-    public MemberUpdateDto(String name, String password, String email, String phoneNumber, Address address) {
-
-        this.name=name;
-        this.password = password;
-        this.email = email;
-        this.phoneNumber=phoneNumber;
-        this.address=address;
-
+    public MemberUpdateDto(String name, String birth, String representativeName, String phoneNumber, String companyRegistrationNumber, String corporateRegistrationNumber, Address address) {
+        this.name = name;
+        this.birth = birth;
+        this.representativeName = representativeName;
+        this.phoneNumber = phoneNumber;
+        this.companyRegistrationNumber = companyRegistrationNumber;
+        this.corporateRegistrationNumber = corporateRegistrationNumber;
+        this.address = address;
     }
 }

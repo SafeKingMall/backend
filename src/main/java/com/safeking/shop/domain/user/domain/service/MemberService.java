@@ -33,8 +33,9 @@ public class MemberService {
 
         GeneralMember generalMember = GeneralMember.builder()
                 .username(criticalItemsDto.getUsername())
-                .password(criticalItemsDto.getPassword())
+                .password(encoder.encode(criticalItemsDto.getPassword()))
                 .email(criticalItemsDto.getEmail())
+                .roles("ROLE_USER")
                 .build();
 
         memoryMemberRepository.save(generalMember);
@@ -82,11 +83,13 @@ public class MemberService {
         return memberRepository.findByUsername(username).orElse(null) == null;
     }
 
-    public void updateMemberInfo(Long id,MemberUpdateDto memberUpdateDto){
+    public void updateMemberInfo(String username,MemberUpdateDto memberUpdateDto){
         log.info("회원 정보 수정");
 
-        Member member = memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("member not found"));
-
+        memberRepository.findByUsername(username)
+                .orElseThrow(()->new MemberNotFoundException("member not found"))
+                .updateInfo(memberUpdateDto.getName(),memberUpdateDto.getBirth(),memberUpdateDto.getRepresentativeName(),memberUpdateDto.getPhoneNumber()
+                ,memberUpdateDto.getCompanyRegistrationNumber(),memberUpdateDto.getCorporateRegistrationNumber(),memberUpdateDto.getAddress());
     }
 
     public Long getIdFromUsername(String username){
