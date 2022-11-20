@@ -92,6 +92,12 @@ public class MemberService {
                 ,memberUpdateDto.getCompanyRegistrationNumber(),memberUpdateDto.getCorporateRegistrationNumber(),memberUpdateDto.getAddress());
     }
 
+    public void updatePassword(String username,String password){
+        memberRepository.findByUsername(username)
+                .orElseThrow(()->new MemberNotFoundException("회원을 찾을 수가 없습니다."))
+                .updatePassword(encoder.encode(password));
+    }
+
     public Long getIdFromUsername(String username){
         return memberRepository.findByUsername(username)
                 .orElseThrow(()->new UsernameNotFoundException("회원을 찾을 수가 없습니다."))

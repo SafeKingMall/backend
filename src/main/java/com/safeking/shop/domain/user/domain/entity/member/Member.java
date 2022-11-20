@@ -62,6 +62,10 @@ public class Member extends BaseTimeEntity {
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.address = address;
     }
+
+    public void updatePassword(String password){
+        this.password=password;
+    }
     public void addAuthenticationInfo(String name,String birth,String phoneNumber){
 
         this.name=name;

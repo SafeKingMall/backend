@@ -96,6 +96,11 @@ public class MemberController {
         memberService.updateMemberInfo(TokenUtils.getUsername(request),updateRequest.toServiceDto());
     }
 
+    @PatchMapping("/user/update/password")
+    public void updatePassword(@RequestBody @Validated UpdatePWRequest updatePWRequest, HttpServletRequest request){
+        memberService.updatePassword(TokenUtils.getUsername(request),updatePWRequest.getPassword());
+    }
+
     @PostMapping("/id/duplication")
     public boolean idDuplicationCheck(@RequestBody @Validated IdDuplicationRequest idDuplicationRequest) {
 
@@ -105,6 +110,7 @@ public class MemberController {
     @PostMapping("/id/find")
     public ResponseEntity idFind(@RequestBody @Validated IdFindRequest request){
         if(smsService.checkCode(request.getCode(),request.getClientPhoneNumber())){
+
             return new ResponseEntity<>(memberRepository.findByPhoneNumber(request.getClientPhoneNumber())
                     .orElseThrow(()->new MemberNotFoundException("등록된 휴대번호와 일치하는 회원이 없습니다."))
                     .getUsername(),HttpStatus.OK);

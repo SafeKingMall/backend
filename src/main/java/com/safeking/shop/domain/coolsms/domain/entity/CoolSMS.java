@@ -23,4 +23,9 @@ public class CoolSMS {
         this.code = code;
         this.clientPhoneNumber = clientPhoneNumber;
     }
+
+    public void changeId(Long id) {
+        this.id = id;
+    }
+
 }
