@@ -141,7 +141,6 @@ public class MemberController {
 
         String provider = oauth2UserInfo.getProvider();
         String providerId = oauth2UserInfo.getProviderId();
-        String name = oauth2UserInfo.getName();
         String username = provider + "_" + providerId;
         String password = encoder.encode("safeking");
         String email = oauth2UserInfo.getEmail();//구글이 준 email
@@ -151,8 +150,7 @@ public class MemberController {
         if (oauthMember == null) {
             oauthMember = OauthMember.builder()
                     .username(username)
-                    .password(password)
-                    .name(name)
+                    .password(encoder.encode(password))
                     .email(email)
                     .roles(role)
                     .provider(provider)
