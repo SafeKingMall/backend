@@ -45,6 +45,10 @@ public class Order extends BaseTimeEntity {
     @Column(length = 50)
     private String memo;
 
+    @OneToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
     public static Order createOrder(Member member, Delivery delivery, String memo, List<OrderItem> orderItems) {
         Order order = new Order();
         order.changeOrder(member, delivery, memo, orderItems);
@@ -84,5 +88,9 @@ public class Order extends BaseTimeEntity {
 
     public void changeMemo(String memo) {
         this.memo = memo;
+    }
+
+    public void changePayment(Payment payment) {
+        this.payment = payment;
     }
 }

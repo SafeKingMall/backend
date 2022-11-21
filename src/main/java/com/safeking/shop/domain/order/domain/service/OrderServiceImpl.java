@@ -5,6 +5,7 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
+import com.safeking.shop.domain.order.domain.entity.Payment;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelRequest;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.safeking.shop.domain.order.web.OrderConst.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +47,8 @@ public class OrderServiceImpl implements OrderService {
         // 주문상품 생성 및 저장
         List<OrderItem> orderItems = orderServiceSubMethod.createOrderItems(orderRequest, items);
 
+        // 결제
+
         // 주문 생성
         Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), orderItems);
         orderRepository.save(order);
@@ -51,10 +56,24 @@ public class OrderServiceImpl implements OrderService {
         return order.getId();
     }
 
+    /**
+     * 주문(배송) 정보 조회
+     */
     @Override
     public Order findOrder(Long id) {
         Optional<Order> orderOptional = orderRepository.findOrder(id);
-        Order findOrder = orderOptional.orElseThrow(() -> new OrderException(OrderConst.ORDER_FIND_FAIL));
+        Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_FIND_FAIL));
+
+        return findOrder;
+    }
+
+    /**
+     * 주문 상세 조회
+     */
+    @Override
+    public Order findOrderDetail(Long id) {
+        Optional<Order> findOrderDetailOptional = orderRepository.findOrderDetail(id);
+        Order findOrder = findOrderDetailOptional.orElseThrow(() -> new OrderException(ORDER_DETAIL_FIND_FAIL));
 
         return findOrder;
     }
@@ -70,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(CancelOrderRequest::getId)
                 .forEach((id) -> {
                     Optional<Order> findOrder = orderRepository.findById(id);
-                    Order order = findOrder.orElseThrow(() -> new OrderException(OrderConst.ORDER_NONE));
+                    Order order = findOrder.orElseThrow(() -> new OrderException(ORDER_NONE));
                     order.cancel();
                 });
     }
@@ -82,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
     public Long modifyOrder(ModifyInfoRequest modifyInfoRequest) {
 
         Optional<Order> findOrderOptional = orderRepository.findById(modifyInfoRequest.getOrder().getId());
-        Order findOrder = findOrderOptional.orElseThrow(() -> new OrderException(OrderConst.ORDER_NONE));
+        Order findOrder = findOrderOptional.orElseThrow(() -> new OrderException(ORDER_NONE));
 
         Delivery delivery = findOrder.getDelivery();
 

@@ -9,12 +9,14 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("select o from Order o" +
-            " join fetch o.delivery" +
+            " join fetch o.delivery d" +
             " where o.id = :id")
     Optional<Order> findOrder(@Param("id") Long id);
     @Query("select o from Order o" +
-            " join fetch o.delivery" +
-            " join fetch o.orderItems" +
-            " join fetch ")
-    Optional<Order> findOrderDetail();
+            " join fetch o.delivery d" +
+            " join fetch o.orderItems oi" +
+            " join fetch o.payment p" +
+            " join fetch oi.item i" +
+            " where o.id = :id")
+    Optional<Order> findOrderDetail(@Param("id") Long id);
 }

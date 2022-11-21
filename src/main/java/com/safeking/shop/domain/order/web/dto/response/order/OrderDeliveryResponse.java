@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.dto.response.findorder;
+package com.safeking.shop.domain.order.web.dto.response.order;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

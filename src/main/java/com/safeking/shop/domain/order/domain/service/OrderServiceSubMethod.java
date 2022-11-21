@@ -5,9 +5,11 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
+import com.safeking.shop.domain.order.domain.entity.Payment;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
+import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
 import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.order.OrderItemRequest;
@@ -28,6 +30,7 @@ public class OrderServiceSubMethod {
     private final DeliveryRepository deliveryRepository;
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
+    private final PaymentRepository paymentRepository;
 
     /**
      * 배송 정보 생성 및 저장
@@ -58,7 +61,8 @@ public class OrderServiceSubMethod {
 
         for(int i = 0; i < items.size(); i++) {
             //주문상품 생성
-            OrderItem orderItem = OrderItem.createOrderItem(items.get(i),
+            OrderItem orderItem = OrderItem.createOrderItem(
+                    items.get(i),
                     items.get(i).getPrice(),
                     orderRequest.getOrderItemRequests().get(i).getCount());
             //주문상품 저장
@@ -86,5 +90,15 @@ public class OrderServiceSubMethod {
         }
 
         return items;
+    }
+
+    /**
+     * 결제
+     */
+    public Payment payment(List<OrderItem> orderItems, String number, String means) {
+        Payment payment = Payment.createPayment(orderItems, number, means);
+        paymentRepository.save(payment);
+
+        return payment;
     }
 }

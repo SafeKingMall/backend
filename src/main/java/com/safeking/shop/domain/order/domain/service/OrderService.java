@@ -9,6 +9,7 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 public interface OrderService {
 
     Order findOrder(Long id); //주문 단건 조회
+    Order findOrderDetail(Long id); //주문 상세 조회
     //List<Order> findOrders(); //주문 다건 조회
     void cancel(CancelRequest cancelRequest); //주문 취소
     Long order(Member member, OrderRequest orderRequest); //주문

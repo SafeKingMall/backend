@@ -1,11 +1,16 @@
 package com.safeking.shop.domain.order.domain.entity;
 
 import com.safeking.shop.domain.admin.common.BaseTimeEntity;
+import com.safeking.shop.domain.order.domain.entity.status.PaymentStatus;
+import com.safeking.shop.domain.order.web.dto.request.order.OrderItemRequest;
+import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -13,27 +18,32 @@ public class Payment extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private Order order;
     private int price;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
     private String number;
     private String means;
 
-    public static Payment createPayment(Long id, Order order, int price, String status, String number, String means) {
+    public static Payment createPayment(List<OrderItem> orderItems, String number, String means) {
         Payment payment = new Payment();
-        payment.changePayment(id, order, price, status, number, means, payment);
+        payment.changePayment(payment.sumPrice(orderItems), PaymentStatus.COMPLETE, number, means);
 
         return payment;
     }
 
-    private void changePayment(Long id, Order order, int price, String status, String number, String means, Payment payment) {
-        payment.id = id;
-        payment.order = order;
-        payment.price = price;
-        payment.status = status;
-        payment.number = number;
-        payment.means = means;
+    private void changePayment(int price, PaymentStatus status, String number, String means) {
+        this.price = price;
+        this.status = status;
+        this.number = number;
+        this.means = means;
+    }
+
+    /**
+     * 주문시 총 가격 계산
+     */
+    private int sumPrice(List<OrderItem> orderItems) {
+        return orderItems.stream()
+                .mapToInt(o -> o.getOrderPrice() * o.getCount())
+                .sum();
     }
 }

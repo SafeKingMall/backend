@@ -8,10 +8,13 @@ import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
+import com.safeking.shop.domain.order.domain.entity.Payment;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
+import com.safeking.shop.domain.order.domain.entity.status.PaymentStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
+import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelRequest;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelOrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.order.OrderDeliveryRequest;
@@ -56,6 +59,8 @@ class OrderServiceImplTest {
     MemberRepository memberRepository;
     @Autowired
     AdminRepository adminRepository;
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @Test
     @Transactional
@@ -375,5 +380,79 @@ class OrderServiceImplTest {
         private String phoneNumber;
         private String address;
         private String deliveryMemo;
+    }
+
+    @Test
+    @Transactional
+    void 주문_상세_조회() throws Exception {
+        //given
+        Member generalMember = GeneralMember.builder()
+                .name("아이유")
+                .username("dlwlrma")
+                .password("1234")
+                .build();
+        memberRepository.save(generalMember);
+
+        Admin admin = new Admin("admin", "1");
+        adminRepository.save(admin);
+
+        Item item1 = Item.createItem("안전모",
+                100,
+                "안전모 입니다.",
+                1000,
+                admin);
+        Item item2 = Item.createItem("안전화",
+                200,
+                "안전화 입니다.",
+                2000,
+                admin);
+        itemRepository.save(item1);
+        itemRepository.save(item2);
+        OrderItem orderItem1 = OrderItem.createOrderItem(item1, 1000, 1);
+        OrderItem orderItem2 = OrderItem.createOrderItem(item2, 2000, 1);
+
+        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
+        orderDeliveryRequest.setMemo("문앞에 놓아주세요.");
+
+        OrderRequest orderRequest = new OrderRequest("아이유",
+                "01012341234",
+                "서울시 여의도",
+                "납기일 준수해주세요.",
+                List.of(new OrderItemRequest(1L, 1), new OrderItemRequest(2L, 1 )),
+                orderDeliveryRequest);
+
+        //배송 완료
+        Delivery delivery = Delivery.createDelivery(
+                orderRequest.getReceiver(),
+                orderRequest.getPhoneNumber(),
+                orderRequest.getAddress(),
+                DeliveryStatus.PREPARATION,
+                orderRequest.getOrderDeliveryRequest().getMemo());
+        deliveryRepository.save(delivery);
+
+        Payment payment = Payment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+        paymentRepository.save(payment);
+
+        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
+        Order orderSave = orderRepository.save(order);
+        orderSave.changePayment(payment);
+
+        //when
+        Order orderDetail = orderService.findOrderDetail(orderSave.getId());
+
+        //then
+        assertThat(orderDetail.getId()).isEqualTo(order.getId());
+        assertThat(orderDetail.getStatus()).isEqualTo(order.getStatus());
+        assertThat(orderDetail.getPayment().getPrice()).isEqualTo(payment.getPrice());
+        assertThat(orderDetail.getMemo()).isEqualTo(order.getMemo());
+        assertThat(orderDetail.getCreateDate()).isEqualTo(order.getCreateDate());
+        assertThat(orderDetail.getOrderItems()).isSameAs(order.getOrderItems());
+        assertThat(orderDetail.getPayment().getStatus()).isEqualTo(order.getPayment().getStatus());
+        assertThat(orderDetail.getDelivery().getId()).isEqualTo(order.getDelivery().getId());
+        assertThat(orderDetail.getDelivery().getStatus()).isEqualTo(order.getDelivery().getStatus());
+        assertThat(orderDetail.getDelivery().getReceiver()).isEqualTo(order.getDelivery().getReceiver());
+        assertThat(orderDetail.getDelivery().getPhoneNumber()).isEqualTo(order.getDelivery().getPhoneNumber());
+        assertThat(orderDetail.getDelivery().getAddress()).isEqualTo(order.getDelivery().getAddress());
+        assertThat(orderDetail.getDelivery().getMemo()).isEqualTo(order.getDelivery().getMemo());
     }
 }
