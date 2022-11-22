@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static com.safeking.shop.domain.order.web.OrderConst.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
+import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
 import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
@@ -42,7 +43,7 @@ public class OrderController {
     public ResponseEntity<OrderBasicResponse> order(@Valid @RequestBody OrderRequest orderRequest, HttpServletRequest request) {
 
         //회원 검증
-        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
 
         //주문
         orderService.order(member, orderRequest);

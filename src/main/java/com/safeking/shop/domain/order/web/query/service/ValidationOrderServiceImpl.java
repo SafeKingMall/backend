@@ -4,6 +4,7 @@ import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,10 @@ public class ValidationOrderServiceImpl implements ValidationOrderService {
     /**
      * 토큰 검증, 회원 검증
      */
-    @Override
-    public Member validationMember(String username) {
+    public Member validationMember(String token) {
+
+        String username = TokenUtils.verify(token);
+
         Optional<Member> findMemberOptional = memberRepository.findByUsername(username);
         Member findMember = findMemberOptional.orElseThrow(() -> new OrderException(OrderConst.ORDER_MEMBER_NONE));
 

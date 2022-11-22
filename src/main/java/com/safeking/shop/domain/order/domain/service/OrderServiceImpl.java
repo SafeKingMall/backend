@@ -114,15 +114,4 @@ public class OrderServiceImpl implements OrderService {
 
         return findOrder.getId();
     }
-
-
-    /**
-     * 토큰 검증, 회원 검증
-     */
-    private Member findMember(String username) {
-        Optional<Member> findMemberOptional = memberRepository.findByUsername(username);
-        Member findMember = findMemberOptional.orElseThrow(() -> new OrderException("주문서비스 -> 회원이 없습니다."));
-
-        return findMember;
-    }
 }
