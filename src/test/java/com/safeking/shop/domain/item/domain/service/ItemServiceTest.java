@@ -52,7 +52,7 @@ class ItemServiceTest {
                 .name("안전모")
                 .quantity(100)
                 .description("설명1")
-                .admin(null)
+                .adminId(null)
                 .categories(categories)
                 .price(1000)
                 .build();
@@ -88,7 +88,7 @@ class ItemServiceTest {
                 .name("안전모")
                 .quantity(100)
                 .description("설명2")
-                .admin(null)
+                .adminId(null)
                 .categories(categories)
                 .price(1000)
                 .build();

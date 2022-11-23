@@ -10,6 +10,8 @@ import com.safeking.shop.domain.item.domain.service.servicedto.category.Category
 import com.safeking.shop.domain.item.domain.service.servicedto.category.CategorySaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
+import com.safeking.shop.global.exception.EmailDuplicateException;
+import com.safeking.shop.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class ItemService {
 
     public Long save(ItemSaveDto itemSaveDto){
 
-        Item item = Item.createItem(itemSaveDto.getName(), itemSaveDto.getQuantity(), itemSaveDto.getDescription(), itemSaveDto.getPrice(), itemSaveDto.getAdmin());
+        Item item = Item.createItem(itemSaveDto.getName(), itemSaveDto.getQuantity(), itemSaveDto.getDescription(), itemSaveDto.getPrice(), itemSaveDto.getAdminId());
 
         itemRepository.save(item);
 
@@ -47,7 +49,7 @@ public class ItemService {
         //기존에 item이 있다고 가정
         Item item = itemRepository.findById(itemUpdateDto.getId()).orElseThrow();
 
-        item.update(itemUpdateDto.getName(), itemUpdateDto.getQuantity(), itemUpdateDto.getPrice(), itemUpdateDto.getDescription());
+        item.update(itemUpdateDto.getName(), itemUpdateDto.getQuantity(), itemUpdateDto.getPrice(), itemUpdateDto.getDescription(), itemUpdateDto.getAdminId());
 
         List<Long> categories = itemUpdateDto.getCategories();
 
@@ -83,6 +85,9 @@ public class ItemService {
         }
     }
 
+    public Item findById(Long id){
+        return itemRepository.findById(id).orElseThrow();
+    }
 
 
 }
