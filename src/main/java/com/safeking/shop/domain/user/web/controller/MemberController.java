@@ -1,19 +1,20 @@
 package com.safeking.shop.domain.user.web.controller;
 
-import com.auth0.jwt.JWT;
+import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
-import com.safeking.shop.domain.user.domain.service.dto.GeneralSingUpDto;
-import com.safeking.shop.domain.user.web.request.idDuplication.IdDuplicationRequest;
-import com.safeking.shop.domain.user.web.request.signup.SignUpRequest;
-import com.safeking.shop.domain.user.web.response.idDuplication.IdDuplicationResponse;
-import com.safeking.shop.domain.user.web.response.oauth.OauthResponse;
-import com.safeking.shop.domain.user.web.response.signup.Data;
-import com.safeking.shop.domain.user.web.response.signup.SignUpResponse;
+import com.safeking.shop.domain.user.web.query.service.MemberQueryService;
+import com.safeking.shop.domain.user.web.request.*;
+import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
+import com.safeking.shop.domain.user.web.request.signuprequest.AuthenticationInfo;
+import com.safeking.shop.domain.user.web.request.signuprequest.CriticalItems;
+import com.safeking.shop.domain.user.web.request.signuprequest.MemberInfo;
+import com.safeking.shop.domain.user.web.response.MemberDetails;
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
+import com.safeking.shop.global.exception.MemberNotFoundException;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.Tokens;
 import com.safeking.shop.global.oauth.provider.GoogleUserInfo;
@@ -30,6 +31,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
@@ -42,49 +44,86 @@ import static com.safeking.shop.global.jwt.TokenUtils.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder encoder;
     private final TokenUtils tokenUtils;
 
-    @PostMapping("/signup")
-    public ResponseEntity<SignUpResponse> signUp(@RequestBody @Validated SignUpRequest signUpRequest){
+    private final SMSService smsService;
 
-        GeneralSingUpDto generalSingUpDto = signUpRequest.toServiceDto();
-        memberService.join(generalSingUpDto);
+    @PostMapping("/signup/criticalItems")
+    public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
 
-        SignUpResponse signUpResponse = SignUpResponse.builder()
-                .code(200)
-                .message(SignUpResponse.SUCCESS_MESSAGE)
-                .data(new Data(Data.message))
-                .error(new Error())
-                .build();
+        return memberService.addCriticalItems(criticalItems.toServiceDto());
+    }
 
-        return ResponseEntity.ok().body(signUpResponse);
+    @PostMapping("/signup/authenticationInfo/{memberId}")
+    public Long signUpAuthenticationInfo(@PathVariable Long memberId,@RequestBody @Validated AuthenticationInfo authenticationInfo) {
+
+        return memberService.addAuthenticationInfo(memberId,authenticationInfo.toServiceDto());
+
+    }
+    @PostMapping("/signup/memberInfo/{memberId}")
+    public Long  signUpMemberInfo(@PathVariable Long memberId, @RequestBody @Validated MemberInfo memberInfo) {
+
+        return memberService.addMemberInfo(memberId,memberInfo.toServiceDto());
+
+    }
+
+    @PostMapping("/signup/agreementInfo/{memberId}")
+    public Long  signUpAgreementInfo(@PathVariable Long memberId, @RequestBody @Validated AgreementInfo agreementInfo) {
+
+        Boolean agreement=null;
+
+        agreement= agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
+
+        return memberService.changeMemoryToDB(memberId,agreement);
+
+    }
+
+
+    @GetMapping("/user/details")
+    public MemberDetails showMemberDetails(HttpServletRequest request){
+        return memberQueryService.showMemberDetails(TokenUtils.getUsername(request));
+    }
+
+    @PutMapping("/user/update")
+    public void update(@RequestBody @Validated UpdateRequest updateRequest, HttpServletRequest request){
+        memberService.updateMemberInfo(TokenUtils.getUsername(request),updateRequest.toServiceDto());
+    }
+
+    @PatchMapping("/user/update/password")
+    public void updatePassword(@RequestBody @Validated UpdatePWRequest updatePWRequest, HttpServletRequest request){
+        memberService.updatePassword(TokenUtils.getUsername(request),updatePWRequest.getPassword());
     }
 
     @PostMapping("/id/duplication")
-    public ResponseEntity<IdDuplicationResponse> idDuplicationCheck(@RequestBody @Validated IdDuplicationRequest idDuplicationRequest){
+    public boolean idDuplicationCheck(@RequestBody @Validated IdDuplicationRequest idDuplicationRequest) {
 
-        boolean idAvailable=true;
-        String message=IdDuplicationResponse.SUCCESS_MESSAGE;
+        return memberService.idDuplicationCheck(idDuplicationRequest.getUsername());
+    }
 
-        if(!memberService.idDuplicationCheck(idDuplicationRequest.getUsername())){
-            idAvailable=false;
-            message=IdDuplicationResponse.FAIL_MESSAGE;
+    @PostMapping("/id/find")
+    public ResponseEntity idFind(@RequestBody @Validated IdFindRequest request){
+        if(smsService.checkCode(request.getCode(),request.getClientPhoneNumber())){
+
+            return new ResponseEntity<>(memberRepository.findByPhoneNumber(request.getClientPhoneNumber())
+                    .orElseThrow(()->new MemberNotFoundException("등록된 휴대번호와 일치하는 회원이 없습니다."))
+                    .getUsername(),HttpStatus.OK);
         }
 
-        return ResponseEntity.ok()
-                .body(IdDuplicationResponse.builder()
-                        .code(200)
-                        .message(message)
-                        .data(new com.safeking.shop.domain.user.web.response.idDuplication.Data(idAvailable))
-                        .error(new Error())
-                        .build());
+        return ResponseEntity.badRequest().body(new Error(1200,"코드가 일치하지 않습니다."));
 
     }
 
+    @PostMapping("/temporaryPassword")
+    public String  sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest){
+        return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
+    }
+
+
     @PostMapping("/oauth/{registrationId}")
-    public ResponseEntity<OauthResponse> jwtCreate(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {
+    public void socialLogin(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {
 
         Oauth2UserInfo oauth2UserInfo = null;
 
@@ -102,7 +141,6 @@ public class MemberController {
 
         String provider = oauth2UserInfo.getProvider();
         String providerId = oauth2UserInfo.getProviderId();
-        String name = oauth2UserInfo.getName();
         String username = provider + "_" + providerId;
         String password = encoder.encode("safeking");
         String email = oauth2UserInfo.getEmail();//구글이 준 email
@@ -112,8 +150,7 @@ public class MemberController {
         if (oauthMember == null) {
             oauthMember = OauthMember.builder()
                     .username(username)
-                    .password(password)
-                    .name(name)
+                    .password(encoder.encode(password))
                     .email(email)
                     .roles(role)
                     .provider(provider)
@@ -134,13 +171,6 @@ public class MemberController {
             response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
             response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
         }
-
-        return new ResponseEntity<>(OauthResponse.builder()
-                .code(200)
-                .message(OauthResponse.SUCCESS_MESSAGE)
-                .data(new Data(Data.message))
-                .error(new Error())
-                .build(), HttpStatus.OK);
     }
 
     private Authentication createAuthentication(String username) {
@@ -149,7 +179,8 @@ public class MemberController {
         PrincipalDetails principalDetails = new PrincipalDetails(member);
 
         Authentication authentication
-                = new UsernamePasswordAuthenticationToken(principalDetails, null,principalDetails.getAuthorities());
+                = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }

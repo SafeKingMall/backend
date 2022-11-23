@@ -1,5 +1,6 @@
 package com.safeking.shop.domain.user.domain.entity.member;
 
+import com.safeking.shop.domain.common.BaseEntity;
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.user.domain.entity.Address;
 import lombok.*;
@@ -15,21 +16,31 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
-public class Member extends BaseTimeEntity {
+public abstract class Member extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
     private String name;
+    private String birth;
     private String username;
     private String password;
     private String email;
     private String roles; //ROLE_USER
 
     private String phoneNumber;
+    private String companyName;
+    private String companyRegistrationNumber;
+    private String corporateRegistrationNumber;
+    private String representativeName;
+
     @Embedded
     private Address address;
+
+    private String contact;
+
+    private Boolean agreement;
 
     public List<String> getRoleList(){
         if(this.roles.length()>0){
@@ -38,11 +49,73 @@ public class Member extends BaseTimeEntity {
         return new ArrayList<>();
     }
 
-    public void updateMemberInfo(String password,String email){
+    public void changeId(Long id) {
+        this.id = id;
+    }
 
+    public void updateInfo(String name, String birth, String representativeName, String phoneNumber, String companyRegistrationNumber, String corporateRegistrationNumber, Address address){
+        this.name = name;
+        this.username = username;
+        this.birth = birth;
+        this.representativeName = representativeName;
+        this.phoneNumber = phoneNumber;
+        this.companyRegistrationNumber = companyRegistrationNumber;
+        this.corporateRegistrationNumber = corporateRegistrationNumber;
+        this.address = address;
+    }
+
+    public void updatePassword(String password){
         this.password=password;
-        this.email=email;
+    }
+    public void addAuthenticationInfo(String name,String birth,String phoneNumber){
 
+        this.name=name;
+        this.birth=birth;
+        this.phoneNumber=phoneNumber;
+
+    }
+
+    public void addMemberInfo(String companyName,String companyRegistrationNumber,String corporateRegistrationNumber,String representativeName,Address address,String contact){
+
+        this.companyName=companyName;
+        this.companyRegistrationNumber=companyRegistrationNumber;
+        this.corporateRegistrationNumber=corporateRegistrationNumber;
+        this.representativeName=representativeName;
+        this.address=address;
+        this.contact=contact;
+
+    }
+
+    public boolean isCheckedItem(){
+        return getPrerequisiteItem().stream().allMatch(item->item!=null);
+    }
+
+    private List<Object> getPrerequisiteItem() {
+        List<Object> prerequisiteItem =new ArrayList<>();
+
+        prerequisiteItem.add(this.name);
+        prerequisiteItem.add(this.birth);
+        prerequisiteItem.add(this.username);
+        prerequisiteItem.add(this.password);
+        prerequisiteItem.add(this.email);
+        prerequisiteItem.add(this.roles);
+        prerequisiteItem.add(this.phoneNumber);
+        prerequisiteItem.add(this.companyName);
+        prerequisiteItem.add(this.companyRegistrationNumber);
+        prerequisiteItem.add(this.representativeName);
+        prerequisiteItem.add(this.address);
+        prerequisiteItem.add(this.agreement);
+
+        return prerequisiteItem;
+    }
+
+    public void addAgreement(Boolean agreement){
+        this.agreement=agreement;
+    }
+
+
+    public void changePassword(String password){
+        this.password=password;
     }
 
 }
