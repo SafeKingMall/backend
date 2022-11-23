@@ -13,8 +13,8 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 public class Address {
 
-    private String city;
-    private String street;
+    private String basicAddress;
+    private String detailedAddress;
     private String zipcode;
 
 }
