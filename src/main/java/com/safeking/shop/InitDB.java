@@ -1,5 +1,6 @@
 package com.safeking.shop;
 
+import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -34,13 +35,25 @@ public class InitDB {
                     .password(encoder.encode("1234"))
                     .roles("ROLE_ADMIN").build();
 
-            Member user = GeneralMember.builder()
-                    .username("user")
-                    .password(encoder.encode("1234"))
-                    .roles("ROLE_USER").build();
+            for (int i = 1; i <=10; i++) {
+                Member user = GeneralMember.builder()
+                        .username("user"+i)
+                        .password(encoder.encode("1234"))
+                        .roles("ROLE_USER").build();
+                em.persist(user);
+            }
+
+
+            for (int i = 1; i <=10 ; i++) {
+                Item item = new Item();
+                item.setPrice(100);
+                item.setName("item"+i);
+                item.setQuantity(i);
+                em.persist(item);
+            }
 
             em.persist(admin);
-            em.persist(user);
+
         }
     }
 

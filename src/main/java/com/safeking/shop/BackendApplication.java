@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import javax.persistence.EntityManager;
 @EnableBatchProcessing
 @EnableScheduling
-@EnableJpaAuditing
 @SpringBootApplication
 public class BackendApplication {
 

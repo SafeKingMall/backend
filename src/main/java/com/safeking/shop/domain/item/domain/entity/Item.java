@@ -5,13 +5,14 @@ import com.safeking.shop.domain.admin.domain.entity.Admin;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity @Getter@Setter
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Item extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

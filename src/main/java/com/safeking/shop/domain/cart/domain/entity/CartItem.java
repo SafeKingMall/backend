@@ -24,4 +24,15 @@ public class CartItem extends BaseTimeEntity {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    private int count;
+
+    public CartItem(Item item, Cart cart,int count){
+        this.item=item;
+        this.cart=cart;
+        this.count=count;
+    }
+
+    public void changeCount(int count) {
+        this.count = count;
+    }
 }
