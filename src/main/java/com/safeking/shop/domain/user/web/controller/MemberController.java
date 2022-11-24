@@ -133,7 +133,7 @@ public class MemberController {
     }
 
     @GetMapping("/admin/member/list")
-    public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 5)Pageable pageable){
+    public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 15)Pageable pageable){
 
         return memberQueryRepository.searchAllCondition(name,pageable);
     }
