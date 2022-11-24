@@ -112,7 +112,7 @@ public class MemberController {
                     .getUsername(),HttpStatus.OK);
         }
 
-        return ResponseEntity.badRequest().body(new Error(1200,"코드가 일치하지 않습니다."));
+        return ResponseEntity.badRequest().body(new Error(1333,"코드가 일치하지 않습니다."));
 
     }
 

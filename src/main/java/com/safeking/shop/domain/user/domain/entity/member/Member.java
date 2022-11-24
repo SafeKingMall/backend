@@ -1,12 +1,15 @@
 package com.safeking.shop.domain.user.domain.entity.member;
 
 import com.safeking.shop.domain.common.BaseEntity;
+import com.safeking.shop.domain.common.BaseMemberEntity;
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.user.domain.entity.Address;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
-public abstract class Member extends BaseTimeEntity {
+public abstract class Member extends BaseMemberEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -42,6 +45,8 @@ public abstract class Member extends BaseTimeEntity {
 
     private Boolean agreement;
 
+    private Boolean humanAccount;
+
     public List<String> getRoleList(){
         if(this.roles.length()>0){
             return Arrays.asList(this.roles.split(","));
@@ -55,7 +60,6 @@ public abstract class Member extends BaseTimeEntity {
 
     public void updateInfo(String name, String birth, String representativeName, String phoneNumber, String companyRegistrationNumber, String corporateRegistrationNumber, Address address){
         this.name = name;
-        this.username = username;
         this.birth = birth;
         this.representativeName = representativeName;
         this.phoneNumber = phoneNumber;
@@ -117,5 +121,13 @@ public abstract class Member extends BaseTimeEntity {
     public void changePassword(String password){
         this.password=password;
     }
+    public void changeAccounts(){
+        this.humanAccount= !this.humanAccount;
+    }
 
+    public void convertHumanAccount(){
+        Duration between = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
+
+        if(between.getSeconds()>=10l)this.humanAccount=false;
+    }
 }

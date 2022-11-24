@@ -32,15 +32,34 @@ public class InitDB {
             Member admin = GeneralMember.builder()
                     .username("admin")
                     .password(encoder.encode("1234"))
+                    .name("admin")
+                    .humanAccount(true)
                     .roles("ROLE_ADMIN").build();
+            admin.addLastLoginTime();
 
+            for (int i = 1; i <=30 ; i++) {
+                Member user = GeneralMember.builder()
+                        .username("user"+i)
+                        .password(encoder.encode("1234"))
+                        .name("user"+i)
+                        .humanAccount(true)
+                        .roles("ROLE_USER").build();
+                user.addLastLoginTime();
+                em.persist(user);
+
+            }
             Member user = GeneralMember.builder()
-                    .username("user")
+                    .username("human")
                     .password(encoder.encode("1234"))
+                    .name("human")
+                    .humanAccount(false)
                     .roles("ROLE_USER").build();
+            user.addLastLoginTime();
+            em.persist(user);
+
+
 
             em.persist(admin);
-            em.persist(user);
         }
     }
 

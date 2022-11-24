@@ -34,9 +34,11 @@ public class MemberService {
                 .username(criticalItemsDto.getUsername())
                 .password(encoder.encode(criticalItemsDto.getPassword()))
                 .email(criticalItemsDto.getEmail())
+                .humanAccount(false)
                 .roles("ROLE_USER")
                 .build();
 
+        generalMember.addLastLoginTime();
         memoryMemberRepository.save(generalMember);
 
         return generalMember.getId();
