@@ -1,6 +1,7 @@
 package com.safeking.shop.domain.user.domain.service;
 
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
+import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
@@ -34,7 +35,8 @@ public class MemberService {
                 .username(criticalItemsDto.getUsername())
                 .password(encoder.encode(criticalItemsDto.getPassword()))
                 .email(criticalItemsDto.getEmail())
-                .humanAccount(false)
+                .accountNonLocked(true)
+                .status(MemberStatus.COMMON)
                 .roles("ROLE_USER")
                 .build();
 
@@ -101,9 +103,9 @@ public class MemberService {
                 .updatePassword(encoder.encode(password));
     }
 
-    public void convertHumanAccount(Long id){
+    public void revertCommonAccounts(Long id){
 
-        memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("회원을 찾을 수가 없습니다.")).convertHumanAccount();
+        memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("회원을 찾을 수가 없습니다.")).revertCommonAccounts();
     }
 
 

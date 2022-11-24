@@ -4,6 +4,7 @@ import com.safeking.shop.domain.common.BaseEntity;
 import com.safeking.shop.domain.common.BaseMemberEntity;
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.user.domain.entity.Address;
+import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -45,7 +46,10 @@ public abstract class Member extends BaseMemberEntity {
 
     private Boolean agreement;
 
-    private Boolean humanAccount;
+    private Boolean accountNonLocked;
+
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status;
 
     public List<String> getRoleList(){
         if(this.roles.length()>0){
@@ -121,13 +125,18 @@ public abstract class Member extends BaseMemberEntity {
     public void changePassword(String password){
         this.password=password;
     }
-    public void changeAccounts(){
-        this.humanAccount= !this.humanAccount;
+    public void revertCommonAccounts(){
+
+        this.accountNonLocked= !this.accountNonLocked;
+        this.status=MemberStatus.COMMON;
     }
 
     public void convertHumanAccount(){
         Duration between = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
 
-        if(between.getSeconds()>=10l)this.humanAccount=false;
+        if(between.getSeconds()>=10l){
+            this.accountNonLocked=false;
+            this.status=MemberStatus.HUMAN;
+        }
     }
 }

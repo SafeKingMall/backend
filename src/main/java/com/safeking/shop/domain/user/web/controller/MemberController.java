@@ -123,7 +123,7 @@ public class MemberController {
 
     @GetMapping("admin/humanAccount/{memberId}")
     public void convertHumanAccount(@PathVariable Long memberId){
-        memberService.convertHumanAccount(memberId);
+        memberService.revertCommonAccounts(memberId);
     }
 
     @PostMapping("/oauth/{registrationId}")
