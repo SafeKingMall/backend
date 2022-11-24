@@ -121,6 +121,10 @@ public class MemberController {
         return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
     }
 
+    @GetMapping("admin/humanAccount/{memberId}")
+    public void convertHumanAccount(@PathVariable Long memberId){
+        memberService.convertHumanAccount(memberId);
+    }
 
     @PostMapping("/oauth/{registrationId}")
     public void socialLogin(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {

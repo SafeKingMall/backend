@@ -92,7 +92,7 @@ public class MemberService {
         memberRepository.findByUsername(username)
                 .orElseThrow(()->new MemberNotFoundException("member not found"))
                 .updateInfo(memberUpdateDto.getName(),memberUpdateDto.getBirth(),memberUpdateDto.getRepresentativeName(),memberUpdateDto.getPhoneNumber()
-                ,memberUpdateDto.getCompanyRegistrationNumber(),memberUpdateDto.getCorporateRegistrationNumber(),memberUpdateDto.getAddress());
+                        ,memberUpdateDto.getCompanyRegistrationNumber(),memberUpdateDto.getCorporateRegistrationNumber(),memberUpdateDto.getAddress());
     }
 
     public void updatePassword(String username,String password){
@@ -101,10 +101,9 @@ public class MemberService {
                 .updatePassword(encoder.encode(password));
     }
 
-    public Long getIdFromUsername(String username){
-        return memberRepository.findByUsername(username)
-                .orElseThrow(()->new UsernameNotFoundException("회원을 찾을 수가 없습니다."))
-                .getId();
+    public void convertHumanAccount(Long id){
+
+        memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("회원을 찾을 수가 없습니다.")).convertHumanAccount();
     }
 
 
