@@ -23,6 +23,7 @@ import com.safeking.shop.domain.order.web.dto.request.order.OrderItemRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoDeliveryRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoOrderRequest;
+import com.safeking.shop.domain.order.web.query.dto.OrderSearchCondition;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
@@ -32,6 +33,9 @@ import lombok.ToString;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -350,7 +354,7 @@ class OrderServiceImplTest {
         orderRepository.save(order);
 
         //when
-        Order findOrder = orderService.findOrder(order.getId());
+        Order findOrder = orderService.searchOrder(order.getId());
 
         //then
         assertThat(findOrder.getId()).isEqualTo(order.getId());
@@ -438,7 +442,7 @@ class OrderServiceImplTest {
         orderSave.changePayment(payment);
 
         //when
-        Order orderDetail = orderService.findOrderDetail(orderSave.getId());
+        Order orderDetail = orderService.searchOrderDetail(orderSave.getId());
 
         //then
         assertThat(orderDetail.getId()).isEqualTo(order.getId());
@@ -454,5 +458,72 @@ class OrderServiceImplTest {
         assertThat(orderDetail.getDelivery().getPhoneNumber()).isEqualTo(order.getDelivery().getPhoneNumber());
         assertThat(orderDetail.getDelivery().getAddress()).isEqualTo(order.getDelivery().getAddress());
         assertThat(orderDetail.getDelivery().getMemo()).isEqualTo(order.getDelivery().getMemo());
+    }
+
+    @Test
+    @Transactional
+    void 주문_다건_조회() throws Exception {
+        //given
+        Member generalMember = GeneralMember.builder()
+                .name("아이유")
+                .username("dlwlrma")
+                .password("1234")
+                .build();
+        memberRepository.save(generalMember);
+
+        Admin admin = new Admin("admin", "1");
+        adminRepository.save(admin);
+
+        Item item1 = Item.createItem("안전모",
+                100,
+                "안전모 입니다.",
+                1000,
+                admin);
+        Item item2 = Item.createItem("안전화",
+                200,
+                "안전화 입니다.",
+                2000,
+                admin);
+        itemRepository.save(item1);
+        itemRepository.save(item2);
+        OrderItem orderItem1 = OrderItem.createOrderItem(item1, 1000, 1);
+        OrderItem orderItem2 = OrderItem.createOrderItem(item2, 2000, 1);
+
+        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
+        orderDeliveryRequest.setMemo("문앞에 놓아주세요.");
+
+        OrderRequest orderRequest = new OrderRequest("아이유",
+                "01012341234",
+                "서울시 여의도",
+                "납기일 준수해주세요.",
+                List.of(new OrderItemRequest(1L, 1), new OrderItemRequest(2L, 1 )),
+                orderDeliveryRequest);
+
+        //배송 완료
+        Delivery delivery = Delivery.createDelivery(
+                orderRequest.getReceiver(),
+                orderRequest.getPhoneNumber(),
+                orderRequest.getAddress(),
+                DeliveryStatus.PREPARATION,
+                orderRequest.getOrderDeliveryRequest().getMemo());
+        deliveryRepository.save(delivery);
+
+        Payment payment = Payment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+        paymentRepository.save(payment);
+
+        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
+        Order orderSave = orderRepository.save(order);
+        orderSave.changePayment(payment);
+
+        //when
+        Pageable pageable = PageRequest.of(0, 5);
+        OrderSearchCondition condition = OrderSearchCondition.builder()
+                .fromDate("2022-12-23")
+                .toDate("2022-12-24")
+                .build();
+        condition.changeMemberId(order.getId());
+
+        Page<Order> orders = orderService.searchOrders(pageable, condition);
+        //then
     }
 }

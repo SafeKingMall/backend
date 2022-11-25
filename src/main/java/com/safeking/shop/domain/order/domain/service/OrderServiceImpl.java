@@ -12,9 +12,12 @@ import com.safeking.shop.domain.order.web.dto.request.cancel.CancelRequest;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelOrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoRequest;
+import com.safeking.shop.domain.order.web.query.dto.OrderSearchCondition;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +33,6 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderServiceSubMethod orderServiceSubMethod;
-    private final MemberRepository memberRepository;
 
     /**
      * 주문
@@ -60,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
      * 주문(배송) 정보 조회
      */
     @Override
-    public Order findOrder(Long id) {
+    public Order searchOrder(Long id) {
         Optional<Order> orderOptional = orderRepository.findOrder(id);
         Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_FIND_FAIL));
 
@@ -71,11 +73,19 @@ public class OrderServiceImpl implements OrderService {
      * 주문 상세 조회
      */
     @Override
-    public Order findOrderDetail(Long id) {
+    public Order searchOrderDetail(Long id) {
         Optional<Order> findOrderDetailOptional = orderRepository.findOrderDetail(id);
         Order findOrder = findOrderDetailOptional.orElseThrow(() -> new OrderException(ORDER_DETAIL_FIND_FAIL));
 
         return findOrder;
+    }
+
+    /**
+     * 주문 다건 조회
+     */
+    @Override
+    public Page<Order> searchOrders(Pageable pageable, OrderSearchCondition condition) {
+        return orderRepository.findOrders(pageable, condition);
     }
 
     /**

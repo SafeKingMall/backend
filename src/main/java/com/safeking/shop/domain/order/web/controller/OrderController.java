@@ -91,7 +91,7 @@ public class OrderController {
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         //주문(배송) 정보 조회(단건)
-        Order findOrder = orderService.findOrder(orderId);
+        Order findOrder = orderService.searchOrder(orderId);
 
         return new ResponseEntity<>(getOrderResponse(findOrder), OK);
     }
@@ -129,7 +129,7 @@ public class OrderController {
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 주문 상세 조회
-        Order findOrderDetail = orderService.findOrderDetail(orderId);
+        Order findOrderDetail = orderService.searchOrderDetail(orderId);
 
         return new ResponseEntity<>(getOrderDetailResponse(findOrderDetail), OK);
     }
