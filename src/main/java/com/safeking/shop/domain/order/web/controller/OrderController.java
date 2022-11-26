@@ -5,22 +5,31 @@ import com.safeking.shop.domain.order.domain.service.OrderService;
 import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoRequest;
+import com.safeking.shop.domain.order.web.dto.request.search.OrderSearchCondition;
 import com.safeking.shop.domain.order.web.dto.response.OrderBasicResponse;
 import com.safeking.shop.domain.order.web.dto.response.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.order.OrderDeliveryResponse;
 import com.safeking.shop.domain.order.web.dto.response.order.OrderOrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.orderdetail.*;
+import com.safeking.shop.domain.order.web.dto.response.search.OrderListOrderItemResponse;
+import com.safeking.shop.domain.order.web.dto.response.search.OrderListOrdersResponse;
+import com.safeking.shop.domain.order.web.dto.response.search.OrderListPaymentResponse;
+import com.safeking.shop.domain.order.web.dto.response.search.OrderListResponse;
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.safeking.shop.domain.order.web.OrderConst.*;
@@ -43,7 +52,7 @@ public class OrderController {
     public ResponseEntity<OrderBasicResponse> order(@Valid @RequestBody OrderRequest orderRequest, HttpServletRequest request) {
 
         //회원 검증
-        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         //주문
         orderService.order(member, orderRequest);
@@ -85,7 +94,7 @@ public class OrderController {
      * 주문(배송) 정보 조회
      */
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<OrderResponse> find(@PathVariable Long orderId, HttpServletRequest request) {
+    public ResponseEntity<OrderResponse> searchOrder(@PathVariable Long orderId, HttpServletRequest request) {
 
         //회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
@@ -124,7 +133,7 @@ public class OrderController {
      * 주문 상세 조회
      */
     @GetMapping("/order/detail/{orderId}")
-    public ResponseEntity<OrderDetailResponse> findDetail(@PathVariable Long orderId, HttpServletRequest request) {
+    public ResponseEntity<OrderDetailResponse> searchOrderDetail(@PathVariable Long orderId, HttpServletRequest request) {
         // 회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
@@ -176,5 +185,50 @@ public class OrderController {
                 .build();
 
         return orderDetailResponse;
+    }
+
+    @GetMapping("/order/list")
+    public ResponseEntity<OrderListResponse> searchOrderList(OrderSearchCondition condition, Pageable pageable, HttpServletRequest request) {
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+
+        Page<Order> ordersPage = orderService.searchOrders(pageable, condition, member.getId());
+        List<Order> findOrders = ordersPage.getContent();
+
+        OrderListResponse orderListResponse = getOrderListResponse(findOrders);
+
+        return new ResponseEntity<>(orderListResponse, OK);
+    }
+
+    private static OrderListResponse getOrderListResponse(List<Order> findOrders) {
+
+        List<OrderListOrdersResponse> orders = new ArrayList<>();
+
+        for(Order o : findOrders) {
+            OrderListPaymentResponse payment = OrderListPaymentResponse.builder()
+                    .status(o.getPayment().getStatus().getDescription())
+                    .build();
+
+            OrderListOrderItemResponse orderItem = OrderListOrderItemResponse.builder()
+                    .id(o.getOrderItems().get(0).getItem().getId())
+                    .name(o.getOrderItems().get(0).getItem().getName())
+                    .build();
+
+            OrderListOrdersResponse order = OrderListOrdersResponse.builder()
+                    .id(o.getId())
+                    .status(o.getStatus().getDescription())
+                    .price(o.getPayment().getPrice())
+                    .date(o.getCreateDate())
+                    .count(o.getOrderItems().size())
+                    .orderItem(orderItem)
+                    .payment(payment)
+                    .build();
+
+            orders.add(order);
+        }
+
+        return OrderListResponse.builder()
+                .message(ORDER_LIST_FIND_SUCCESS)
+                .orders(orders)
+                .build();
     }
 }

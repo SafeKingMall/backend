@@ -11,7 +11,6 @@ import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.order.domain.entity.Payment;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
-import com.safeking.shop.domain.order.domain.entity.status.PaymentStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
@@ -23,7 +22,8 @@ import com.safeking.shop.domain.order.web.dto.request.order.OrderItemRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoDeliveryRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoOrderRequest;
-import com.safeking.shop.domain.order.web.query.dto.OrderSearchCondition;
+import com.safeking.shop.domain.order.web.dto.request.search.OrderSearchCondition;
+import com.safeking.shop.domain.user.domain.entity.Address;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
@@ -36,10 +36,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -389,6 +391,10 @@ class OrderServiceImplTest {
     @Test
     @Transactional
     void 주문_상세_조회() throws Exception {
+
+        em.flush();
+        em.clear();
+
         //given
         Member generalMember = GeneralMember.builder()
                 .name("아이유")
@@ -462,14 +468,23 @@ class OrderServiceImplTest {
 
     @Test
     @Transactional
+    @Commit
     void 주문_다건_조회() throws Exception {
+
+        em.flush();
+        em.clear();
+
         //given
         Member generalMember = GeneralMember.builder()
-                .name("아이유")
-                .username("dlwlrma")
-                .password("1234")
+                .name("kim")
+                .username("abc12344")
+                .password("$2a$10$x2bbVjn7zz8C18sI9xCnJuDqkRbVIYQRqG.LVNNGbiEM20Rz.DYhe")
+                .email("abc@gamil.com")
+                .phoneNumber("01011111111")
+                .address(new Address("서울시", "마포대로", "303동 301호"))
+                .roles("ROLE_USER")
                 .build();
-        memberRepository.save(generalMember);
+        Member saveMember = memberRepository.save(generalMember);
 
         Admin admin = new Admin("admin", "1");
         adminRepository.save(admin);
@@ -518,12 +533,18 @@ class OrderServiceImplTest {
         //when
         Pageable pageable = PageRequest.of(0, 5);
         OrderSearchCondition condition = OrderSearchCondition.builder()
-                .fromDate("2022-12-23")
-                .toDate("2022-12-24")
+                .fromDate(LocalDate.now().toString())
+                .toDate(LocalDate.now().plusDays(1).toString())
                 .build();
-        condition.changeMemberId(order.getId());
 
-        Page<Order> orders = orderService.searchOrders(pageable, condition);
+        Page<Order> orders = orderService.searchOrders(pageable, condition, saveMember.getId());
+
         //then
+        assertThat(orders.getContent().get(0).getMember()).isSameAs(generalMember);
+        assertThat(orders.getContent().get(0).getOrderItems().get(0).getItem().getName()).isEqualTo("안전모");
+        assertThat(orders.getContent().get(0).getOrderItems().get(1).getItem().getName()).isEqualTo("안전화");
+        assertThat(orders.getContent().get(0)).isSameAs(order);
+        assertThat(orders.getContent().get(0).getPayment()).isSameAs(payment);
+
     }
 }

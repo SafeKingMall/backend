@@ -17,4 +17,6 @@ public class OrderConst {
     public static final String ORDER_FIND_FAIL = "주문(배송) 정보 조회 실패";
     public static final String ORDER_DETAIL_FIND_SUCCESS = "주문 상세 조회 완료";
     public static final String ORDER_DETAIL_FIND_FAIL = "주문 상세 조회 실패";
+    public static final String ORDER_LIST_FIND_SUCCESS = "주문 다건 조회 성공";
+    public static final String ORDER_LIST_FIND_FAIL = "주문 상세 조회 실패";
 }

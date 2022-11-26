@@ -5,8 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.PaymentStatus;
-import com.safeking.shop.domain.order.web.query.dto.OrderSearchCondition;
-import lombok.RequiredArgsConstructor;
+import com.safeking.shop.domain.order.web.dto.request.search.OrderSearchCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.safeking.shop.domain.item.domain.entity.QItem.item;
@@ -23,8 +21,6 @@ import static com.safeking.shop.domain.order.domain.entity.QDelivery.delivery;
 import static com.safeking.shop.domain.order.domain.entity.QOrder.*;
 import static com.safeking.shop.domain.order.domain.entity.QOrderItem.orderItem;
 import static com.safeking.shop.domain.order.domain.entity.QPayment.payment;
-import static java.time.LocalDateTime.*;
-import static java.time.format.DateTimeFormatter.*;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.util.StringUtils.*;
 
@@ -40,7 +36,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public Page<Order> findOrders(Pageable pageable, OrderSearchCondition condition) {
+    public Page<Order> findOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
         List<Order> content = queryFactory
                 .select(order)
                 .from(order)
@@ -49,7 +45,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .join(order.delivery, delivery).fetchJoin()
                 .join(orderItem.item, item).fetchJoin()
                 .where(
-                        order.member.id.eq(condition.getMemberId()),
+                        order.member.id.eq(memberId),
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
@@ -63,7 +59,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .select(order.count())
                 .from(order)
                 .where(
-                        order.member.id.eq(condition.getMemberId()),
+                        order.member.id.eq(memberId),
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
@@ -88,8 +84,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     private BooleanExpression betweenDate(String fromDate, String toDate) {
 
-        LocalDateTime from;
-        LocalDateTime to;
+        //종료 주문일시만 있을 경우
+        LocalDateTime from = null;
+        LocalDateTime to = null;
 
         //검색 시작, 종료 주문일시 둘다 있을 경우
         if(hasText(fromDate) && hasText(toDate)) {
@@ -109,8 +106,17 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         }
 
         //종료 주문일시만 있을 경우
-        from = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
-        to = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
+        if(hasText(toDate)) {
+
+            from = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
+            to = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
+
+            return order.createDate.between(from, to);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        from = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 0, 0, 0);
+        to = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 23, 59, 59);
 
         return order.createDate.between(from, to);
     }

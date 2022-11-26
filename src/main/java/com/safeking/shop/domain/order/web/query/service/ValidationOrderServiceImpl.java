@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class ValidationOrderServiceImpl implements ValidationOrderService {
      */
     public Member validationMember(String token) {
 
-        String username = TokenUtils.verify(token);
+        String username = TokenUtils.verify(token.replace(BEARER, ""));
 
         Optional<Member> findMemberOptional = memberRepository.findByUsername(username);
         Member findMember = findMemberOptional.orElseThrow(() -> new OrderException(OrderConst.ORDER_MEMBER_NONE));

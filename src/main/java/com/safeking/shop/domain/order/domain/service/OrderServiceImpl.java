@@ -5,16 +5,13 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
-import com.safeking.shop.domain.order.domain.entity.Payment;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
-import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelRequest;
 import com.safeking.shop.domain.order.web.dto.request.cancel.CancelOrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoRequest;
-import com.safeking.shop.domain.order.web.query.dto.OrderSearchCondition;
+import com.safeking.shop.domain.order.web.dto.request.search.OrderSearchCondition;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -84,8 +81,8 @@ public class OrderServiceImpl implements OrderService {
      * 주문 다건 조회
      */
     @Override
-    public Page<Order> searchOrders(Pageable pageable, OrderSearchCondition condition) {
-        return orderRepository.findOrders(pageable, condition);
+    public Page<Order> searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
+        return orderRepository.findOrders(pageable, condition, memberId);
     }
 
     /**

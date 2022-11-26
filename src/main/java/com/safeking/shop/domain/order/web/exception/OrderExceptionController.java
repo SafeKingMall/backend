@@ -47,6 +47,8 @@ public class OrderExceptionController {
             return 2003;
         } else if(e.getMessage().equals(OrderConst.ORDER_MODIFY_DELIVERY_DONE)) {
             return 2004;
+        } else if(e.getMessage().equals(OrderConst.ORDER_LIST_FIND_FAIL)) {
+            return 2005;
         }
 
         return 2000;
