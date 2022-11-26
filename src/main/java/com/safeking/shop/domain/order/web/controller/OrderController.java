@@ -177,12 +177,10 @@ public class OrderController {
                 .delivery(delivery)
                 .build();
 
-        OrderDetailResponse orderDetailResponse = OrderDetailResponse.builder()
+        return OrderDetailResponse.builder()
                 .message(ORDER_DETAIL_FIND_SUCCESS)
                 .order(order)
                 .build();
-
-        return orderDetailResponse;
     }
 
     /**

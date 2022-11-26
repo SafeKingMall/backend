@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 
+import static com.safeking.shop.domain.order.web.OrderConst.*;
+import static org.springframework.http.HttpStatus.*;
+
 @Slf4j
 @RestControllerAdvice
 public class OrderExceptionController {
@@ -31,23 +34,21 @@ public class OrderExceptionController {
 
         log.error("[OrderException] ex", e);
 
-        Error error = new Error();
-        error.setCode(extractedErrorCode(e));
-        error.setMessage(OrderConst.ORDER_CANCEL_FAIL);
+        Error error = new Error(extractedErrorCode(e), ORDER_CANCEL_FAIL);
 
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(error, FORBIDDEN);
     }
 
     private int extractedErrorCode(OrderException e) {
-        if(e.getMessage().equals(OrderConst.ORDER_CANCEL_FAIL)) {
+        if(e.getMessage().equals(ORDER_CANCEL_FAIL)) {
             return 2001;
-        } else if(e.getMessage().equals(OrderConst.ORDER_CANCEL_DELIVERY_DONE)) {
+        } else if(e.getMessage().equals(ORDER_CANCEL_DELIVERY_DONE)) {
             return 2002;
-        } else if(e.getMessage().equals(OrderConst.ORDER_MODIFY_FAIL)) {
+        } else if(e.getMessage().equals(ORDER_MODIFY_FAIL)) {
             return 2003;
-        } else if(e.getMessage().equals(OrderConst.ORDER_MODIFY_DELIVERY_DONE)) {
+        } else if(e.getMessage().equals(ORDER_MODIFY_DELIVERY_DONE)) {
             return 2004;
-        } else if(e.getMessage().equals(OrderConst.ORDER_LIST_FIND_FAIL)) {
+        } else if(e.getMessage().equals(ORDER_LIST_FIND_FAIL)) {
             return 2005;
         }
 
@@ -59,10 +60,8 @@ public class OrderExceptionController {
 
         log.error("[HttpRequestMethodNotSupportedException] ex", e);
 
-        Error error = new Error();
-        error.setCode(1);
-        error.setMessage(e.getMessage());
+        Error error = new Error(1, e.getMessage());
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, BAD_REQUEST);
     }
 }

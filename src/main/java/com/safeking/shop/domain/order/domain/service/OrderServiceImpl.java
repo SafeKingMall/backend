@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.COMPLETE;
+import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.IN_DELIVERY;
 import static com.safeking.shop.domain.order.web.OrderConst.*;
 
 @Service
@@ -111,6 +113,10 @@ public class OrderServiceImpl implements OrderService {
         Order findOrder = findOrderOptional.orElseThrow(() -> new OrderException(ORDER_NONE));
 
         Delivery delivery = findOrder.getDelivery();
+
+        if(delivery.getStatus().equals(COMPLETE) || delivery.getStatus().equals(IN_DELIVERY)) {
+            throw new OrderException(ORDER_MODIFY_DELIVERY_DONE);
+        }
 
         delivery.changeDelivery(modifyInfoRequest.getDelivery().getReceiver(),
                 modifyInfoRequest.getDelivery().getPhoneNumber(),
