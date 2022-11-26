@@ -13,8 +13,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -60,10 +63,16 @@ public class ItemController {
         return itemViewResponse;
     }
 
-    @GetMapping("/item/admin")
-    public Page<Item> itemLst(@PageableDefault(size=10)Pageable pageable){
-
-        return itemService.Lst(pageable);
+    @GetMapping("/item/admin/list")
+    public Page<ItemLstResponse> itemLst(@PageableDefault(size=10)Pageable pageable){
+        Page<ItemLstResponse> itemLst = itemService.Lst(pageable).map(m -> ItemLstResponse.builder()
+                .id(m.getId())
+                .name(m.getName())
+                .createDate(m.getCreateDate().toString())
+                .lastModifiedDate(m.getLastModifiedDate().toString())
+                .build()
+        );
+        return itemLst;
     }
 
 }
