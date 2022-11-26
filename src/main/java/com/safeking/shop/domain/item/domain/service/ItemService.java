@@ -6,19 +6,15 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.CategoryItemRepository;
 import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
-import com.safeking.shop.domain.item.domain.service.servicedto.category.CategoryDto;
-import com.safeking.shop.domain.item.domain.service.servicedto.category.CategorySaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
-import com.safeking.shop.global.exception.EmailDuplicateException;
-import com.safeking.shop.global.exception.ErrorCode;
+import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -85,8 +81,26 @@ public class ItemService {
         }
     }
 
-    public Item findById(Long id){
-        return itemRepository.findById(id).orElseThrow();
+    public ItemViewDto view(Long id){
+        Item item = itemRepository.findById(id).orElseThrow();
+        ItemViewDto itemViewDto = new ItemViewDto(item.getId(),
+                item.getName(),
+                item.getQuantity(),
+                item.getDescription(),
+                item.getPrice(),
+                item.getAdminId(),
+                null,
+                null,
+                item.getCreateDate().toString(),
+                item.getLastModifiedDate().toString()
+                );
+
+        return itemViewDto;
+    }
+
+    public Page<Item> Lst(Pageable pageable){
+        Page<Item> posts = itemRepository.findAll(pageable);
+        return posts;
     }
 
 
