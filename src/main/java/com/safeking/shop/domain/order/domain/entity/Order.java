@@ -44,6 +44,8 @@ public class Order extends BaseTimeEntity {
     @Lob
     @Column(length = 50)
     private String memo;
+    @Lob
+    private String adminMemo;
 
     @OneToOne
     @JoinColumn(name = "payment_id")

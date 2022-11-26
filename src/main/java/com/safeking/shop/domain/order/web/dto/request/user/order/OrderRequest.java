@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.dto.request.order;
+package com.safeking.shop.domain.order.web.dto.request.user.order;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;

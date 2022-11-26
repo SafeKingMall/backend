@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.dto.response.orderdetail;
+package com.safeking.shop.domain.order.web.dto.response.user.orderdetail;
 
 import lombok.Builder;
 import lombok.Data;
@@ -12,12 +12,12 @@ public class OrderDetailOrderResponse {
     private int price;
     private String memo;
     private String date;
-    private List<OrderDetailItem> orderItems;
-    private OrderDetailPayment payment;
-    private OrderDetailDelivery delivery;
+    private List<OrderDetailOrderItemResponse> orderItems;
+    private OrderDetailPaymentResponse payment;
+    private OrderDetailDeliveryResponse delivery;
 
     @Builder
-    public OrderDetailOrderResponse(Long id, String status, int price, String memo, String date, List<OrderDetailItem> orderItems, OrderDetailPayment payment, OrderDetailDelivery delivery) {
+    public OrderDetailOrderResponse(Long id, String status, int price, String memo, String date, List<OrderDetailOrderItemResponse> orderItems, OrderDetailPaymentResponse payment, OrderDetailDeliveryResponse delivery) {
         this.id = id;
         this.status = status;
         this.price = price;

@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.dto.request.order;
+package com.safeking.shop.domain.order.web.dto.request.user.order;
 
 import lombok.Data;
 

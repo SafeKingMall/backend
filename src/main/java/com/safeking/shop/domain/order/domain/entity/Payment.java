@@ -2,15 +2,12 @@ package com.safeking.shop.domain.order.domain.entity;
 
 import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import com.safeking.shop.domain.order.domain.entity.status.PaymentStatus;
-import com.safeking.shop.domain.order.web.dto.request.order.OrderItemRequest;
-import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,6 +20,8 @@ public class Payment extends BaseTimeEntity {
     private PaymentStatus status;
     private String number;
     private String means;
+    private String company;
+    private String businessNumber;
 
     public static Payment createPayment(List<OrderItem> orderItems, String number, String means) {
         Payment payment = new Payment();

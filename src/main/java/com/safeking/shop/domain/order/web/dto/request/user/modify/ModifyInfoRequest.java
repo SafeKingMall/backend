@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.dto.request.modify;
+package com.safeking.shop.domain.order.web.dto.request.user.modify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

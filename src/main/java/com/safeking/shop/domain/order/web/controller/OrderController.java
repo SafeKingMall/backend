@@ -2,19 +2,19 @@ package com.safeking.shop.domain.order.web.controller;
 
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.service.OrderService;
-import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
-import com.safeking.shop.domain.order.web.dto.request.cancel.CancelRequest;
-import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoRequest;
-import com.safeking.shop.domain.order.web.dto.request.search.OrderSearchCondition;
+import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
+import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelRequest;
+import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoRequest;
+import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.order.web.dto.response.OrderBasicResponse;
-import com.safeking.shop.domain.order.web.dto.response.order.OrderResponse;
-import com.safeking.shop.domain.order.web.dto.response.order.OrderDeliveryResponse;
-import com.safeking.shop.domain.order.web.dto.response.order.OrderOrderResponse;
-import com.safeking.shop.domain.order.web.dto.response.orderdetail.*;
-import com.safeking.shop.domain.order.web.dto.response.search.OrderListOrderItemResponse;
-import com.safeking.shop.domain.order.web.dto.response.search.OrderListOrdersResponse;
-import com.safeking.shop.domain.order.web.dto.response.search.OrderListPaymentResponse;
-import com.safeking.shop.domain.order.web.dto.response.search.OrderListResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.order.OrderDeliveryResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.order.OrderOrderResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
+import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListOrderItemResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListOrdersResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListPaymentResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListResponse;
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +29,10 @@ import javax.validation.Valid;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.safeking.shop.domain.order.web.OrderConst.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
-import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
 import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
@@ -146,8 +144,8 @@ public class OrderController {
     private OrderDetailResponse getOrderDetailResponse(Order findOrderDetail) {
 
         // 주문 상세 조회 응답 데이터
-        List<OrderDetailItem> orderItems = findOrderDetail.getOrderItems().stream()
-                .map(oi -> OrderDetailItem.builder()
+        List<OrderDetailOrderItemResponse> orderItems = findOrderDetail.getOrderItems().stream()
+                .map(oi -> OrderDetailOrderItemResponse.builder()
                         .id(oi.getId())
                         .name(oi.getItem().getName())
                         .count(oi.getCount())
@@ -155,7 +153,7 @@ public class OrderController {
                         .build())
                 .collect(Collectors.toList());
 
-        OrderDetailDelivery delivery = OrderDetailDelivery.builder()
+        OrderDetailDeliveryResponse delivery = OrderDetailDeliveryResponse.builder()
                 .id(findOrderDetail.getDelivery().getId())
                 .status(findOrderDetail.getDelivery().getStatus().getDescription())
                 .receiver(findOrderDetail.getDelivery().getReceiver())
@@ -164,7 +162,7 @@ public class OrderController {
                 .memo(findOrderDetail.getDelivery().getMemo())
                 .build();
 
-        OrderDetailPayment payment = OrderDetailPayment.builder()
+        OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
                 .status(findOrderDetail.getPayment().getStatus().getDescription())
                 .build();
 
@@ -187,6 +185,9 @@ public class OrderController {
         return orderDetailResponse;
     }
 
+    /**
+     * 주문 다건 조회
+     */
     @GetMapping("/order/list")
     public ResponseEntity<OrderListResponse> searchOrderList(OrderSearchCondition condition, Pageable pageable, HttpServletRequest request) {
         Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));

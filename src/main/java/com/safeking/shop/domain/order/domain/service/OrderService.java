@@ -1,10 +1,10 @@
 package com.safeking.shop.domain.order.domain.service;
 
 import com.safeking.shop.domain.order.domain.entity.Order;
-import com.safeking.shop.domain.order.web.dto.request.cancel.CancelRequest;
-import com.safeking.shop.domain.order.web.dto.request.order.OrderRequest;
-import com.safeking.shop.domain.order.web.dto.request.modify.ModifyInfoRequest;
-import com.safeking.shop.domain.order.web.dto.request.search.OrderSearchCondition;
+import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelRequest;
+import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
+import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoRequest;
+import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
