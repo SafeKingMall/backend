@@ -64,43 +64,44 @@ public class MemberController {
     }
 
     @PostMapping("/signup/authenticationInfo/{memberId}")
-    public Long signUpAuthenticationInfo(@PathVariable Long memberId,@RequestBody @Validated AuthenticationInfo authenticationInfo) {
+    public Long signUpAuthenticationInfo(@PathVariable Long memberId, @RequestBody @Validated AuthenticationInfo authenticationInfo) {
 
-        return memberService.addAuthenticationInfo(memberId,authenticationInfo.toServiceDto());
+        return memberService.addAuthenticationInfo(memberId, authenticationInfo.toServiceDto());
 
     }
-    @PostMapping("/signup/memberInfo/{memberId}")
-    public Long  signUpMemberInfo(@PathVariable Long memberId, @RequestBody @Validated MemberInfo memberInfo) {
 
-        return memberService.addMemberInfo(memberId,memberInfo.toServiceDto());
+    @PostMapping("/signup/memberInfo/{memberId}")
+    public Long signUpMemberInfo(@PathVariable Long memberId, @RequestBody @Validated MemberInfo memberInfo) {
+
+        return memberService.addMemberInfo(memberId, memberInfo.toServiceDto());
 
     }
 
     @PostMapping("/signup/agreementInfo/{memberId}")
-    public Long  signUpAgreementInfo(@PathVariable Long memberId, @RequestBody @Validated AgreementInfo agreementInfo) {
+    public Long signUpAgreementInfo(@PathVariable Long memberId, @RequestBody @Validated AgreementInfo agreementInfo) {
 
-        Boolean agreement=null;
+        Boolean agreement = null;
 
-        agreement= agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
+        agreement = agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
 
-        return memberService.changeMemoryToDB(memberId,agreement);
+        return memberService.changeMemoryToDB(memberId, agreement);
 
     }
 
 
     @GetMapping("/user/details")
-    public MemberDetails showMemberDetails(HttpServletRequest request){
+    public MemberDetails showMemberDetails(HttpServletRequest request) {
         return memberQueryService.showMemberDetails(TokenUtils.getUsername(request));
     }
 
     @PutMapping("/user/update")
-    public void update(@RequestBody @Validated UpdateRequest updateRequest, HttpServletRequest request){
-        memberService.updateMemberInfo(TokenUtils.getUsername(request),updateRequest.toServiceDto());
+    public void update(@RequestBody @Validated UpdateRequest updateRequest, HttpServletRequest request) {
+        memberService.updateMemberInfo(TokenUtils.getUsername(request), updateRequest.toServiceDto());
     }
 
     @PatchMapping("/user/update/password")
-    public void updatePassword(@RequestBody @Validated UpdatePWRequest updatePWRequest, HttpServletRequest request){
-        memberService.updatePassword(TokenUtils.getUsername(request),updatePWRequest.getPassword());
+    public void updatePassword(@RequestBody @Validated UpdatePWRequest updatePWRequest, HttpServletRequest request) {
+        memberService.updatePassword(TokenUtils.getUsername(request), updatePWRequest.getPassword());
     }
 
     @PostMapping("/id/duplication")
@@ -110,32 +111,37 @@ public class MemberController {
     }
 
     @PostMapping("/id/find")
-    public ResponseEntity idFind(@RequestBody @Validated IdFindRequest request){
-        if(smsService.checkCode(request.getCode(),request.getClientPhoneNumber())){
+    public ResponseEntity idFind(@RequestBody @Validated IdFindRequest request) {
+        if (smsService.checkCode(request.getCode(), request.getClientPhoneNumber())) {
 
             return new ResponseEntity<>(memberRepository.findByPhoneNumber(request.getClientPhoneNumber())
-                    .orElseThrow(()->new MemberNotFoundException("등록된 휴대번호와 일치하는 회원이 없습니다."))
-                    .getUsername(),HttpStatus.OK);
+                    .orElseThrow(() -> new MemberNotFoundException("등록된 휴대번호와 일치하는 회원이 없습니다."))
+                    .getUsername(), HttpStatus.OK);
         }
 
-        return ResponseEntity.badRequest().body(new Error(1333,"코드가 일치하지 않습니다."));
+        return ResponseEntity.badRequest().body(new Error(1333, "코드가 일치하지 않습니다."));
 
     }
 
     @PostMapping("/temporaryPassword")
-    public String  sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest){
+    public String sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest) {
         return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
     }
 
     @GetMapping("admin/humanAccount/{memberId}")
-    public void convertHumanAccount(@PathVariable Long memberId){
+    public void convertHumanAccount(@PathVariable Long memberId) {
         memberService.revertCommonAccounts(memberId);
     }
 
     @GetMapping("/admin/member/list")
-    public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 15)Pageable pageable){
+    public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 15) Pageable pageable) {
 
-        return memberQueryRepository.searchAllCondition(name,pageable);
+        return memberQueryRepository.searchAllCondition(name, pageable);
+    }
+
+    @GetMapping("/admin/humanBatch")
+    public void humanConverterBatch() {
+        memberService.humanAccountConverterBatch();
     }
 
     @PostMapping("/oauth/{registrationId}")
@@ -147,11 +153,11 @@ public class MemberController {
             log.info("google login request");
 
             oauth2UserInfo = new GoogleUserInfo(data);
-        } else if(registrationId.equals("kakao")) {
+        } else if (registrationId.equals("kakao")) {
             log.info("Kakao login request");
 
             oauth2UserInfo = new KakaoUserInfo(data);
-        } else{
+        } else {
             throw new IllegalArgumentException("카카오와 구글만 지원합니다.");
         }
 
@@ -178,14 +184,14 @@ public class MemberController {
         }
 
         //jwt 발행
-        if(oauthMember.getUsername()!=null){
+        if (oauthMember.getUsername() != null) {
             //authentication 을 생성
             Authentication authentication = createAuthentication(username);
 
             Tokens tokens = tokenUtils.createTokens(authentication);
 
-            response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
-            response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
+            response.addHeader(AUTH_HEADER, BEARER + tokens.getJwtToken());
+            response.addHeader(REFRESH_HEADER, tokens.getRefreshToken());
         }
     }
 
@@ -200,8 +206,6 @@ public class MemberController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }
-
-
 
 
 }
