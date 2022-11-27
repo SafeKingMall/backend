@@ -40,6 +40,7 @@ public class HumanAccountsJobConfig {
                 .build();
         //배치가 실패시에 알림기능 log and email, 수동조작기능 추가
         //트렌젝션을 걸지 말지
+        //임시 커밋
     }
 
     @JobScope//job 밑에서 실행이 되므로
