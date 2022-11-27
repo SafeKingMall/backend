@@ -27,7 +27,7 @@ public class ItemAnswerService {
 
         itemQuestionRepository.save(itemQuestion);
 
-        return itemAnswer.getId();
+        return itemQuestion.getId();
     }
     public void update(ItemAnswerUpdateDto itemAnswerUpdateDto){
 
