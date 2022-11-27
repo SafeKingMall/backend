@@ -9,6 +9,7 @@ import com.safeking.shop.domain.item.web.request.ItemRequest;
 import com.safeking.shop.domain.item.web.response.ItemListResponse;
 import com.safeking.shop.domain.item.web.response.ItemResponse;
 import com.safeking.shop.domain.item.web.response.ItemViewResponse;
+import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
+import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
 
 @Slf4j
 @RestController
@@ -27,16 +32,16 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping("/item/admin")
-    public Long save(@RequestBody ItemSaveDto itemSaveDto){
-        // 토큰값으로 아이디 가져오는 기능 확인되면 변경
-        itemSaveDto.setAdminId("admin");
+    public Long save(@RequestBody ItemSaveDto itemSaveDto, HttpServletRequest request){
+        String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
+        itemSaveDto.setAdminId(username);
         return itemService.save(itemSaveDto);
     }
 
     @PutMapping("/item/admin/{itemId}")
-    public void update(@PathVariable Long itemId, @RequestBody ItemUpdateDto itemUpdateDto){
-        // 토큰값으로 아이디 가져오는 기능 확인되면 변경
-        itemUpdateDto.setAdminId("admin");
+    public void update(@PathVariable Long itemId, @RequestBody ItemUpdateDto itemUpdateDto, HttpServletRequest request){
+        String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
+        itemUpdateDto.setAdminId(username);
         itemUpdateDto.setId(itemId);
         itemService.update(itemUpdateDto);
     }
