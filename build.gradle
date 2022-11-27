@@ -62,6 +62,8 @@ dependencies {
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
+
+
     implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 }
 

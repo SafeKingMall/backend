@@ -1,5 +1,6 @@
 package com.safeking.shop.global.job;
 
+import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class HumanAccountsJobConfig {
 
     private final StepBuilderFactory stepBuilderFactory;
     private final MemberService memberService;
+    private final SMSService smsService;
 
     @Bean
     @Qualifier("humanAccountsJob")
@@ -66,6 +68,8 @@ public class HumanAccountsJobConfig {
         return stepBuilderFactory.get("conditionalFailStep")
                 .tasklet((contribution, chunkContext) -> {
                     log.error("conditional Fail Step");
+                    //지금 현재 문자 잔액 부족!!
+//                    smsService.sendErrorMessage("01082460887");
                     return RepeatStatus.FINISHED;
                 })
                 .build();
@@ -87,7 +91,7 @@ public class HumanAccountsJobConfig {
         return (contribution, chunkContext) -> {
             log.info("Run humanAccountsJobTasklet");
             memberService.humanAccountConverterBatch();
-
+//            throw new Exception("test");
             return RepeatStatus.FINISHED;
         };
     }
