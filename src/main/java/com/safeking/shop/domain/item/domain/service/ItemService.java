@@ -99,7 +99,7 @@ public class ItemService {
         return itemViewDto;
     }
 
-    public Page<Item> Lst(Pageable pageable){
+    public Page<Item> List(Pageable pageable){
         Page<Item> posts = itemRepository.findAll(pageable);
         return posts;
     }

@@ -6,7 +6,7 @@ import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import com.safeking.shop.domain.item.web.request.ItemRequest;
-import com.safeking.shop.domain.item.web.response.ItemLstResponse;
+import com.safeking.shop.domain.item.web.response.ItemListResponse;
 import com.safeking.shop.domain.item.web.response.ItemResponse;
 import com.safeking.shop.domain.item.web.response.ItemViewResponse;
 import lombok.RequiredArgsConstructor;
@@ -64,8 +64,8 @@ public class ItemController {
     }
 
     @GetMapping("/item/admin/list")
-    public Page<ItemLstResponse> itemLst(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemLstResponse> itemLst = itemService.Lst(pageable).map(m -> ItemLstResponse.builder()
+    public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable){
+        Page<ItemListResponse> itemLst = itemService.List(pageable).map(m -> ItemListResponse.builder()
                 .id(m.getId())
                 .name(m.getName())
                 .createDate(m.getCreateDate().toString())
