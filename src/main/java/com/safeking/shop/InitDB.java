@@ -1,5 +1,6 @@
 package com.safeking.shop;
 
+import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -33,7 +34,8 @@ public class InitDB {
                     .username("admin")
                     .password(encoder.encode("1234"))
                     .name("admin")
-                    .humanAccount(true)
+                    .accountNonLocked(true)
+                    .status(MemberStatus.COMMON)
                     .roles("ROLE_ADMIN").build();
             admin.addLastLoginTime();
 
@@ -42,7 +44,8 @@ public class InitDB {
                         .username("user"+i)
                         .password(encoder.encode("1234"))
                         .name("user"+i)
-                        .humanAccount(true)
+                        .accountNonLocked(true)
+                        .status(MemberStatus.COMMON)
                         .roles("ROLE_USER").build();
                 user.addLastLoginTime();
                 em.persist(user);
@@ -52,7 +55,8 @@ public class InitDB {
                     .username("human")
                     .password(encoder.encode("1234"))
                     .name("human")
-                    .humanAccount(false)
+                    .accountNonLocked(false)
+                    .status(MemberStatus.HUMAN)
                     .roles("ROLE_USER").build();
             user.addLastLoginTime();
             em.persist(user);

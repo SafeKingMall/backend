@@ -5,6 +5,7 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
+import com.safeking.shop.domain.user.web.query.repository.MemberQueryRepository;
 import com.safeking.shop.domain.user.web.query.service.MemberQueryService;
 import com.safeking.shop.domain.user.web.request.*;
 import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
@@ -12,6 +13,7 @@ import com.safeking.shop.domain.user.web.request.signuprequest.AuthenticationInf
 import com.safeking.shop.domain.user.web.request.signuprequest.CriticalItems;
 import com.safeking.shop.domain.user.web.request.signuprequest.MemberInfo;
 import com.safeking.shop.domain.user.web.response.MemberDetails;
+import com.safeking.shop.domain.user.web.response.MemberListDto;
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.exception.MemberNotFoundException;
@@ -22,6 +24,9 @@ import com.safeking.shop.global.oauth.provider.KakaoUserInfo;
 import com.safeking.shop.global.oauth.provider.Oauth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,6 +51,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberQueryService memberQueryService;
     private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
     private final BCryptPasswordEncoder encoder;
     private final TokenUtils tokenUtils;
 
@@ -123,7 +129,13 @@ public class MemberController {
 
     @GetMapping("admin/humanAccount/{memberId}")
     public void convertHumanAccount(@PathVariable Long memberId){
-        memberService.convertHumanAccount(memberId);
+        memberService.revertCommonAccounts(memberId);
+    }
+
+    @GetMapping("/admin/member/list")
+    public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 15)Pageable pageable){
+
+        return memberQueryRepository.searchAllCondition(name,pageable);
     }
 
     @PostMapping("/oauth/{registrationId}")
