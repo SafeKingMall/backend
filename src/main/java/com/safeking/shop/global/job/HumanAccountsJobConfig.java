@@ -1,6 +1,7 @@
 package com.safeking.shop.global.job;
 
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -28,22 +29,30 @@ public class HumanAccountsJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
 
     private final StepBuilderFactory stepBuilderFactory;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Bean
     @Qualifier("humanAccountsJob")
-    public Job humanAccountsJobJob(Step humanAccountsJobStep){
+    public Job humanAccountsJobJob(
+            Step humanAccountsJobStep
+            , Step conditionalFailStep
+            , Step conditionalCompletedStep){
         return jobBuilderFactory
                 .get("humanAccountsJob")
                 .incrementer(new RunIdIncrementer())
                 .start(humanAccountsJobStep)
+                .on("FAILED").to(conditionalFailStep)//실패시
+                .from(humanAccountsJobStep)
+                .on("COMPLETED").to(conditionalCompletedStep)//성공시
+                .from(humanAccountsJobStep)
+                .end()
                 .build();
         //배치가 실패시에 알림기능 log and email, 수동조작기능 추가
-        //트렌젝션을 걸지 말지
-        //임시 커밋
+
+
     }
 
-    @JobScope//job 밑에서 실행이 되므로
+    @JobScope
     @Bean
     public Step humanAccountsJobStep(Tasklet humanAccountsJobTasklet){
         return stepBuilderFactory
@@ -51,22 +60,35 @@ public class HumanAccountsJobConfig {
                 .tasklet(humanAccountsJobTasklet)
                 .build();
     }
-    @StepScope//Step 밑에서 실행이 되므로
+    @JobScope
+    @Bean
+    public Step conditionalFailStep() {
+        return stepBuilderFactory.get("conditionalFailStep")
+                .tasklet((contribution, chunkContext) -> {
+                    log.error("conditional Fail Step");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+    @JobScope
+    @Bean
+    public Step conditionalCompletedStep() {
+        return stepBuilderFactory.get("conditionalCompletedStep")
+                .tasklet((contribution, chunkContext) -> {
+                    log.info("conditional Completed Step");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+    @StepScope
     @Bean
     @Transactional
     public Tasklet humanAccountsJobTasklet() {
-        return new Tasklet() {
-            @Override
-            public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                log.info("Run humanAccountsJobTasklet");
+        return (contribution, chunkContext) -> {
+            log.info("Run humanAccountsJobTasklet");
+            memberService.humanAccountConverterBatch();
 
-                memberRepository.findAll().stream()
-                        .filter(member -> !member.getRoleList().stream().findFirst().get().equals("ROLE_ADMIN"))
-                        .forEach(member -> member.convertHumanAccount());
-
-
-                return RepeatStatus.FINISHED;
-            }
+            return RepeatStatus.FINISHED;
         };
     }
 

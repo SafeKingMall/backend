@@ -103,6 +103,13 @@ public class MemberService {
                 .updatePassword(encoder.encode(password));
     }
 
+    public void humanAccountConverterBatch(){
+        memberRepository.findAll().stream()
+                .filter(member -> !member.getRoleList().stream().findFirst().get().equals("ROLE_ADMIN"))
+                .forEach(member -> member.convertHumanAccount());
+
+    }
+
     public void revertCommonAccounts(Long id){
 
         memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("회원을 찾을 수가 없습니다.")).revertCommonAccounts();
