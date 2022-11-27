@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @GetMapping("/category/list")
     public Page<CategoryListResponse> categoryList(@PageableDefault(size=10) Pageable pageable){
