@@ -20,6 +20,8 @@ public class Cart extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public static final int DELIVERY_FEE=3000;
+
     public Cart(Member member){
         this.member=member;
     }

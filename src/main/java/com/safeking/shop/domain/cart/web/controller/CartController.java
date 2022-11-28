@@ -5,6 +5,7 @@ import com.safeking.shop.domain.cart.web.query.repository.CartQueryRepository;
 import com.safeking.shop.domain.cart.web.query.service.CartQueryService;
 import com.safeking.shop.domain.cart.web.request.BasicRequest;
 import com.safeking.shop.domain.cart.web.response.CartItemResponse;
+import com.safeking.shop.domain.cart.web.response.CartResponse;
 import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,7 @@ public class CartController {
     }
     
     @GetMapping("user/cart")
-    public List<CartItemResponse> showCartList(HttpServletRequest request){
+    public CartResponse showCartList(HttpServletRequest request){
         //객체로 한번 더 감싸서 총 가격이랑 등등 해야한다.
         return cartQueryService.showCart(TokenUtils.getUsername(request));
     }
