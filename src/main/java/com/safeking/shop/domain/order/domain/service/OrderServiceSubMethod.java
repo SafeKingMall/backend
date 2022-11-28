@@ -39,7 +39,7 @@ public class OrderServiceSubMethod {
     public Delivery createDelivery(OrderRequest orderRequest) {
         //배송 정보 생성
         Delivery delivery = Delivery.createDelivery(orderRequest.getReceiver(), orderRequest.getPhoneNumber(),
-                orderRequest.getAddress(), DeliveryStatus.PREPARATION, orderRequest.getOrderDeliveryRequest().getMemo());
+                orderRequest.getAddress(), DeliveryStatus.PREPARATION, orderRequest.getDeliveryMemo());
         //배송 정보 저장
         deliveryRepository.save(delivery);
 

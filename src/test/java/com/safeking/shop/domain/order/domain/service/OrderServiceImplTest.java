@@ -16,7 +16,6 @@ import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
 import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelOrderRequest;
-import com.safeking.shop.domain.order.web.dto.request.user.order.OrderDeliveryRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderItemRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoDeliveryRequest;
@@ -88,15 +87,14 @@ class OrderServiceImplTest {
 
         itemRepository.save(item);
 
-        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
-        orderDeliveryRequest.setMemo("안전하게 배송해주세요.");
         OrderItemRequest orderItemRequest = new OrderItemRequest(item.getId(), 2);
         OrderRequest orderRequest = new OrderRequest(generalMember.getName(),
+                "dlwlrma@kakako.com",
                 generalMember.getPhoneNumber(),
                 "서울시 강남구",
                 "납기일 준수 해주세요.",
                 List.of(orderItemRequest),
-                orderDeliveryRequest);
+                "문앞에 부탁드립니다.");
 
         //when
         Long orderId = orderService.order(generalMember, orderRequest);
@@ -149,15 +147,14 @@ class OrderServiceImplTest {
     @Transactional
     void 주문_취소_배송중() throws Exception {
         //given
-        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
-        orderDeliveryRequest.setMemo("문앞에 놓아주세요.");
 
         OrderRequest orderRequest = new OrderRequest("아이유",
+                "dlwlrma@kakako.com",
                 "01012341234",
                 "서울시 여의도",
                 "납기일 준수해주세요.",
                 List.of(new OrderItemRequest(1L, 1000)),
-                orderDeliveryRequest);
+                "문앞에 부탁드립니다.");
 
         //배송 중
         Delivery delivery = Delivery.createDelivery(
@@ -165,7 +162,7 @@ class OrderServiceImplTest {
                 orderRequest.getPhoneNumber(),
                 orderRequest.getAddress(),
                 DeliveryStatus.IN_DELIVERY,
-                orderRequest.getOrderDeliveryRequest().getMemo());
+                orderRequest.getDeliveryMemo());
 
         Item item = Item.createItem("안전모",
                 1,
@@ -199,15 +196,14 @@ class OrderServiceImplTest {
     @Transactional
     void 주문_취소_배송완료() throws Exception {
         //given
-        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
-        orderDeliveryRequest.setMemo("문앞에 놓아주세요.");
 
         OrderRequest orderRequest = new OrderRequest("아이유",
+                "dlwlrma@kakako.com",
                 "01012341234",
                 "서울시 여의도",
                 "납기일 준수해주세요.",
                 List.of(new OrderItemRequest(1L, 1000)),
-                orderDeliveryRequest);
+                "문앞에 부탁드립니다.");
 
         //배송 완료
         Delivery delivery = Delivery.createDelivery(
@@ -215,7 +211,7 @@ class OrderServiceImplTest {
                 orderRequest.getPhoneNumber(),
                 orderRequest.getAddress(),
                 DeliveryStatus.COMPLETE,
-                orderRequest.getOrderDeliveryRequest().getMemo());
+                orderRequest.getDeliveryMemo());
 
         Item item = Item.createItem("안전모",
                 1,
@@ -249,15 +245,13 @@ class OrderServiceImplTest {
     @Transactional
     void 주문_수정() throws Exception {
         //given
-        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
-        orderDeliveryRequest.setMemo("문앞에 놓아주세요.");
-
         OrderRequest orderRequest = new OrderRequest("아이유",
+                "dlwlrma@kakako.com",
                 "01012341234",
                 "서울시 여의도",
                 "납기일 준수해주세요.",
                 List.of(new OrderItemRequest(1L, 1000)),
-                orderDeliveryRequest);
+                "문앞에 부탁드립니다.");
 
         //배송 완료
         Delivery delivery = Delivery.createDelivery(
@@ -265,7 +259,7 @@ class OrderServiceImplTest {
                 orderRequest.getPhoneNumber(),
                 orderRequest.getAddress(),
                 DeliveryStatus.PREPARATION,
-                orderRequest.getOrderDeliveryRequest().getMemo());
+                orderRequest.getDeliveryMemo());
 
         Member generalMember = GeneralMember.builder()
                 .name("아이유")
@@ -332,15 +326,13 @@ class OrderServiceImplTest {
 
         itemRepository.save(item);
 
-        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
-        orderDeliveryRequest.setMemo("문앞에 놓아주세요.");
-
         OrderRequest orderRequest = new OrderRequest("아이유",
+                "dlwlrma@kakako.com",
                 "01012341234",
                 "서울시 여의도",
                 "납기일 준수해주세요.",
                 List.of(new OrderItemRequest(1L, 1000)),
-                orderDeliveryRequest);
+                "문앞에 부탁드립니다.");
 
         //배송 완료
         Delivery delivery = Delivery.createDelivery(
@@ -348,7 +340,7 @@ class OrderServiceImplTest {
                 orderRequest.getPhoneNumber(),
                 orderRequest.getAddress(),
                 DeliveryStatus.PREPARATION,
-                orderRequest.getOrderDeliveryRequest().getMemo());
+                orderRequest.getDeliveryMemo());
         deliveryRepository.save(delivery);
 
         OrderItem orderItem = OrderItem.createOrderItem(item, 3000, 1);
@@ -421,15 +413,13 @@ class OrderServiceImplTest {
         OrderItem orderItem1 = OrderItem.createOrderItem(item1, 1000, 1);
         OrderItem orderItem2 = OrderItem.createOrderItem(item2, 2000, 1);
 
-        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
-        orderDeliveryRequest.setMemo("문앞에 놓아주세요.");
-
         OrderRequest orderRequest = new OrderRequest("아이유",
+                "dlwlrma@kakako.com",
                 "01012341234",
                 "서울시 여의도",
                 "납기일 준수해주세요.",
                 List.of(new OrderItemRequest(1L, 1), new OrderItemRequest(2L, 1 )),
-                orderDeliveryRequest);
+                "문앞에 부탁드립니다.");
 
         //배송 완료
         Delivery delivery = Delivery.createDelivery(
@@ -437,7 +427,7 @@ class OrderServiceImplTest {
                 orderRequest.getPhoneNumber(),
                 orderRequest.getAddress(),
                 DeliveryStatus.PREPARATION,
-                orderRequest.getOrderDeliveryRequest().getMemo());
+                orderRequest.getDeliveryMemo());
         deliveryRepository.save(delivery);
 
         Payment payment = Payment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
@@ -504,15 +494,13 @@ class OrderServiceImplTest {
         OrderItem orderItem1 = OrderItem.createOrderItem(item1, 1000, 1);
         OrderItem orderItem2 = OrderItem.createOrderItem(item2, 2000, 1);
 
-        OrderDeliveryRequest orderDeliveryRequest = new OrderDeliveryRequest();
-        orderDeliveryRequest.setMemo("문앞에 놓아주세요.");
-
         OrderRequest orderRequest = new OrderRequest("아이유",
+                "dlwlrma@kakako.com",
                 "01012341234",
                 "서울시 여의도",
                 "납기일 준수해주세요.",
                 List.of(new OrderItemRequest(1L, 1), new OrderItemRequest(2L, 1 )),
-                orderDeliveryRequest);
+                "문앞에 부탁드립니다.");
 
         //배송 완료
         Delivery delivery = Delivery.createDelivery(
@@ -520,7 +508,7 @@ class OrderServiceImplTest {
                 orderRequest.getPhoneNumber(),
                 orderRequest.getAddress(),
                 DeliveryStatus.PREPARATION,
-                orderRequest.getOrderDeliveryRequest().getMemo());
+                orderRequest.getDeliveryMemo());
         deliveryRepository.save(delivery);
 
         Payment payment = Payment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");

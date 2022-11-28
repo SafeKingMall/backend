@@ -39,8 +39,8 @@ public class OrderAdminController {
     @GetMapping("/order/detail/{orderId}")
     public ResponseEntity<AdminOrderDetailResponse> searchOrderDetail(@PathVariable("orderId") Long orderId, HttpServletRequest request) {
 
-        // 회원 검증 + 관리자 검증 로직 필요(*)
-        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        // 회원 검증
+        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 주문 상세 조회
         Order findOrderDetail = orderService.searchOrderDetail(orderId);
