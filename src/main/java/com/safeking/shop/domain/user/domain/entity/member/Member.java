@@ -138,6 +138,19 @@ public abstract class Member extends BaseMemberEntity {
         if(between.getSeconds()>=10l){
             this.accountNonLocked=false;
             this.status=MemberStatus.HUMAN;
+
+            //개인정보 지우기
+            this.name = null;
+            this.birth = null;
+            this.email = null;
+            this.phoneNumber = null;
+            this.companyName = null;
+            this.representativeName = null;
+            this.companyRegistrationNumber = null;
+            this.corporateRegistrationNumber = null;
+            this.address = null;
+            this.contact=null;
+            this.agreement=null;
         }
     }
 }
