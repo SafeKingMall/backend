@@ -55,15 +55,10 @@ public class CartService {
         cartItemRepository.save(newCartItem);
     }
 
-    public void deleteFromCart(String username, Long... itemIdList){
-        if(itemIdList!=null){
-            Arrays.stream(itemIdList).forEach(itemId->{
+    public void deleteCartItemFromCart(String username, Long... itemId){
 
-                CartItem cartItem = findCartItem(username, itemId).orElseThrow(()->new EntityNotFoundException("찾으시는 장바구니 아이템이 없습니다."));
-                cartItemRepository.delete(cartItem);
-
-            });
-        }
+        Cart cart = cartRepository.findCartByUsername(username).orElseThrow(() -> new EntityNotFoundException("장바구니가 없습니다."));
+        if(itemId!=null) cartItemRepository.deleteCartItem(cart.getId(), itemId);
 
     }
 
@@ -88,6 +83,13 @@ public class CartService {
 
         Cart cart = cartRepository.findByMember(member).orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않습니다."));
         return cart;
+    }
+
+    public void deleteCart(String username){
+        Cart cart = cartRepository.findCartByUsername(username).orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않습니다."));
+
+        cartItemRepository.deleteCartItemBatch(cart.getId());
+        cartRepository.delete(cart);
     }
 
 }

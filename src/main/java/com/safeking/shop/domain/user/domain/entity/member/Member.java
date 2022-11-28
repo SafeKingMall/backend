@@ -42,6 +42,8 @@ public abstract class Member extends BaseTimeEntity {
 
     private Boolean agreement;
 
+
+
     public List<String> getRoleList(){
         if(this.roles.length()>0){
             return Arrays.asList(this.roles.split(","));

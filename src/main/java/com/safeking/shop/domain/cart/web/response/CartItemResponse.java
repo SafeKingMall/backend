@@ -12,7 +12,8 @@ public class CartItemResponse {
     private int itemQuantity;
 
     @QueryProjection
-    public CartItemResponse(String itemName, int itemPrice, int itemQuantity) {
+    public CartItemResponse(Long id,String itemName, int itemPrice, int itemQuantity) {
+        this.id=id;
         this.itemName = itemName;
         this.itemPrice = itemPrice;
         this.itemQuantity = itemQuantity;

@@ -28,8 +28,10 @@ public class CartItem extends BaseTimeEntity {
 
     public CartItem(Item item, Cart cart,int count){
         this.item=item;
-        this.cart=cart;
         this.count=count;
+        this.cart=cart;
+
+        cart.addCartItem(this);
     }
 
     public void changeCount(int count) {

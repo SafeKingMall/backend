@@ -1,5 +1,6 @@
 package com.safeking.shop.domain.cart.web.controller;
 
+import com.safeking.shop.domain.cart.domain.repository.CartRepository;
 import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.cart.web.query.repository.CartQueryRepository;
 import com.safeking.shop.domain.cart.web.query.service.CartQueryService;
@@ -20,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/v1")
 public class CartController {
-
+    private final CartRepository cartRepository;
     private final CartService cartService;
     private final CartQueryService cartQueryService;
 
@@ -45,16 +46,20 @@ public class CartController {
     @DeleteMapping("user/cartItem")
     public void deleteCart(HttpServletRequest request,Long... itemId){
 
-        cartService.deleteFromCart(TokenUtils.getUsername(request),itemId);
+        cartService.deleteCartItemFromCart(TokenUtils.getUsername(request),itemId);
     }
     
     @GetMapping("user/cart")
     public CartResponse showCartList(HttpServletRequest request){
-        //객체로 한번 더 감싸서 총 가격이랑 등등 해야한다.
         return cartQueryService.showCart(TokenUtils.getUsername(request));
     }
 
+    @DeleteMapping("/user/cart/{username}")
+    public void deleteCart(@PathVariable String username){
 
+        cartService.deleteCart(username);
+
+    }
 
 
 }

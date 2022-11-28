@@ -26,17 +26,16 @@ public class CartQueryService {
 
     public CartResponse showCart(String username){
 
-        Cart cart = cartRepository.findCartByUsername(username).orElseThrow(() -> new EntityNotFoundException("회원과 일치하는 장바구니가 없습니다."));
-
-        List<CartItemResponse> cartItemResponses = cartQueryRepository.searchAll(cart);
-
-        int sum = cartItemResponses.stream().mapToInt(cartItem -> cartItem.getItemPrice()).sum();
+        List<CartItemResponse> cartItemResponses = cartQueryRepository.searchAll(username);
 
         return CartResponse.builder()
                 .cartItemResponses(cartItemResponses)
                 .deliveryFee(Cart.DELIVERY_FEE)
-                .totalPrice(sum).build();
-
+                .totalPrice(
+                        cartItemResponses
+                                .stream()
+                                .mapToInt(cartItem -> cartItem.getItemPrice()).sum())
+                                .build();
     }
 
 }
