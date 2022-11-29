@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+
 @Slf4j
 @RestControllerAdvice
 public class ExControllerAdvice {
@@ -43,6 +46,19 @@ public class ExControllerAdvice {
         log.error("[MemberNotFoundExceptionExHandler] ex",e);
 
         return new ResponseEntity<>(new Error(1223,e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler
+    public ResponseEntity<Error> EntityNotFoundExceptionExHandler(EntityNotFoundException e){
+        log.error("[EntityNotFoundException] ex",e);
+
+        return new ResponseEntity<>(new Error(5001,e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Error> EntityExistsExceptionExHandler(EntityExistsException e){
+        log.error("[EntityExistsException] ex",e);
+
+        return new ResponseEntity<>(new Error(5002,e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
