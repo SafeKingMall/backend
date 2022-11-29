@@ -2,6 +2,7 @@ package com.safeking.shop.global.job;
 
 import com.safeking.shop.domain.coolsms.domain.respository.SMSMemoryRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,8 @@ public class MemoryClearJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final MemoryMemberRepository memoryMemberRepository;
     private final SMSMemoryRepository smsMemoryRepository;
+
+//    private final MemoryDormantRepository dormantRepository; 이거는 추후에 개발예정
 
     @Bean
     @Qualifier("memoryClearJobJob")
