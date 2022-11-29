@@ -48,6 +48,7 @@ public class ItemController {
 
     @DeleteMapping("/item/admin/{itemId}")
     public void delete(@PathVariable Long itemId){
+
         itemService.delete(itemId);
     }
 
