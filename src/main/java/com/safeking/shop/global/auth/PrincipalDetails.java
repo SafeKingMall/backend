@@ -62,7 +62,8 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        //false 면 사용불가
+        return member.getAccountNonLocked();
     }
 
     @Override

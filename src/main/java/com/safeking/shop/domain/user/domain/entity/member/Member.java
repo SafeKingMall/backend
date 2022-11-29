@@ -1,11 +1,16 @@
 package com.safeking.shop.domain.user.domain.entity.member;
 
-import com.safeking.shop.domain.admin.common.BaseTimeEntity;
+import com.safeking.shop.domain.common.BaseEntity;
+import com.safeking.shop.domain.common.BaseMemberEntity;
+import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.user.domain.entity.Address;
+import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
-public abstract class Member extends BaseTimeEntity {
+public abstract class Member extends BaseMemberEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -41,10 +46,16 @@ public abstract class Member extends BaseTimeEntity {
 
     private Boolean agreement;
 
+    private Boolean accountNonLocked;
+
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status;
+
     public List<String> getRoleList(){
         if(this.roles.length()>0){
             return Arrays.asList(this.roles.split(","));
         }
+
         return new ArrayList<>();
     }
 
@@ -52,15 +63,50 @@ public abstract class Member extends BaseTimeEntity {
         this.id = id;
     }
 
-    public void updateInfo(String name, String birth, String representativeName, String phoneNumber, String companyRegistrationNumber, String corporateRegistrationNumber, Address address){
+    public void updateInfo(String name
+                            ,String birth
+                            ,String representativeName
+                            ,String phoneNumber
+                            ,String companyRegistrationNumber
+                            ,String corporateRegistrationNumber
+                            ,Address address
+    ){
         this.name = name;
-        this.username = username;
         this.birth = birth;
         this.representativeName = representativeName;
         this.phoneNumber = phoneNumber;
         this.companyRegistrationNumber = companyRegistrationNumber;
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.address = address;
+    }
+
+    public void updateInfoFromDormant(String name
+                                        ,String birth
+                                        ,String password
+                                        ,String email
+                                        ,String companyName
+                                        ,String representativeName
+                                        ,String phoneNumber
+                                        ,String companyRegistrationNumber
+                                        ,String corporateRegistrationNumber
+                                        ,Address address
+                                        ,String contact
+                                        ,Boolean agreement
+                                        ,Boolean accountNonLocked
+    ){
+        this.name = name;
+        this.birth = birth;
+        this.password = password;
+        this.email = email;
+        this.companyName = companyName;
+        this.representativeName = representativeName;
+        this.phoneNumber = phoneNumber;
+        this.companyRegistrationNumber = companyRegistrationNumber;
+        this.corporateRegistrationNumber = corporateRegistrationNumber;
+        this.address = address;
+        this.contact = contact;
+        this.agreement = agreement;
+        this.accountNonLocked = accountNonLocked;
     }
 
     public void updatePassword(String password){
@@ -83,6 +129,11 @@ public abstract class Member extends BaseTimeEntity {
         this.address=address;
         this.contact=contact;
 
+    }
+
+    public void addCriticalItemsForDormant(String password, String email){
+        this.password=password;
+        this.email=email;
     }
 
     public boolean isCheckedItem(){
@@ -116,5 +167,31 @@ public abstract class Member extends BaseTimeEntity {
     public void changePassword(String password){
         this.password=password;
     }
+    public void revertCommonAccounts(){
 
+        this.accountNonLocked= !this.accountNonLocked;
+        this.status=MemberStatus.COMMON;
+    }
+
+    public void convertHumanAccount(){
+        Duration between = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
+
+        if(between.getSeconds()>=10l){
+            this.accountNonLocked=false;
+            this.status=MemberStatus.HUMAN;
+
+            //개인정보 지우기
+            this.name = null;
+            this.birth = null;
+            this.email = null;
+            this.phoneNumber = null;
+            this.companyName = null;
+            this.representativeName = null;
+            this.companyRegistrationNumber = null;
+            this.corporateRegistrationNumber = null;
+            this.address = null;
+            this.contact=null;
+            this.agreement=null;
+        }
+    }
 }
