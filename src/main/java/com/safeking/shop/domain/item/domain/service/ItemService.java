@@ -73,13 +73,14 @@ public class ItemService {
 
     private void createCategoryItem(List<Long> categories, Item item) {
 
-        categories.stream().forEach(categoryId ->{
+        for (Long categoryId : categories) {
 
             Category category = categoryRepository.findById(categoryId).orElseThrow();
-            CategoryItem categoryItem = new CategoryItem(category, item);
-            categoryItemRepository.save(categoryItem);
 
-        });
+            CategoryItem categoryItem = new CategoryItem(category, item);
+
+            categoryItemRepository.save(categoryItem);
+        }
     }
 
 

@@ -1,14 +1,13 @@
 package com.safeking.shop.domain.item.domain.entity;
 
-import com.safeking.shop.domain.common.BaseTimeEntity;
+import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import com.safeking.shop.domain.admin.domain.entity.Admin;
+import com.safeking.shop.domain.exception.ItemException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -76,5 +75,26 @@ public class Item extends BaseTimeEntity {
         this.description=description;
 
         this.price=price;
+    }
+
+    /**
+     * 상품수량 감소
+     * @param count 주문 상품 수량
+     */
+    public void removeItemQuantity(int count) {
+        int restStock = this.quantity - count;
+
+        if(restStock < 0) {
+            throw new ItemException("상품 재고가 부족합니다.");
+        }
+        this.quantity = restStock;
+    }
+
+    /**
+     * 상품 재고 증가
+     * @param count 주문상품취소 수량
+     */
+    public void addItemQuantity(int count) {
+        this.quantity += count;
     }
 }
