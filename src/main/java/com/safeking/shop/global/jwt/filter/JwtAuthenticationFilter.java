@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.security.auth.login.CredentialException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -59,17 +60,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     = authenticationManager.authenticate(authenticationToken);
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
-            log.info("principalDetails.name={}",principalDetails.getMember().getUsername());
-
             return authentication;
 
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             Error errorResponse = new Error(1200, e.getMessage());
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             generateResponseData(response, errorResponse);
-        }catch (IOException e){
-            throw new RuntimeException(e);
         }
         return null;
     }

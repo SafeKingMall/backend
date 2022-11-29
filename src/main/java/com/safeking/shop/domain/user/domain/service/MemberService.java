@@ -1,9 +1,11 @@
 package com.safeking.shop.domain.user.domain.service;
 
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
+import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.*;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -25,6 +27,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemoryMemberRepository memoryMemberRepository;
     private final CustomBCryPasswordEncoder encoder;
+    private final MemoryDormantRepository dormantRepository;
 
     private final SMSService smsService;
 
@@ -34,9 +37,12 @@ public class MemberService {
                 .username(criticalItemsDto.getUsername())
                 .password(encoder.encode(criticalItemsDto.getPassword()))
                 .email(criticalItemsDto.getEmail())
+                .accountNonLocked(true)
+                .status(MemberStatus.COMMON)
                 .roles("ROLE_USER")
                 .build();
 
+        generalMember.addLastLoginTime();
         memoryMemberRepository.save(generalMember);
 
         return generalMember.getId();
@@ -90,7 +96,7 @@ public class MemberService {
         memberRepository.findByUsername(username)
                 .orElseThrow(()->new MemberNotFoundException("member not found"))
                 .updateInfo(memberUpdateDto.getName(),memberUpdateDto.getBirth(),memberUpdateDto.getRepresentativeName(),memberUpdateDto.getPhoneNumber()
-                ,memberUpdateDto.getCompanyRegistrationNumber(),memberUpdateDto.getCorporateRegistrationNumber(),memberUpdateDto.getAddress());
+                        ,memberUpdateDto.getCompanyRegistrationNumber(),memberUpdateDto.getCorporateRegistrationNumber(),memberUpdateDto.getAddress());
     }
 
     public void updatePassword(String username,String password){
@@ -99,10 +105,32 @@ public class MemberService {
                 .updatePassword(encoder.encode(password));
     }
 
-    public Long getIdFromUsername(String username){
-        return memberRepository.findByUsername(username)
-                .orElseThrow(()->new UsernameNotFoundException("회원을 찾을 수가 없습니다."))
-                .getId();
+    public void humanAccountConverterBatch(){
+        memberRepository.findAll().stream()
+                .filter(member -> !member.getRoleList().stream().findFirst().get().equals("ROLE_ADMIN"))
+                .forEach(member -> member.convertHumanAccount());
+
+    }
+
+    public Long revertCommonAccounts(Long id, Boolean agreement){
+
+        memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("회원을 찾을 수가 없습니다.")).revertCommonAccounts();
+
+        try{
+            if(agreement!=true)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
+
+            Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+
+            member.addAgreement(true);
+            //필요한 게 다 있는지 check하는 로직 추가
+            if(!member.isCheckedItem())throw new IllegalArgumentException("필수 항목들을 모두 기입해주세요");
+            member.changeId(null);
+            memberRepository.save(member);
+
+            return member.getId();
+        }finally {
+            memoryMemberRepository.delete(id);
+        }
     }
 
 

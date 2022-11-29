@@ -30,9 +30,9 @@ public class SMSService {
         return code;
     }
 
-    public void sendPasswordToClient(String clientPhoneNumber, String password) throws CoolsmsException {
+    public void sendErrorMessage(String clientPhoneNumber) throws CoolsmsException {
 
-        sendInformation(clientPhoneNumber, password, "password");
+        sendInformation(clientPhoneNumber, "ERROR", "error");
     }
 
     public boolean checkCode(String clientCode, String clientPhoneNumber) {
@@ -71,7 +71,7 @@ public class SMSService {
 
 
     private static void sendInformation(String clientPhoneNumber, String information, String type) throws CoolsmsException {
-        String text = type.equals("code") ? "SAFEKING의 인증번호는 " : "고객님의 임시 비밀번호는 ";
+        String text = type.equals("code") ? "SAFEKING의 인증번호는 " : "지금 배치 과정중의  ";
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("to", clientPhoneNumber);
