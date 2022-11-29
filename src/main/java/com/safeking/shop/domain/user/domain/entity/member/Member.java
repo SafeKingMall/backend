@@ -63,7 +63,14 @@ public abstract class Member extends BaseMemberEntity {
         this.id = id;
     }
 
-    public void updateInfo(String name, String birth, String representativeName, String phoneNumber, String companyRegistrationNumber, String corporateRegistrationNumber, Address address){
+    public void updateInfo(String name
+                            ,String birth
+                            ,String representativeName
+                            ,String phoneNumber
+                            ,String companyRegistrationNumber
+                            ,String corporateRegistrationNumber
+                            ,Address address
+    ){
         this.name = name;
         this.birth = birth;
         this.representativeName = representativeName;
@@ -71,6 +78,35 @@ public abstract class Member extends BaseMemberEntity {
         this.companyRegistrationNumber = companyRegistrationNumber;
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.address = address;
+    }
+
+    public void updateInfoFromDormant(String name
+                                        ,String birth
+                                        ,String password
+                                        ,String email
+                                        ,String companyName
+                                        ,String representativeName
+                                        ,String phoneNumber
+                                        ,String companyRegistrationNumber
+                                        ,String corporateRegistrationNumber
+                                        ,Address address
+                                        ,String contact
+                                        ,Boolean agreement
+                                        ,Boolean accountNonLocked
+    ){
+        this.name = name;
+        this.birth = birth;
+        this.password = password;
+        this.email = email;
+        this.companyName = companyName;
+        this.representativeName = representativeName;
+        this.phoneNumber = phoneNumber;
+        this.companyRegistrationNumber = companyRegistrationNumber;
+        this.corporateRegistrationNumber = corporateRegistrationNumber;
+        this.address = address;
+        this.contact = contact;
+        this.agreement = agreement;
+        this.accountNonLocked = accountNonLocked;
     }
 
     public void updatePassword(String password){
@@ -93,6 +129,11 @@ public abstract class Member extends BaseMemberEntity {
         this.address=address;
         this.contact=contact;
 
+    }
+
+    public void addCriticalItemsForDormant(String password, String email){
+        this.password=password;
+        this.email=email;
     }
 
     public boolean isCheckedItem(){

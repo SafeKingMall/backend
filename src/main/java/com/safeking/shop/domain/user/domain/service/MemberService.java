@@ -5,6 +5,7 @@ import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.*;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -26,6 +27,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemoryMemberRepository memoryMemberRepository;
     private final CustomBCryPasswordEncoder encoder;
+    private final MemoryDormantRepository dormantRepository;
 
     private final SMSService smsService;
 
@@ -110,9 +112,25 @@ public class MemberService {
 
     }
 
-    public void revertCommonAccounts(Long id){
+    public Long revertCommonAccounts(Long id, Boolean agreement){
 
         memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("회원을 찾을 수가 없습니다.")).revertCommonAccounts();
+
+        try{
+            if(agreement!=true)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
+
+            Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+
+            member.addAgreement(true);
+            //필요한 게 다 있는지 check하는 로직 추가
+            if(!member.isCheckedItem())throw new IllegalArgumentException("필수 항목들을 모두 기입해주세요");
+            member.changeId(null);
+            memberRepository.save(member);
+
+            return member.getId();
+        }finally {
+            memoryMemberRepository.delete(id);
+        }
     }
 
 

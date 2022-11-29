@@ -4,6 +4,8 @@ import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
+import com.safeking.shop.domain.user.domain.service.DormantMemberService;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.web.query.repository.MemberQueryRepository;
 import com.safeking.shop.domain.user.web.query.service.MemberQueryService;
@@ -57,6 +59,8 @@ public class MemberController {
 
     private final SMSService smsService;
 
+    private final DormantMemberService dormantMemberService;
+
     @PostMapping("/signup/criticalItems")
     public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
 
@@ -85,6 +89,37 @@ public class MemberController {
         agreement = agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
 
         return memberService.changeMemoryToDB(memberId, agreement);
+
+    }
+
+    @PostMapping("/dormant/criticalItems")
+    public Long dormantCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
+
+        return dormantMemberService.addCriticalItems(criticalItems.toServiceDto());
+    }
+
+    @PostMapping("/dormant/authenticationInfo/{memberId}")
+    public Long dormantAuthenticationInfo(@PathVariable Long memberId, @RequestBody @Validated AuthenticationInfo authenticationInfo) {
+
+        return dormantMemberService.addAuthenticationInfo(memberId, authenticationInfo.toServiceDto());
+
+    }
+
+    @PostMapping("/dormant/memberInfo/{memberId}")
+    public Long dormantMemberInfo(@PathVariable Long memberId, @RequestBody @Validated MemberInfo memberInfo) {
+
+        return dormantMemberService.addMemberInfo(memberId, memberInfo.toServiceDto());
+
+    }
+
+    @PostMapping("/dormant/agreementInfo/{memberId}")
+    public Long dormantAgreementInfo(@PathVariable Long memberId, @RequestBody @Validated AgreementInfo agreementInfo) {
+
+        Boolean agreement = null;
+
+        agreement = agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
+
+        return dormantMemberService.revertCommonAccounts(memberId, agreement);
 
     }
 
@@ -126,11 +161,6 @@ public class MemberController {
     @PostMapping("/temporaryPassword")
     public String sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest) {
         return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
-    }
-
-    @GetMapping("admin/humanAccount/{memberId}")
-    public void convertHumanAccount(@PathVariable Long memberId) {
-        memberService.revertCommonAccounts(memberId);
     }
 
     @GetMapping("/admin/member/list")

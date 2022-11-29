@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 @EnableBatchProcessing
 @EnableScheduling
 @SpringBootApplication
+@EnableJpaAuditing
 public class BackendApplication {
 
     public static void main(String[] args) {

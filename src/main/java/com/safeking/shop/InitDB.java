@@ -59,11 +59,25 @@ public class InitDB {
                     .status(MemberStatus.HUMAN)
                     .roles("ROLE_USER").build();
             user.addLastLoginTime();
+
+            Member minsung = GeneralMember.builder()
+                    .name("minsung")
+                    .birth("971202")
+                    .username("kms199711")
+                    .password(encoder.encode("kms92460771*"))
+                    .email("kms199719@naver.com")
+                    .roles("ROLE_USER")
+                    .phoneNumber("01082460887")
+                    .accountNonLocked(true)
+                    .status(MemberStatus.COMMON)
+                    .companyName("safeking")
+                     .build();
+            minsung.addLastLoginTime();
+
+
             em.persist(user);
-
-
-
             em.persist(admin);
+            em.persist(minsung);
         }
     }
 
