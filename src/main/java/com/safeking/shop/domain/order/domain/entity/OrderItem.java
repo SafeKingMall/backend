@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.order.domain.entity;
 
-import com.safeking.shop.domain.common.BaseTimeEntity;
+import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,6 +20,10 @@ public class OrderItem extends BaseTimeEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    /**
+     * 양방향 관계로 설정
+     * OrderItem 이 연관관계의 주인으로 설정(외래키가 있는 곳이기 때문)
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
@@ -28,4 +32,29 @@ public class OrderItem extends BaseTimeEntity {
 
     private int count;
 
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.changeOrderItem(item, orderPrice, count);
+
+        return orderItem;
+    }
+
+    public void changeOrderItem(Item item, int orderPrice, int count) {
+        this.item = item;
+        this.orderPrice = orderPrice;
+        this.count = count;
+        item.removeItemQuantity(count); //재고 감소
+    }
+
+    /**
+     * 상품 취소시
+     * 상품에 있는 재고 증가
+     */
+    public void cancel() {
+        getItem().addItemQuantity(count);
+    }
+
+    public void changeOrder(Order order) {
+        this.order = order;
+    }
 }

@@ -1,5 +1,6 @@
 package com.safeking.shop.global;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
