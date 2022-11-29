@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.order.domain.entity;
 
-import com.safeking.shop.domain.admin.common.BaseTimeEntity;
+import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;

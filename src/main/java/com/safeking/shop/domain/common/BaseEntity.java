@@ -1,7 +1,6 @@
 package com.safeking.shop.domain.common;
 
 
-import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,7 @@ import javax.persistence.MappedSuperclass;
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BaseEntity extends BaseTimeEntity {
+public class BaseEntity extends BaseTimeEntity{
     @CreatedBy
     @Column(updatable = false)
     private String createdBy;
