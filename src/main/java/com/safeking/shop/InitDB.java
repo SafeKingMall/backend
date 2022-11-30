@@ -51,6 +51,7 @@ public class InitDB {
                 em.persist(user);
 
             }
+
             Member user = GeneralMember.builder()
                     .username("human")
                     .password(encoder.encode("1234"))

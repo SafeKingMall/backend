@@ -1,21 +1,26 @@
 package com.safeking.shop.domain.user.domain.service;
 
+import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.*;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import com.safeking.shop.global.exception.MemberNotFoundException;
+import com.safeking.shop.global.oauth.provider.GoogleUserInfo;
+import com.safeking.shop.global.oauth.provider.KakaoUserInfo;
+import com.safeking.shop.global.oauth.provider.Oauth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -27,9 +32,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemoryMemberRepository memoryMemberRepository;
     private final CustomBCryPasswordEncoder encoder;
-    private final MemoryDormantRepository dormantRepository;
-
-    private final SMSService smsService;
+    private final CartService cartService;
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
@@ -48,6 +51,52 @@ public class MemberService {
         return generalMember.getId();
     }
 
+    public CheckSignUp socialLogin(String registrationId, Map<String, Object> data) {
+
+        Oauth2UserInfo oauth2UserInfo = null;
+
+        if (registrationId.equals("google")) {
+            log.info("google login request");
+
+            oauth2UserInfo = new GoogleUserInfo(data);
+        } else if (registrationId.equals("kakao")) {
+            log.info("Kakao login request");
+
+            oauth2UserInfo = new KakaoUserInfo(data);
+        } else {
+            throw new IllegalArgumentException("카카오와 구글만 지원합니다.");
+        }
+
+        String provider = oauth2UserInfo.getProvider();
+        String providerId = oauth2UserInfo.getProviderId();
+        String username = provider + "_" + providerId;
+        String password = encoder.encode("safeking");
+        String email = oauth2UserInfo.getEmail();//구글이 준 email
+        String role = "ROLE_USER";
+
+        Member oauthMember = memberRepository.findByUsername(username).orElse(null);
+        if (oauthMember == null) {
+            oauthMember = OauthMember.builder()
+                    .username(username)
+                    .password(encoder.encode(password))
+                    .email(email)
+                    .roles(role)
+                    .accountNonLocked(true)
+                    .status(MemberStatus.COMMON)
+                    .provider(provider)
+                    .providerId(providerId)
+                    .build();
+
+            oauthMember.addLastLoginTime();
+            memoryMemberRepository.save(oauthMember);
+
+            return CheckSignUp.createSignUpUser(oauthMember.getId(),false);
+        } else {
+            log.info("Oauth 를 톤해 회원가입을 한 적이 있다.");
+            return CheckSignUp.createLoginUser(oauthMember.getUsername(),true);
+        }
+    }
+
     public Long addAuthenticationInfo(Long id,AuthenticationInfoDto authenticationInfoDto){
 
         Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
@@ -57,10 +106,18 @@ public class MemberService {
         return member.getId();
     }
 
+    public Long addMemberInfo(Long id, MemberInfoDto memberInfoDto){
+        Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+
+        member.addMemberInfo(memberInfoDto.getCompanyName(),memberInfoDto.getCompanyRegistrationNumber(),memberInfoDto.getCorporateRegistrationNumber(),memberInfoDto.getRepresentativeName(),memberInfoDto.getAddress(),memberInfoDto.getContact());
+
+        return member.getId();
+    }
+
     public Long changeMemoryToDB(Long id, Boolean agreement){
 
         try{
-            if(agreement!=true)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
+            if(!agreement)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
 
             Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
@@ -68,7 +125,9 @@ public class MemberService {
             //필요한 게 다 있는지 check하는 로직 추가
             if(!member.isCheckedItem())throw new IllegalArgumentException("필수 항목들을 모두 기입해주세요");
             member.changeId(null);
+
             memberRepository.save(member);
+            cartService.createCart(member);
 
             return member.getId();
         }finally {
@@ -77,13 +136,7 @@ public class MemberService {
     }
 
 
-    public Long addMemberInfo(Long id, MemberInfoDto memberInfoDto){
-        Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
-        member.addMemberInfo(memberInfoDto.getCompanyName(),memberInfoDto.getCompanyRegistrationNumber(),memberInfoDto.getCorporateRegistrationNumber(),memberInfoDto.getRepresentativeName(),memberInfoDto.getAddress(),memberInfoDto.getContact());
-
-        return member.getId();
-    }
 
     public boolean idDuplicationCheck(String username){
         //id를 사용가능하다면  true

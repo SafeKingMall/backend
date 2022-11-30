@@ -25,12 +25,6 @@ public class CartController {
     private final CartService cartService;
     private final CartQueryService cartQueryService;
 
-    @PostMapping("user/cart")
-    public void createCart(HttpServletRequest request){
-        //merge 후에 회원이 생성시에 자동 생성으로 바꾸고 한번만 생성되도록 하자
-        cartService.createCart(TokenUtils.getUsername(request));
-    }
-
     @PostMapping("user/cartItem")
     public void putCart(HttpServletRequest request, @RequestBody BasicRequest basicRequest){
 
