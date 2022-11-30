@@ -1,6 +1,8 @@
 package com.safeking.shop;
 
+import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.item.domain.entity.Item;
+import com.safeking.shop.domain.user.domain.entity.Address;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
@@ -22,8 +24,10 @@ public class InitDB {
 
     @PostConstruct
     public void init(){
-        initService.init1();
-        initService.init2();
+        initService.initAdminTestV1();
+        initService.initMemberTestV1();
+        initService.initItemTestV1();
+        initService.initCacheDB();
     }
 
     @Component
@@ -34,29 +38,63 @@ public class InitDB {
         private final CustomBCryPasswordEncoder encoder;
         private final MemberRepository memberRepository;
         private final CacheMemberRepository cacheMemberRepository;
+        private final CartService cartService;
 
-        public void init1(){
+        public void initAdminTestV1(){
             Member admin = GeneralMember.builder()
-                    .username("admin")
-                    .password(encoder.encode("1234"))
                     .name("admin")
+                    .birth("971202")
+                    .username("admin1234")
+                    .password(encoder.encode("admin1234*"))
+                    .email("kms199719@naver.com")
+                    .roles("ROLE_ADMIN")
+                    .phoneNumber("01082460887")
+                    .companyName("safeking")
                     .accountNonLocked(true)
                     .status(MemberStatus.COMMON)
-                    .roles("ROLE_ADMIN").build();
+                    .build();
             admin.addLastLoginTime();
 
+            em.persist(admin);
+        }
+
+        public void initMemberTestV1(){
+            //일반 회원 30명 넣기
             for (int i = 1; i <=30 ; i++) {
                 Member user = GeneralMember.builder()
-                        .username("user"+i)
-                        .password(encoder.encode("1234"))
-                        .name("user"+i)
+                        .name("admin")
+                        .birth("971202")
+                        .username("testUser"+i)
+                        .password(encoder.encode("testUser"+i+"*"))
+                        .email("kms199719@naver.com")
+                        .roles("ROLE_ADMIN")
+                        .phoneNumber("01082460887")
+                        .companyName("safeking")
+                        .companyRegistrationNumber("111")
+                        .corporateRegistrationNumber("222")
+                        .representativeName("MS")
+                        .address(new Address("서울시","마포대로","111"))
+                        .agreement(true)
                         .accountNonLocked(true)
                         .status(MemberStatus.COMMON)
-                        .roles("ROLE_USER").build();
+                        .build();
                 user.addLastLoginTime();
                 em.persist(user);
+                cartService.createCart(user);
 
             }
+            Member user = GeneralMember.builder()
+                    .username("humen1234")
+                    .password(encoder.encode("humen1234*"))
+                    .roles("ROLE_ADMIN")
+                    .accountNonLocked(false)
+                    .status(MemberStatus.HUMAN)
+                    .build();
+            user.addLastLoginTime();
+            em.persist(user);
+            cartService.createCart(user);
+        }
+        public void initItemTestV1(){
             for (int i = 1; i <=10 ; i++) {
                 Item item = new Item();
                 item.setPrice(100);
@@ -64,36 +102,9 @@ public class InitDB {
                 item.setQuantity(i);
                 em.persist(item);
             }
-            Member user = GeneralMember.builder()
-                    .username("human")
-                    .password(encoder.encode("1234"))
-                    .name("human")
-                    .accountNonLocked(false)
-                    .status(MemberStatus.HUMAN)
-                    .roles("ROLE_USER").build();
-            user.addLastLoginTime();
-
-            Member minsung = GeneralMember.builder()
-                    .name("minsung")
-                    .birth("971202")
-                    .username("kms199711")
-                    .password(encoder.encode("kms92460771*"))
-                    .email("kms199719@naver.com")
-                    .roles("ROLE_USER")
-                    .phoneNumber("01082460887")
-                    .accountNonLocked(true)
-                    .status(MemberStatus.COMMON)
-                    .companyName("safeking")
-                     .build();
-            minsung.addLastLoginTime();
-
-
-            em.persist(user);
-            em.persist(admin);
-            em.persist(minsung);
         }
 
-        public void init2(){
+        public void initCacheDB(){
             memberRepository.findAll().stream().forEach(cacheMemberRepository::save);
         }
     }
