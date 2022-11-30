@@ -1,4 +1,4 @@
-package com.safeking.shop.global.jwt.exception;
+package com.safeking.shop.global.exception;
 
 public class CacheException extends RuntimeException{
     public CacheException() {
