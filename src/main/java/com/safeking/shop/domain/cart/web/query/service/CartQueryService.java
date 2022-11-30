@@ -20,22 +20,5 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartQueryService {
 
-    private final CartQueryRepository cartQueryRepository;
-
-    private final CartRepository cartRepository;
-
-    public CartResponse showCart(String username){
-
-        List<CartItemResponse> cartItemResponses = cartQueryRepository.searchAll(username);
-
-        return CartResponse.builder()
-                .cartItemResponses(cartItemResponses)
-                .deliveryFee(Cart.DELIVERY_FEE)
-                .totalPrice(
-                        cartItemResponses
-                                .stream()
-                                .mapToInt(cartItem -> cartItem.getItemPrice()).sum())
-                                .build();
-    }
 
 }

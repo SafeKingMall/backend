@@ -12,6 +12,9 @@ import com.safeking.shop.domain.cart.web.response.CartResponse;
 import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +27,7 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class CartController {
     private final CartService cartService;
-    private final CartQueryService cartQueryService;
+    private final CartQueryRepository cartQueryRepository;
     private final CartItemService cartItemService;
 
     @PostMapping("user/cartItem")
@@ -46,10 +49,9 @@ public class CartController {
     }
     
     @GetMapping("user/cart")
-    public CartResponse showCartList(HttpServletRequest request){
-        return cartQueryService.showCart(TokenUtils.getUsername(request));
+    public Page<CartItemResponse> showCartList(HttpServletRequest request, @PageableDefault(page = 0, size = 15) Pageable pageable) {
+        return cartQueryRepository.searchAll(TokenUtils.getUsername(request), pageable);
     }
-
     @DeleteMapping("/user/cart/{username}")
     public void deleteCart(@PathVariable String username){
 
