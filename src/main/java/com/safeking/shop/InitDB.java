@@ -10,12 +10,13 @@ import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-
+@Profile("local")
 @Component
 @RequiredArgsConstructor
 public class InitDB {
@@ -62,7 +63,7 @@ public class InitDB {
             //일반 회원 30명 넣기
             for (int i = 1; i <=30 ; i++) {
                 Member user = GeneralMember.builder()
-                        .name("admin")
+                        .name("user")
                         .birth("971202")
                         .username("testUser"+i)
                         .password(encoder.encode("testUser"+i+"*"))
