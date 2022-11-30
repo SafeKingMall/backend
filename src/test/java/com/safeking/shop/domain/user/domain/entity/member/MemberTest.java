@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor
 class MemberTest {
     private final CustomBCryPasswordEncoder encoder;
-
+    //태스트 시작
     @Test
     void getRoleList() {
 
