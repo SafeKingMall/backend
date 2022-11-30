@@ -101,17 +101,29 @@ public class MemberService {
 
     public Long addAuthenticationInfo(Long id,AuthenticationInfoDto authenticationInfoDto){
 
-        Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+        Member member = memoryMemberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
-        member.addAuthenticationInfo(authenticationInfoDto.getName(),authenticationInfoDto.getBirth(),authenticationInfoDto.getPhoneNumber());
+        member.addAuthenticationInfo(
+                authenticationInfoDto.getName()
+                ,authenticationInfoDto.getBirth()
+                ,authenticationInfoDto.getPhoneNumber()
+        );
 
         return member.getId();
     }
 
     public Long addMemberInfo(Long id, MemberInfoDto memberInfoDto){
-        Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+        Member member = memoryMemberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
-        member.addMemberInfo(memberInfoDto.getCompanyName(),memberInfoDto.getCompanyRegistrationNumber(),memberInfoDto.getCorporateRegistrationNumber(),memberInfoDto.getRepresentativeName(),memberInfoDto.getAddress(),memberInfoDto.getContact());
+        member.addMemberInfo(
+                memberInfoDto.getCompanyName()
+                ,memberInfoDto.getCompanyRegistrationNumber()
+                ,memberInfoDto.getCorporateRegistrationNumber()
+                ,memberInfoDto.getRepresentativeName()
+                ,memberInfoDto.getAddress()
+                ,memberInfoDto.getContact());
 
         return member.getId();
     }
@@ -121,7 +133,8 @@ public class MemberService {
         try{
             if(!agreement)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
 
-            Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+            Member member = memoryMemberRepository.findById(id)
+                    .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
             member.addAgreement(true);
             //필요한 게 다 있는지 check 하는 로직
@@ -134,6 +147,7 @@ public class MemberService {
             cacheMemberRepository.save(member);
 
             return member.getId();
+
         }finally {
             memoryMemberRepository.delete(id);
         }
@@ -144,7 +158,8 @@ public class MemberService {
 
     public boolean idDuplicationCheck(String username){
         //id를 사용가능하다면  true
-        return memberRepository.findByUsername(username).orElse(null) == null & memoryMemberRepository.findDuplication(username);
+        return memberRepository.findByUsername(username)
+                .orElse(null) == null & memoryMemberRepository.findDuplication(username);
     }
 
     public void updateMemberInfo(String username,MemberUpdateDto memberUpdateDto){
@@ -152,8 +167,14 @@ public class MemberService {
 
         memberRepository.findByUsername(username)
                 .orElseThrow(()->new MemberNotFoundException("member not found"))
-                .updateInfo(memberUpdateDto.getName(),memberUpdateDto.getBirth(),memberUpdateDto.getRepresentativeName(),memberUpdateDto.getPhoneNumber()
-                        ,memberUpdateDto.getCompanyRegistrationNumber(),memberUpdateDto.getCorporateRegistrationNumber(),memberUpdateDto.getAddress());
+                .updateInfo(
+                        memberUpdateDto.getName()
+                        ,memberUpdateDto.getBirth()
+                        ,memberUpdateDto.getRepresentativeName()
+                        ,memberUpdateDto.getPhoneNumber()
+                        ,memberUpdateDto.getCompanyRegistrationNumber()
+                        ,memberUpdateDto.getCorporateRegistrationNumber()
+                        ,memberUpdateDto.getAddress());
     }
 
     public void updatePassword(String username,String password){
@@ -205,10 +226,10 @@ public class MemberService {
         String temporaryPassword = createCode();
 
         member.changePassword(encoder.encode(temporaryPassword));
-
         return temporaryPassword;
     }
 
+    //임시비밀번호를 생성
     private static String createCode() {
         Random rand  = new Random();
         String code = "";

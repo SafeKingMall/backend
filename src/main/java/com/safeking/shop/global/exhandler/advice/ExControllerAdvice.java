@@ -2,6 +2,7 @@ package com.safeking.shop.global.exhandler.advice;
 
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.exception.MemberNotFoundException;
+import com.safeking.shop.global.jwt.exception.CacheException;
 import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -52,6 +53,12 @@ public class ExControllerAdvice {
         log.error("[EntityNotFoundException] ex",e);
 
         return new ResponseEntity<>(new Error(5001,e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler
+    public ResponseEntity<Error> CacheExceptionExHandler(CacheException e){
+        log.error("[EntityNotFoundException] ex",e);
+
+        return new ResponseEntity<>(new Error(1998,e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler

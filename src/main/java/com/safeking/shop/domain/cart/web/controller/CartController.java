@@ -1,25 +1,19 @@
 package com.safeking.shop.domain.cart.web.controller;
 
-import com.safeking.shop.domain.cart.domain.repository.CartItemRepository;
-import com.safeking.shop.domain.cart.domain.repository.CartRepository;
 import com.safeking.shop.domain.cart.domain.service.CartItemService;
 import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.cart.web.query.repository.CartQueryRepository;
-import com.safeking.shop.domain.cart.web.query.service.CartQueryService;
 import com.safeking.shop.domain.cart.web.request.BasicRequest;
 import com.safeking.shop.domain.cart.web.response.CartItemResponse;
-import com.safeking.shop.domain.cart.web.response.CartResponse;
 import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

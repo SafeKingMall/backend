@@ -22,28 +22,36 @@ public class DormantMemberService {
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
-        Member dormant = memberRepository.findByUsername(criticalItemsDto.getUsername()).orElseThrow(() -> new MemberNotFoundException("일치하는 회원이 없습니다."));
+        Member dormant = memberRepository.findByUsername(criticalItemsDto.getUsername())
+                .orElseThrow(() -> new MemberNotFoundException("일치하는 회원이 없습니다."));
+
         dormant.addCriticalItemsForDormant(criticalItemsDto.getPassword(),criticalItemsDto.getEmail());
-
         dormant.addLastLoginTime();
-        dormantRepository.save(dormant);
 
+        dormantRepository.save(dormant);
         return dormant.getId();
     }
     public Long addAuthenticationInfo(Long id, AuthenticationInfoDto authenticationInfoDto){
 
-        Member dormant = dormantRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+        Member dormant = dormantRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
         dormant.addAuthenticationInfo(authenticationInfoDto.getName(),authenticationInfoDto.getBirth(),authenticationInfoDto.getPhoneNumber());
-
         return dormant.getId();
     }
 
     public Long addMemberInfo (Long id, MemberInfoDto memberInfoDto){
-        Member dormant = dormantRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+        Member dormant = dormantRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
-        dormant.addMemberInfo(memberInfoDto.getCompanyName(),memberInfoDto.getCompanyRegistrationNumber(),memberInfoDto.getCorporateRegistrationNumber(),memberInfoDto.getRepresentativeName(),memberInfoDto.getAddress(),memberInfoDto.getContact());
-
+        dormant.addMemberInfo(
+                memberInfoDto.getCompanyName()
+                ,memberInfoDto.getCompanyRegistrationNumber()
+                ,memberInfoDto.getCorporateRegistrationNumber()
+                ,memberInfoDto.getRepresentativeName()
+                ,memberInfoDto.getAddress()
+                ,memberInfoDto.getContact()
+        );
         return dormant.getId();
     }
 
@@ -52,15 +60,20 @@ public class DormantMemberService {
         try{
             if(agreement!=true)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
 
-            Member dormant = dormantRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+            Member dormant = dormantRepository.findById(id)
+                    .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
+            //휴먼의 개인 정보수집, 휴먼 계정에서 일반 계정으로 변환
             dormant.addAgreement(true);
             dormant.revertCommonAccounts();
-            //필요한 게 다 있는지 check하는 로직 추가
+
+            //필요한 게 다 있는지 check하는 로직
             if(!dormant.isCheckedItem())throw new IllegalArgumentException("필수 항목들을 모두 기입해주세요");
 
             //실제 db에 반영
-            Member member = memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+            Member member = memberRepository.findById(id)
+                    .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+
             member.updateInfoFromDormant(
                     dormant.getName()
                     ,dormant.getBirth()
@@ -78,6 +91,7 @@ public class DormantMemberService {
             );
             member.addLastLoginTime();
             return member.getId();
+
         }finally {
             dormantRepository.delete(id);
         }

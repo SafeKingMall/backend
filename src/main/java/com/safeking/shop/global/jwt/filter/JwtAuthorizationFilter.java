@@ -6,6 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.safeking.shop.global.exception.MemberNotFoundException;
+import com.safeking.shop.global.jwt.exception.CacheException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,7 +55,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         if(username!=null){
 
-            Member member = cacheMemberRepository.findByUsername(username).orElseThrow();
+            Member member = cacheMemberRepository.findByUsername(username).orElseThrow(()->new CacheException("캐시에 문제가 있습니다."));
 
             PrincipalDetails principalDetails = new PrincipalDetails(member);
 

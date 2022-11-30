@@ -5,6 +5,7 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
+import com.safeking.shop.domain.user.domain.service.CacheService;
 import com.safeking.shop.domain.user.domain.service.DormantMemberService;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.domain.service.dto.CheckSignUp;
@@ -58,6 +59,7 @@ public class MemberController {
     private final TokenUtils tokenUtils;
     private final SMSService smsService;
     private final DormantMemberService dormantMemberService;
+    private final CacheService cacheService;
 
     @PostMapping("/signup/criticalItems")
     public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
@@ -83,7 +85,6 @@ public class MemberController {
     public Long signUpAgreementInfo(@PathVariable Long memberId, @RequestBody @Validated AgreementInfo agreementInfo) {
 
         Boolean agreement = null;
-
         agreement = agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
 
         return memberService.changeMemoryToDB(memberId, agreement);
@@ -160,6 +161,9 @@ public class MemberController {
     public String sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest) {
         return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
     }
+
+    @GetMapping("/admin/cache/restoration")
+    public void cacheRestoration(){ cacheService.cacheRestoration(); }
 
     @GetMapping("/admin/member/list")
     public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 15) Pageable pageable) {
