@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return authentication;
 
         } catch (Exception e) {
-            Error errorResponse = new Error(1300, e.getMessage());
+            Error errorResponse = new Error(1400, e.getMessage());
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             generateResponseData(response, errorResponse);
