@@ -15,8 +15,8 @@ import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem,Long> {
 
-    @Query("select ci from CartItem ci join fetch Cart c join fetch Member m where ci.item.id=:itemId and m.username =:username")
-    Optional<CartItem> findByItemIdUsername(@Param("itemId") Long itemId, @Param("username") String username);
+    @Query("select ci from CartItem ci join fetch ci.cart c join fetch c.member m where ci.item.id=:itemId and m.username =:username")
+    Optional<CartItem> findByItemIdAndUsername(@Param("itemId") Long itemId, @Param("username") String username);
 
     @Modifying
     @Query("delete from CartItem c where c.cart.id=:cartId")

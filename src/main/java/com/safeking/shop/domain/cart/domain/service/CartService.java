@@ -26,7 +26,6 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
 
 
@@ -38,47 +37,6 @@ public class CartService {
         cartRepository.save(cart);
 
         return cart.getId();
-    }
-
-    public void putCart(String username, Long itemId, int count){
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new EntityNotFoundException("아이템이 존재하지 않습니다."));
-
-        Cart cart = getCartForUsername(username);
-
-//        CartItem cartItem = cartItemRepository.findByItemAndCart(item, cart).orElse(null);
-//
-//        if (cartItem != null) throw new EntityExistsException("동일한 상품이 장바구니에 있습니다.");
-//
-//        CartItem newCartItem = new CartItem(item, cart, count);
-//        cartItemRepository.save(newCartItem);
-    }
-
-    public void deleteCartItemFromCart(String username, Long... itemId){
-
-        Cart cart = cartRepository.findCartByUsername(username).orElseThrow(() -> new EntityNotFoundException("장바구니가 없습니다."));
-        if(itemId!=null) cartItemRepository.deleteCartItem(cart.getId(), itemId);
-
-    }
-
-//    public void updateCartItem(String username, Long itemId, int count){
-//        CartItem cartItem = findCartItem(username, itemId).orElseThrow(()->new EntityNotFoundException("찾으시는 장바구니 아이템이 없습니다."));
-//
-//        cartItem.changeCount(count);
-//    }
-
-//    private Optional<CartItem> findCartItem(String username, Long itemId) {
-//        Item item = itemRepository.findById(itemId).orElseThrow(() -> new EntityNotFoundException("아이템이 존재하지 않습니다."));
-//
-//        Cart cart = getCartForUsername(username);
-//
-//        CartItem cartItem = cartItemRepository.findByItemAndCart(item, cart).orElseThrow(() -> new EntityNotFoundException("찾으시는 아이템이 없습니다."));
-//        return Optional.ofNullable(cartItem);
-//    }
-
-
-    private Cart getCartForUsername(String username) {
-        return cartRepository.findCartByUsername(username)
-                .orElseThrow(()->new EntityNotFoundException("장바구니가 존재하지 않습니다."));
     }
 
     public void deleteCart(String username){

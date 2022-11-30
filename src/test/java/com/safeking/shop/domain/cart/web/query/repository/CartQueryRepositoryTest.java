@@ -3,6 +3,7 @@ package com.safeking.shop.domain.cart.web.query.repository;
 import com.safeking.shop.domain.cart.domain.entity.Cart;
 import com.safeking.shop.domain.cart.domain.repository.CartItemRepository;
 import com.safeking.shop.domain.cart.domain.repository.CartRepository;
+import com.safeking.shop.domain.cart.domain.service.CartItemService;
 import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
@@ -35,6 +36,8 @@ class CartQueryRepositoryTest {
     ItemRepository itemRepository;
     @Autowired
     CartService cartService;
+    @Autowired
+    CartItemService cartItemService;
     @Test
     void searchAll() {
 
@@ -64,16 +67,16 @@ class CartQueryRepositoryTest {
         Cart cart = new Cart(user);
         cartRepository.save(cart);
 
-        cartService.putCart(user.getUsername(),1L,3);
-        cartService.putCart(user.getUsername(),2L,3);
-        cartService.putCart(user.getUsername(),3L,3);
+        cartItemService.putCart(user.getUsername(),1L,3);
+        cartItemService.putCart(user.getUsername(),2L,3);
+        cartItemService.putCart(user.getUsername(),3L,3);
 
         Cart cart2 = new Cart(user2);
         cartRepository.save(cart2);
 
-        cartService.putCart(user2.getUsername(),4L,3);
-        cartService.putCart(user2.getUsername(),5L,3);
-        cartService.putCart(user2.getUsername(),6L,3);
+        cartItemService.putCart(user2.getUsername(),4L,3);
+        cartItemService.putCart(user2.getUsername(),5L,3);
+        cartItemService.putCart(user2.getUsername(),6L,3);
 
         Long id = cartRepository.findCartByUsername(user2.getUsername()).orElseThrow().getId();
 

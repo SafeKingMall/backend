@@ -1,6 +1,8 @@
 package com.safeking.shop.domain.cart.web.controller;
 
+import com.safeking.shop.domain.cart.domain.repository.CartItemRepository;
 import com.safeking.shop.domain.cart.domain.repository.CartRepository;
+import com.safeking.shop.domain.cart.domain.service.CartItemService;
 import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.cart.web.query.repository.CartQueryRepository;
 import com.safeking.shop.domain.cart.web.query.service.CartQueryService;
@@ -21,26 +23,26 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/v1")
 public class CartController {
-    private final CartRepository cartRepository;
     private final CartService cartService;
     private final CartQueryService cartQueryService;
+    private final CartItemService cartItemService;
 
     @PostMapping("user/cartItem")
     public void putCart(HttpServletRequest request, @RequestBody BasicRequest basicRequest){
 
-        cartService.putCart(TokenUtils.getUsername(request), basicRequest.getItemId(), basicRequest.getCount());
+        cartItemService.putCart(TokenUtils.getUsername(request), basicRequest.getItemId(), basicRequest.getCount());
     }
 
-//    @PatchMapping("user/cartItem")
-//    public void updateCart(HttpServletRequest request,@RequestBody BasicRequest basicRequest){
-//
-//        cartService.updateCartItem(TokenUtils.getUsername(request),basicRequest.getItemId(), basicRequest.getCount());
-//    }
+    @PatchMapping("user/cartItem")
+    public void updateCartItem(HttpServletRequest request,@RequestBody BasicRequest basicRequest){
+
+        cartItemService.updateCartItem(TokenUtils.getUsername(request),basicRequest.getItemId(), basicRequest.getCount());
+    }
 
     @DeleteMapping("user/cartItem")
-    public void deleteCart(HttpServletRequest request,Long... itemId){
+    public void deleteCartItem(HttpServletRequest request,Long... itemId){
 
-        cartService.deleteCartItemFromCart(TokenUtils.getUsername(request),itemId);
+        cartItemService.deleteCartItemFromCart(TokenUtils.getUsername(request),itemId);
     }
     
     @GetMapping("user/cart")
