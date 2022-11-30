@@ -3,9 +3,9 @@ package com.safeking.shop.global.jwt.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,11 +25,11 @@ import static com.safeking.shop.global.jwt.TokenUtils.*;
 //권한처리시 사용되는 필터
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private MemberRepository memberRepository;
+    private CacheMemberRepository cacheMemberRepository;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, CacheMemberRepository cacheMemberRepository) {
         super(authenticationManager);
-        this.memberRepository=memberRepository;
+        this.cacheMemberRepository = cacheMemberRepository;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         if(username!=null){
 
-            Member member = memberRepository.findByUsername(username).orElseThrow();
+            Member member = cacheMemberRepository.findByUsername(username).orElseThrow();
 
             PrincipalDetails principalDetails = new PrincipalDetails(member);
 

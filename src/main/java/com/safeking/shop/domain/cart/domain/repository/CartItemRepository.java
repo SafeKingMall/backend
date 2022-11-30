@@ -9,12 +9,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem,Long> {
 
-    Optional<CartItem> findByItemAndCart(Item item, Cart cart);
+    @Query("select ci from CartItem ci join fetch Cart c join fetch Member m where ci.item.id=:itemId and m.username =:username")
+    Optional<CartItem> findByItemIdUsername(@Param("itemId") Long itemId, @Param("username") String username);
 
     @Modifying
     @Query("delete from CartItem c where c.cart.id=:cartId")

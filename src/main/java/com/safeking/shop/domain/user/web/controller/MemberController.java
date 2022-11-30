@@ -55,7 +55,6 @@ public class MemberController {
     private final MemberQueryService memberQueryService;
     private final MemberRepository memberRepository;
     private final MemberQueryRepository memberQueryRepository;
-    private final BCryptPasswordEncoder encoder;
     private final TokenUtils tokenUtils;
     private final SMSService smsService;
     private final DormantMemberService dormantMemberService;

@@ -31,11 +31,11 @@ public class CartController {
         cartService.putCart(TokenUtils.getUsername(request), basicRequest.getItemId(), basicRequest.getCount());
     }
 
-    @PatchMapping("user/cartItem")
-    public void updateCart(HttpServletRequest request,@RequestBody BasicRequest basicRequest){
-
-        cartService.updateCartItem(TokenUtils.getUsername(request),basicRequest.getItemId(), basicRequest.getCount());
-    }
+//    @PatchMapping("user/cartItem")
+//    public void updateCart(HttpServletRequest request,@RequestBody BasicRequest basicRequest){
+//
+//        cartService.updateCartItem(TokenUtils.getUsername(request),basicRequest.getItemId(), basicRequest.getCount());
+//    }
 
     @DeleteMapping("user/cartItem")
     public void deleteCart(HttpServletRequest request,Long... itemId){

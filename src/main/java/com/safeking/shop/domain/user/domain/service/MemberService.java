@@ -6,6 +6,7 @@ import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
+import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
@@ -33,6 +34,7 @@ public class MemberService {
     private final MemoryMemberRepository memoryMemberRepository;
     private final CustomBCryPasswordEncoder encoder;
     private final CartService cartService;
+    private final CacheMemberRepository cacheMemberRepository;
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
@@ -122,12 +124,14 @@ public class MemberService {
             Member member = memoryMemberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
             member.addAgreement(true);
-            //필요한 게 다 있는지 check하는 로직 추가
+            //필요한 게 다 있는지 check 하는 로직
             if(!member.isCheckedItem())throw new IllegalArgumentException("필수 항목들을 모두 기입해주세요");
             member.changeId(null);
 
+            //1. db에 저장, 2. 장바구니 생성, 3. 캐시 db에 저장
             memberRepository.save(member);
             cartService.createCart(member);
+            cacheMemberRepository.save(member);
 
             return member.getId();
         }finally {

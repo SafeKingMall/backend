@@ -1,8 +1,11 @@
 package com.safeking.shop;
 
+import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,6 +23,7 @@ public class InitDB {
     @PostConstruct
     public void init(){
         initService.init1();
+        initService.init2();
     }
 
     @Component
@@ -28,6 +32,8 @@ public class InitDB {
     static class InitService{
         private final EntityManager em;
         private final CustomBCryPasswordEncoder encoder;
+        private final MemberRepository memberRepository;
+        private final CacheMemberRepository cacheMemberRepository;
 
         public void init1(){
             Member admin = GeneralMember.builder()
@@ -51,7 +57,13 @@ public class InitDB {
                 em.persist(user);
 
             }
-
+            for (int i = 1; i <=10 ; i++) {
+                Item item = new Item();
+                item.setPrice(100);
+                item.setName("item"+i);
+                item.setQuantity(i);
+                em.persist(item);
+            }
             Member user = GeneralMember.builder()
                     .username("human")
                     .password(encoder.encode("1234"))
@@ -79,6 +91,10 @@ public class InitDB {
             em.persist(user);
             em.persist(admin);
             em.persist(minsung);
+        }
+
+        public void init2(){
+            memberRepository.findAll().stream().forEach(cacheMemberRepository::save);
         }
     }
 
