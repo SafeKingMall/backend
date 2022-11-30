@@ -38,8 +38,6 @@ public class BackendApplication {
 
         if (null == authentication || !authentication.isAuthenticated())return null;
 
-        log.info("--------"+authentication.getPrincipal());
-
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         return ()->Optional.of(principal.getMember().getUsername());
     }
