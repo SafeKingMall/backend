@@ -70,7 +70,7 @@ public class ItemController {
     }
 
     @GetMapping("/item/admin/list")
-    public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable){
+    public Page<ItemListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable){
         Page<ItemListResponse> itemLst = itemService.List(pageable).map(m -> ItemListResponse.builder()
                 .id(m.getId())
                 .name(m.getName())
@@ -97,6 +97,18 @@ public class ItemController {
                 , itemViewDto.getLastModifiedDate()
         );
         return itemViewResponse;
+    }
+
+    @GetMapping("/item/list")
+    public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable){
+        Page<ItemListResponse> itemLst = itemService.List(pageable).map(m -> ItemListResponse.builder()
+                .id(m.getId())
+                .name(m.getName())
+                .createDate(m.getCreateDate().toString())
+                .lastModifiedDate(m.getLastModifiedDate().toString())
+                .build()
+        );
+        return itemLst;
     }
 
 }
