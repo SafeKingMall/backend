@@ -16,8 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-@Profile("local")
+
 @Component
+@Profile("local")
 @RequiredArgsConstructor
 public class InitDB {
 
@@ -68,7 +69,7 @@ public class InitDB {
                         .username("testUser"+i)
                         .password(encoder.encode("testUser"+i+"*"))
                         .email("kms199719@naver.com")
-                        .roles("ROLE_ADMIN")
+                        .roles("ROLE_USER")
                         .phoneNumber("01082460887")
                         .companyName("safeking")
                         .companyRegistrationNumber("111")
@@ -87,7 +88,7 @@ public class InitDB {
             Member user = GeneralMember.builder()
                     .username("humen1234")
                     .password(encoder.encode("humen1234*"))
-                    .roles("ROLE_ADMIN")
+                    .roles("ROLE_USER")
                     .accountNonLocked(false)
                     .status(MemberStatus.HUMAN)
                     .build();
