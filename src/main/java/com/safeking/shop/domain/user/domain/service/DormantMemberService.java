@@ -88,6 +88,7 @@ public class DormantMemberService {
                     ,dormant.getContact()
                     ,dormant.getAgreement()
                     ,dormant.getAccountNonLocked()
+                    ,dormant.getStatus()
             );
             member.addLastLoginTime();
             return member.getId();
