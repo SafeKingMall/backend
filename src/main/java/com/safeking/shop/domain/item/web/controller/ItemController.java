@@ -53,7 +53,7 @@ public class ItemController {
     }
 
     @GetMapping("/item/admin/{itemId}")
-    public ItemViewResponse itemView(@PathVariable Long itemId){
+    public ItemViewResponse itemAdminView(@PathVariable Long itemId){
         ItemViewResponse itemViewResponse;
         itemViewResponse = new ItemViewResponse(itemService.view(itemId).getId()
                 , itemService.view(itemId).getName()
@@ -79,6 +79,24 @@ public class ItemController {
                 .build()
         );
         return itemLst;
+    }
+
+    @GetMapping("/item/{itemId}")
+    public ItemViewResponse itemView(@PathVariable Long itemId){
+        ItemViewResponse itemViewResponse;
+        ItemViewDto itemViewDto = itemService.view(itemId);
+        itemViewResponse = new ItemViewResponse(itemViewDto.getId()
+                , itemViewDto.getName()
+                , itemViewDto.getQuantity()
+                , itemViewDto.getDescription()
+                , ("Y".equals(itemViewDto.getViewYn())?itemViewDto.getPrice():null)
+                , itemViewDto.getAdminId()
+                , itemViewDto.getCategories()
+                , itemViewDto.getCategoryName()
+                , itemViewDto.getCreateDate()
+                , itemViewDto.getLastModifiedDate()
+        );
+        return itemViewResponse;
     }
 
 }

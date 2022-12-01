@@ -10,6 +10,7 @@ import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -21,6 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ItemService {
 
     private final CategoryRepository categoryRepository;
@@ -84,6 +86,7 @@ public class ItemService {
 
     public ItemViewDto view(Long id){
         Item item = itemRepository.findById(id).orElseThrow();
+        log.info("Item.viewYn : "+ item.getViewYn());
         ItemViewDto itemViewDto = new ItemViewDto(item.getId(),
                 item.getName(),
                 item.getQuantity(),
@@ -93,7 +96,8 @@ public class ItemService {
                 null,
                 null,
                 item.getCreateDate().toString(),
-                item.getLastModifiedDate().toString()
+                item.getLastModifiedDate().toString(),
+                item.getViewYn()
                 );
 
         return itemViewDto;

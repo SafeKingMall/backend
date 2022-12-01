@@ -6,6 +6,7 @@ import com.safeking.shop.domain.exception.ItemException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -24,6 +25,10 @@ public class Item extends BaseTimeEntity {
     private String description;
 
     private int price;
+
+    @Column(name="view_yn")
+    @ColumnDefault("'Y'")
+    private String viewYn = "Y";
 
 
     //BaseEntity가 있는데 이게 꼭 필요한가?
