@@ -41,4 +41,9 @@ public class NoticeService {
         notice.update(noticeUpdateDto.getTitle(), noticeUpdateDto.getContents(), noticeUpdateDto.getMemberId());
     }
 
+    public void delete(Long id){
+        Notice notice = noticeRepository.findById(id).orElseThrow();
+        noticeRepository.delete(notice);
+    }
+
 }

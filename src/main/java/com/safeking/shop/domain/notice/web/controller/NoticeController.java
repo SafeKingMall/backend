@@ -45,4 +45,10 @@ public class NoticeController {
         noticeService.update(noticeUpdateDto);
     }
 
+    @DeleteMapping("/admin/notice/{noticeId}")
+    public void delete(@PathVariable Long noticeId, HttpServletRequest request){
+        String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
+        noticeService.delete(noticeId);
+    }
+
 }
