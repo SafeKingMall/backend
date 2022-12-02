@@ -106,6 +106,7 @@ public class ItemController {
                 .name(m.getName())
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
+                .price(("Y".equals(m.getViewYn())?m.getPrice():null))
                 .build()
         );
         return itemLst;
