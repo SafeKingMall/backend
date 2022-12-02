@@ -10,6 +10,7 @@ import com.safeking.shop.domain.item.domain.repository.ItemAnswerRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemQuestionRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemAnswer.ItemAnswerViewDto;
+import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionListDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionUpdateDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionViewDto;
@@ -18,6 +19,8 @@ import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,5 +86,18 @@ public class ItemQuestionService {
                 , itemAnswerQueryRepository.findAnswerByTargetQuestionId(itemQuestion.getId())
         );
         return itemQuestionViewDto;
+    }
+
+    public Page<ItemQuestionListDto> list(Pageable pageable){
+        Page<ItemQuestionListDto> posts = itemQuestionRepository.findAll(pageable).map(m->ItemQuestionListDto.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .itemId(m.getItem().getId())
+                .memberId(m.getWriter().getUsername())
+                .createDate(m.getCreateDate().toString())
+                .lastModifiedDate(m.getLastModifiedDate().toString())
+                .build()
+        );
+        return posts;
     }
 }

@@ -8,6 +8,7 @@ import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.Item
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
 import com.safeking.shop.domain.item.web.response.CategoryListResponse;
+import com.safeking.shop.domain.item.web.response.ItemQuestionListResponse;
 import com.safeking.shop.domain.item.web.response.ItemQuestionViewResponse;
 import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
@@ -59,5 +62,18 @@ public class ItemQuestionController {
                 , itemQuestionViewDto.getAnswer()
         );
         return itemQuestionViewResponse;
+    }
+
+    @GetMapping("/itemQna/list")
+    public Page<ItemQuestionListResponse> list(@PageableDefault(size=10) Pageable pageable){
+        return itemQuestionService.list(pageable).map(m -> ItemQuestionListResponse.builder()
+                .id(m.getId())
+                .itemId(m.getItemId())
+                .title(m.getTitle())
+                .createDate(m.getCreateDate())
+                .lastModifiedDate(m.getLastModifiedDate())
+                .memberId(m.getMemberId())
+                .build()
+        );
     }
 }
