@@ -10,6 +10,8 @@ import com.safeking.shop.domain.item.web.response.ItemViewResponse;
 import com.safeking.shop.domain.notice.domain.sevice.NoticeService;
 import com.safeking.shop.domain.notice.domain.sevice.servicedto.notice.NoticeSaveDto;
 import com.safeking.shop.domain.notice.domain.sevice.servicedto.notice.NoticeUpdateDto;
+import com.safeking.shop.domain.notice.domain.sevice.servicedto.notice.NoticeViewDto;
+import com.safeking.shop.domain.notice.web.response.NoticeViewResponse;
 import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +33,7 @@ public class NoticeController {
     private final NoticeService noticeService;
 
     @PostMapping("/admin/notice")
-    public Long save(NoticeSaveDto noticeSaveDto, HttpServletRequest request){
+    public Long save(@RequestBody NoticeSaveDto noticeSaveDto, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         noticeSaveDto.setMemberId(username);
         return noticeService.save(noticeSaveDto);
@@ -49,6 +51,18 @@ public class NoticeController {
     public void delete(@PathVariable Long noticeId, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         noticeService.delete(noticeId);
+    }
+
+    @GetMapping("/admin/notice/{noticeId}")
+    public NoticeViewResponse view(@PathVariable Long noticeId){
+        NoticeViewDto noticeViewDto = noticeService.view(noticeId);
+        return new NoticeViewResponse(noticeViewDto.getId(),
+                noticeViewDto.getTitle(),
+                noticeViewDto.getContents(),
+                noticeViewDto.getMemberId(),
+                noticeViewDto.getCreateDate(),
+                noticeViewDto.getLastModifiedDate()
+        );
     }
 
 }
