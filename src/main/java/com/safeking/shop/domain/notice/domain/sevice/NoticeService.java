@@ -12,6 +12,7 @@ import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import com.safeking.shop.domain.notice.domain.entity.Notice;
 import com.safeking.shop.domain.notice.domain.repository.NoticeRepository;
 import com.safeking.shop.domain.notice.domain.sevice.servicedto.notice.NoticeSaveDto;
+import com.safeking.shop.domain.notice.domain.sevice.servicedto.notice.NoticeUpdateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,11 @@ public class NoticeService {
         Notice notice = Notice.create(noticeSaveDto.getTitle(), noticeSaveDto.getContents(), noticeSaveDto.getMemberId());
         noticeRepository.save(notice);
         return notice.getId();
+    }
+
+    public void update(NoticeUpdateDto noticeUpdateDto){
+        Notice notice = noticeRepository.findById(noticeUpdateDto.getId()).orElseThrow();
+        notice.update(noticeUpdateDto.getTitle(), noticeUpdateDto.getContents(), noticeUpdateDto.getMemberId());
     }
 
 }

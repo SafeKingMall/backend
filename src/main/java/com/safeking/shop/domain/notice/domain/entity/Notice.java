@@ -31,8 +31,7 @@ public class Notice extends BaseEntity {
         return notice;
     }
 
-    public void update(Long id, String title, String contents, String memberId){
-        this.id = id;
+    public void update(String title, String contents, String memberId){
         this.title = title;
         this.contents = contents;
         this.memberId = memberId;

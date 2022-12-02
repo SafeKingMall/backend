@@ -9,6 +9,7 @@ import com.safeking.shop.domain.item.web.response.ItemListResponse;
 import com.safeking.shop.domain.item.web.response.ItemViewResponse;
 import com.safeking.shop.domain.notice.domain.sevice.NoticeService;
 import com.safeking.shop.domain.notice.domain.sevice.servicedto.notice.NoticeSaveDto;
+import com.safeking.shop.domain.notice.domain.sevice.servicedto.notice.NoticeUpdateDto;
 import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,14 @@ public class NoticeController {
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         noticeSaveDto.setMemberId(username);
         return noticeService.save(noticeSaveDto);
+    }
+
+    @PutMapping("/admin/notice/{noticeId}")
+    public void update(@PathVariable Long noticeId, @RequestBody NoticeUpdateDto noticeUpdateDto, HttpServletRequest request){
+        String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
+        noticeUpdateDto.setMemberId(username);
+        noticeUpdateDto.setId(noticeId);
+        noticeService.update(noticeUpdateDto);
     }
 
 }
