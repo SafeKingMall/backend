@@ -1,5 +1,6 @@
 package com.safeking.shop.global.config;
 
+import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.filter.JwtAuthenticationFilter;
@@ -22,7 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig{
 
     private final CorsConfig corsConfig;
-    private final MemberRepository memberRepository;
+    private final CacheMemberRepository cacheMemberRepository;
 
     private final TokenUtils tokenUtils;
 
@@ -67,7 +68,7 @@ public class SecurityConfig{
             http
                     .addFilter(corsConfig.corsFilter())
                     .addFilter(new JwtAuthenticationFilter(authenticationManager,tokenUtils))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, cacheMemberRepository))
             ;
 
         }

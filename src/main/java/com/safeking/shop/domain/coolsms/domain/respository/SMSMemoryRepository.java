@@ -20,11 +20,7 @@ public class SMSMemoryRepository {
 
         return coolSMS.getId();
     }
-    public Optional<CoolSMS> findById(Long id) {
-
-        return Optional.ofNullable(store.get(id));
-
-    }
+    public Optional<CoolSMS> findById(Long id) {return Optional.ofNullable(store.get(id)); }
 
     public void update(Long id,CoolSMS coolSMS){
         store.replace(id,coolSMS);
@@ -37,11 +33,15 @@ public class SMSMemoryRepository {
     }
 
     public Optional<CoolSMS> findByClientPhoneNumber(String clientPhoneNumber) {
-        return store.values().stream().filter(coolSMS -> coolSMS.getClientPhoneNumber().equals(clientPhoneNumber)).findFirst();
+        return store.values()
+                .stream()
+                .filter(coolSMS -> coolSMS.getClientPhoneNumber().equals(clientPhoneNumber)).findFirst();
 
     }
     public Optional<CoolSMS> findByCode(String code) {
-        return store.values().stream().filter(coolSMS -> coolSMS.getCode().equals(code)).findFirst();
+        return store.values()
+                .stream()
+                .filter(coolSMS -> coolSMS.getCode().equals(code)).findFirst();
 
     }
 

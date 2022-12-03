@@ -23,29 +23,22 @@ public abstract class Member extends BaseMemberEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-
     private String name;
     private String birth;
     private String username;
     private String password;
     private String email;
     private String roles; //ROLE_USER
-
     private String phoneNumber;
     private String companyName;
     private String companyRegistrationNumber;
     private String corporateRegistrationNumber;
     private String representativeName;
-
     @Embedded
     private Address address;
-
     private String contact;
-
     private Boolean agreement;
-
     private Boolean accountNonLocked;
-
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
@@ -118,8 +111,14 @@ public abstract class Member extends BaseMemberEntity {
 
     }
 
-    public void addMemberInfo(String companyName,String companyRegistrationNumber,String corporateRegistrationNumber,String representativeName,Address address,String contact){
-
+    public void addMemberInfo(
+            String companyName
+            ,String companyRegistrationNumber
+            ,String corporateRegistrationNumber
+            ,String representativeName
+            ,Address address
+            ,String contact)
+    {
         this.companyName=companyName;
         this.companyRegistrationNumber=companyRegistrationNumber;
         this.corporateRegistrationNumber=corporateRegistrationNumber;
@@ -166,14 +165,13 @@ public abstract class Member extends BaseMemberEntity {
         this.password=password;
     }
     public void revertCommonAccounts(){
-
         this.accountNonLocked= !this.accountNonLocked;
         this.status=MemberStatus.COMMON;
     }
 
     public void convertHumanAccount(){
         Duration between = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
-
+        //지금은 임시로 10초로 설정
         if(between.getSeconds()>=10l){
             this.accountNonLocked=false;
             this.status=MemberStatus.HUMAN;

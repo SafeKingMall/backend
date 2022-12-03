@@ -5,8 +5,10 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
+import com.safeking.shop.domain.user.domain.service.CacheService;
 import com.safeking.shop.domain.user.domain.service.DormantMemberService;
 import com.safeking.shop.domain.user.domain.service.MemberService;
+import com.safeking.shop.domain.user.domain.service.dto.CheckSignUp;
 import com.safeking.shop.domain.user.web.query.repository.MemberQueryRepository;
 import com.safeking.shop.domain.user.web.query.service.MemberQueryService;
 import com.safeking.shop.domain.user.web.request.*;
@@ -54,12 +56,10 @@ public class MemberController {
     private final MemberQueryService memberQueryService;
     private final MemberRepository memberRepository;
     private final MemberQueryRepository memberQueryRepository;
-    private final BCryptPasswordEncoder encoder;
     private final TokenUtils tokenUtils;
-
     private final SMSService smsService;
-
     private final DormantMemberService dormantMemberService;
+    private final CacheService cacheService;
 
     @PostMapping("/signup/criticalItems")
     public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
@@ -85,7 +85,6 @@ public class MemberController {
     public Long signUpAgreementInfo(@PathVariable Long memberId, @RequestBody @Validated AgreementInfo agreementInfo) {
 
         Boolean agreement = null;
-
         agreement = agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
 
         return memberService.changeMemoryToDB(memberId, agreement);
@@ -154,7 +153,7 @@ public class MemberController {
                     .getUsername(), HttpStatus.OK);
         }
 
-        return ResponseEntity.badRequest().body(new Error(1333, "코드가 일치하지 않습니다."));
+        return ResponseEntity.badRequest().body(new Error(1300, "코드가 일치하지 않습니다."));
 
     }
 
@@ -162,6 +161,9 @@ public class MemberController {
     public String sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest) {
         return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
     }
+
+    @GetMapping("/admin/cache/restoration")
+    public void cacheRestoration(){ cacheService.cacheRestoration(); }
 
     @GetMapping("/admin/member/list")
     public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 15) Pageable pageable) {
@@ -175,54 +177,21 @@ public class MemberController {
     }
 
     @PostMapping("/oauth/{registrationId}")
-    public void socialLogin(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {
+    public Long socialLogin(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {
 
-        Oauth2UserInfo oauth2UserInfo = null;
+        CheckSignUp checkSignUp = memberService.socialLogin(registrationId, data);
 
-        if (registrationId.equals("google")) {
-            log.info("google login request");
-
-            oauth2UserInfo = new GoogleUserInfo(data);
-        } else if (registrationId.equals("kakao")) {
-            log.info("Kakao login request");
-
-            oauth2UserInfo = new KakaoUserInfo(data);
-        } else {
-            throw new IllegalArgumentException("카카오와 구글만 지원합니다.");
-        }
-
-        String provider = oauth2UserInfo.getProvider();
-        String providerId = oauth2UserInfo.getProviderId();
-        String username = provider + "_" + providerId;
-        String password = encoder.encode("safeking");
-        String email = oauth2UserInfo.getEmail();//구글이 준 email
-        String role = "ROLE_USER";
-
-        Member oauthMember = memberRepository.findByUsername(username).orElse(null);
-        if (oauthMember == null) {
-            oauthMember = OauthMember.builder()
-                    .username(username)
-                    .password(encoder.encode(password))
-                    .email(email)
-                    .roles(role)
-                    .provider(provider)
-                    .providerId(providerId)
-                    .build();
-            memberRepository.save(oauthMember);
-        } else {
-            log.info("Oauth 를 톤해 회원가입을 한 적이 있다.");
-        }
+        if(!checkSignUp.isCheck()){return checkSignUp.getId();}
 
         //jwt 발행
-        if (oauthMember.getUsername() != null) {
-            //authentication 을 생성
-            Authentication authentication = createAuthentication(username);
+        Authentication authentication = createAuthentication(checkSignUp.getUsername());
 
-            Tokens tokens = tokenUtils.createTokens(authentication);
+        Tokens tokens = tokenUtils.createTokens(authentication);
 
-            response.addHeader(AUTH_HEADER, BEARER + tokens.getJwtToken());
-            response.addHeader(REFRESH_HEADER, tokens.getRefreshToken());
-        }
+        response.addHeader(AUTH_HEADER, BEARER + tokens.getJwtToken());
+        response.addHeader(REFRESH_HEADER, tokens.getRefreshToken());
+
+        return null;
     }
 
     private Authentication createAuthentication(String username) {
