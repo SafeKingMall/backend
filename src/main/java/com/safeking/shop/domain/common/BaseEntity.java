@@ -1,7 +1,6 @@
 package com.safeking.shop.domain.common;
 
 
-import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

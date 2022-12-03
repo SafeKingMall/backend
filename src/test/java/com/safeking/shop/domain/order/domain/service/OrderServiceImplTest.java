@@ -83,11 +83,14 @@ class OrderServiceImplTest {
 
         memberRepository.save(generalMember);
 
+        Admin admin = new Admin("admin", "1");
+        adminRepository.save(admin);
+
         Item item = Item.createItem("안전모",
                 100,
                 "안전모 입니다.",
                 1000,
-                new Admin("admin", "1"));
+                admin.getLoginId());
 
         itemRepository.save(item);
 
