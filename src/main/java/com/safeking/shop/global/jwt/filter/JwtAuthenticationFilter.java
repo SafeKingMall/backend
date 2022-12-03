@@ -4,7 +4,6 @@ package com.safeking.shop.global.jwt.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
-import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.Tokens;
 import com.safeking.shop.global.jwt.filter.dto.LoginRequestDto;
@@ -18,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.security.auth.login.CredentialException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -73,17 +71,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("일반로그인 user 에게 JWT 토큰 발행");
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        String roles = principalDetails.getMember().getRoles();
+
         Tokens tokens = tokenUtils.createTokens(authResult);
 
         response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
         response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
+        generateResponseData(response, roles);
 
     }
 
-    private void generateResponseData(HttpServletResponse response, Error errorResponse) throws IOException {
+    private void generateResponseData(HttpServletResponse response, Object object) throws IOException {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        om.writeValue(response.getWriter(), errorResponse);
+        om.writeValue(response.getWriter(), object);
     }
 }
