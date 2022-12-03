@@ -1,7 +1,6 @@
 package com.safeking.shop.domain.common;
 
 
-import com.safeking.shop.domain.admin.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,16 +12,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
 
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BaseEntity extends BaseTimeEntity {
-    @CreatedBy
-    @Column(updatable = false)
-    private String createdBy;
-    @LastModifiedBy
-    private String lastModifiedBy;
+public class BaseMemberEntity extends BaseTimeEntity{
+
+    private LocalDateTime lastLoginTime;
+
+    public void addLastLoginTime(){
+        lastLoginTime=LocalDateTime.now();
+    }
 }

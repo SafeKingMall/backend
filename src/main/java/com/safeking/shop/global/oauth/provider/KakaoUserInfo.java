@@ -15,7 +15,7 @@ public class KakaoUserInfo implements Oauth2UserInfo {
 
     @Override
     public String getProvider() {
-        return "naver";
+        return "kakao";
     }
 
     @Override
@@ -23,8 +23,4 @@ public class KakaoUserInfo implements Oauth2UserInfo {
         return (String) attributes.get("email");
     }
 
-    @Override
-    public String getName() {
-        return (String) attributes.get("name");
-    }
 }
