@@ -190,6 +190,7 @@ public class OrderController {
     public ResponseEntity<OrderListResponse> searchOrderList(OrderSearchCondition condition, Pageable pageable, HttpServletRequest request) {
         Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
+        //주문 다건 조회
         Page<Order> ordersPage = orderService.searchOrders(pageable, condition, member.getId());
         List<Order> findOrders = ordersPage.getContent();
 

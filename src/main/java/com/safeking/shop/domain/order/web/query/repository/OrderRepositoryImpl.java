@@ -1,14 +1,15 @@
 package com.safeking.shop.domain.order.web.query.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -18,9 +19,10 @@ import java.util.List;
 
 import static com.safeking.shop.domain.item.domain.entity.QItem.item;
 import static com.safeking.shop.domain.order.domain.entity.QDelivery.delivery;
-import static com.safeking.shop.domain.order.domain.entity.QOrder.*;
+import static com.safeking.shop.domain.order.domain.entity.QOrder.order;
 import static com.safeking.shop.domain.order.domain.entity.QOrderItem.orderItem;
 import static com.safeking.shop.domain.order.domain.entity.QPayment.payment;
+import static com.safeking.shop.domain.user.domain.entity.member.QMember.member;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.util.StringUtils.*;
 
@@ -38,12 +40,11 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     @Override
     public Page<Order> findOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
         List<Order> content = queryFactory
-                .select(order)
-                .from(order)
-                .join(order.orderItems, orderItem).fetchJoin()
-                .join(order.payment, payment).fetchJoin()
-                .join(order.delivery, delivery).fetchJoin()
-                .join(orderItem.item, item).fetchJoin()
+                .selectFrom(order)
+                .leftJoin(order.orderItems, orderItem).fetchJoin()
+                .leftJoin(order.payment, payment).fetchJoin()
+                .leftJoin(order.delivery, delivery).fetchJoin()
+                .leftJoin(orderItem.item, item).fetchJoin()
                 .where(
                         order.member.id.eq(memberId),
                         betweenDate(condition.getFromDate(), condition.getToDate()),
@@ -55,7 +56,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory
+        JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
                 .where(
@@ -64,10 +65,42 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
                         paymentStatusEq(condition.getPaymentStats())
-                )
-                .fetchOne();
+                );
 
-        return new PageImpl<>(content, pageable, count);
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<Order> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
+
+        List<Order> content = queryFactory
+                .selectFrom(order)
+                .leftJoin(order.orderItems, orderItem).fetchJoin()
+                .leftJoin(order.payment, payment).fetchJoin()
+                .leftJoin(order.delivery, delivery).fetchJoin()
+                .leftJoin(order.member, member).fetchJoin()
+                .leftJoin(orderItem.item, item).fetchJoin()
+                .where(
+                        betweenDate(condition.getFromDate(), condition.getToDate()),
+                        keywordContains(condition.getKeyword()),
+                        deliveryStatusEq(condition.getDeliveryStatus()),
+                        paymentStatusEq(condition.getPaymentStats())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(order.count())
+                .from(order)
+                .where(
+                        betweenDate(condition.getFromDate(), condition.getToDate()),
+                        keywordContains(condition.getKeyword()),
+                        deliveryStatusEq(condition.getDeliveryStatus()),
+                        paymentStatusEq(condition.getPaymentStats())
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     private BooleanExpression paymentStatusEq(String paymentStats) {
@@ -79,7 +112,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     private BooleanExpression keywordContains(String keyword) {
-        return hasText(keyword) ? orderItem.item.name.contains(keyword) : null;
+        return hasText(keyword) ? orderItem.item.name.containsIgnoreCase(keyword) : null;
     }
 
     private BooleanExpression betweenDate(String fromDate, String toDate) {

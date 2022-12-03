@@ -14,6 +14,10 @@ import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
+import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoDeliveryRequest;
+import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoOrderRequest;
+import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoPaymentRequest;
+import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelOrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
@@ -458,7 +462,7 @@ class OrderServiceImplTest {
 
     @Test
     @Transactional
-    @Commit
+    //@Commit
     void 주문_다건_조회() throws Exception {
 
         em.flush();
@@ -533,6 +537,97 @@ class OrderServiceImplTest {
         assertThat(orders.getContent().get(0).getOrderItems().get(1).getItem().getName()).isEqualTo("안전화");
         assertThat(orders.getContent().get(0)).isSameAs(order);
         assertThat(orders.getContent().get(0).getPayment()).isSameAs(payment);
+    }
 
+    @Test
+    @Transactional
+    @Commit
+    void 주문관리_상세_수정() throws Exception {
+        //given
+        Member generalMember = GeneralMember.builder()
+                .name("kim")
+                .username("abc12344")
+                .password("$2a$10$x2bbVjn7zz8C18sI9xCnJuDqkRbVIYQRqG.LVNNGbiEM20Rz.DYhe")
+                .email("abc@gamil.com")
+                .phoneNumber("01011111111")
+                .address(new Address("서울시", "마포대로", "303동 301호"))
+                .roles("ROLE_USER")
+                .build();
+        Member saveMember = memberRepository.save(generalMember);
+
+        Admin admin = new Admin("admin", "1");
+        adminRepository.save(admin);
+
+        Item item1 = Item.createItem("안전모",
+                100,
+                "안전모 입니다.",
+                1000,
+                admin);
+        Item item2 = Item.createItem("안전화",
+                200,
+                "안전화 입니다.",
+                2000,
+                admin);
+        itemRepository.save(item1);
+        itemRepository.save(item2);
+        OrderItem orderItem1 = OrderItem.createOrderItem(item1, 1000, 1);
+        OrderItem orderItem2 = OrderItem.createOrderItem(item2, 2000, 1);
+
+        OrderRequest orderRequest = new OrderRequest("아이유",
+                "dlwlrma@kakako.com",
+                "01012341234",
+                "서울시 여의도",
+                "납기일 준수해주세요.",
+                List.of(new OrderItemRequest(1L, 1), new OrderItemRequest(2L, 1 )),
+                "문앞에 부탁드립니다.");
+
+        //배송 완료
+        Delivery delivery = Delivery.createDelivery(
+                orderRequest.getReceiver(),
+                orderRequest.getPhoneNumber(),
+                orderRequest.getAddress(),
+                DeliveryStatus.PREPARATION,
+                orderRequest.getDeliveryMemo());
+        Delivery saveDelivery = deliveryRepository.save(delivery);
+
+        Payment payment = Payment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+        Payment savePayment = paymentRepository.save(payment);
+
+        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
+        Order orderSave = orderRepository.save(order);
+        orderSave.changePayment(payment);
+
+        //주문관리 상세 수정 로직
+        AdminModifyInfoRequest request = new AdminModifyInfoRequest();
+        AdminModifyInfoOrderRequest adminModifyInfoOrderRequest = new AdminModifyInfoOrderRequest();
+        AdminModifyInfoPaymentRequest adminModifyInfoPaymentRequest = new AdminModifyInfoPaymentRequest();
+        AdminModifyInfoDeliveryRequest adminModifyInfoDeliveryRequest = new AdminModifyInfoDeliveryRequest();
+
+        adminModifyInfoDeliveryRequest.setStatus("IN_DELIVERY");
+        adminModifyInfoDeliveryRequest.setInvoiceNumber("241664056970");
+        adminModifyInfoDeliveryRequest.setCost(2500);
+        adminModifyInfoDeliveryRequest.setCompany("롯데택배");
+
+        adminModifyInfoPaymentRequest.setStatus("COMPLETE");
+
+        adminModifyInfoOrderRequest.setAdminMemo("주문 수정, 재고 부족으로 고객과 통화 후 주문수량 수정함. -담당자: 홍길동");
+        adminModifyInfoOrderRequest.setPayment(adminModifyInfoPaymentRequest);
+        adminModifyInfoOrderRequest.setDelivery(adminModifyInfoDeliveryRequest);
+
+        request.setOrder(adminModifyInfoOrderRequest);
+
+        //when
+        Long updateOrderId = orderService.modifyOrderByAdmin(request, orderSave.getId());
+        Optional<Delivery> findDeliveryOptional = deliveryRepository.findById(saveDelivery.getId());
+        Optional<Payment> findPaymentOptional = paymentRepository.findById(savePayment.getId());
+
+        //then
+        assertThat(orderSave.getId()).isEqualTo(updateOrderId);
+        assertThat(orderSave.getAdminMemo()).isEqualTo(adminModifyInfoOrderRequest.getAdminMemo());
+        assertThat(findDeliveryOptional.get().getStatus().toString()).isEqualTo(adminModifyInfoDeliveryRequest.getStatus());
+        assertThat(findDeliveryOptional.get().getInvoiceNumber()).isEqualTo(adminModifyInfoDeliveryRequest.getInvoiceNumber());
+        assertThat(findDeliveryOptional.get().getCost()).isEqualTo(adminModifyInfoDeliveryRequest.getCost());
+        assertThat(findDeliveryOptional.get().getCompany()).isEqualTo(adminModifyInfoDeliveryRequest.getCompany());
+        assertThat(findPaymentOptional.get().getStatus().toString()).isEqualTo(adminModifyInfoPaymentRequest.getStatus());
     }
 }

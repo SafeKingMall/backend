@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static com.safeking.shop.domain.order.web.OrderConst.deliveryCost;
+
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Delivery extends BaseTimeEntity {
@@ -20,11 +22,12 @@ public class Delivery extends BaseTimeEntity {
     @Column(length = 11)
     private String phoneNumber;
     private String address;
+    @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
     private String memo;
     private LocalDateTime shippingStartDate;
     private LocalDateTime shippingEndDate;
-    private int cost;
+    private Integer cost;
     private String company;
     private String invoiceNumber;
 
@@ -47,6 +50,7 @@ public class Delivery extends BaseTimeEntity {
         this.status = status;
         this.memo = memo;
         this.shippingStartDate = shippingStartDate;
+        this.cost = deliveryCost;
     }
 
     public void changeDeliveryStatus(DeliveryStatus status) {
@@ -60,7 +64,8 @@ public class Delivery extends BaseTimeEntity {
         this.memo = memo;
     }
 
-    public void changeDeliveryByAdmin(int cost, String company, String invoiceNumber) {
+    public void changeDeliveryByAdmin(String status, int cost, String company, String invoiceNumber) {
+        this.status = DeliveryStatus.valueOf(status);
         this.cost = cost;
         this.company = company;
         this.invoiceNumber = invoiceNumber;

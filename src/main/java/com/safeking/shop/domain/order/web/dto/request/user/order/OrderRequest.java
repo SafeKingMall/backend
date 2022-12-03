@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderRequest {
-    @NotBlank(message = "반는 사람 이름을 입력해주세요.")
+    @NotBlank(message = "받는 사람 이름을 입력해주세요.")
     private String receiver;
     @NotBlank
     @Email(message = "이메일 형식을 준수해주세요.")

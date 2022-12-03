@@ -25,16 +25,14 @@ import static org.springframework.http.HttpStatus.*;
 public class OrderExceptionController {
 
     /**
-     * 주문 취소 에러 처리
-     * @param e
-     * @return
+     * 주문 에러 처리
      */
     @ExceptionHandler(OrderException.class)
-    public ResponseEntity<Error> cancelOrderExHandler(OrderException e) {
+    public ResponseEntity<Error> orderExHandler(OrderException e) {
 
         log.error("[OrderException] ex", e);
 
-        Error error = new Error(extractedErrorCode(e), ORDER_CANCEL_FAIL);
+        Error error = new Error(extractedErrorCode(e), e.getMessage());
 
         return new ResponseEntity<>(error, FORBIDDEN);
     }
@@ -50,6 +48,8 @@ public class OrderExceptionController {
             return 2004;
         } else if(e.getMessage().equals(ORDER_LIST_FIND_FAIL)) {
             return 2005;
+        } else if (e.getMessage().equals(ADMIN_ORDER_DETAIL_MODIFY_FAIL)) {
+            return 2006;
         }
 
         return 2000;

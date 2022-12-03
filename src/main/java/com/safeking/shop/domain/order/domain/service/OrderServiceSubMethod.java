@@ -95,7 +95,7 @@ public class OrderServiceSubMethod {
     /**
      * 결제
      */
-    public Payment payment(List<OrderItem> orderItems, String number, String means) {
+    public Payment createPayment(List<OrderItem> orderItems, String number, String means) {
         Payment payment = Payment.createPayment(orderItems, number, means);
         paymentRepository.save(payment);
 
