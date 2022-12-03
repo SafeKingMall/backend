@@ -14,7 +14,7 @@ public class CriticalItems {
     @Pattern(
             regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d~!@#$%^&*()+|=]{8,20}$"
             ,message = "아이디는 숫자', '문자' 무조건 1개 이상, '최소 8자에서 최대 20자' 허용\n" +
-            " (특수문자는 정의된 특수문자만 사용 가능)")
+            " 아이디는 숫자', '문자' 무조건 1개 이상, '최소 8자에서 최대 20자' 허용")
     private String username;
     @NotNull
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,20}$"

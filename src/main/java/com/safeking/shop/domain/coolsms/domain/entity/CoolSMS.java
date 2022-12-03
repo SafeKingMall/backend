@@ -16,7 +16,6 @@ public class CoolSMS {
     private Long id;
     private String code;
     private String clientPhoneNumber;
-
     private LocalDateTime createTime;
 
     private LocalDateTime endTime;

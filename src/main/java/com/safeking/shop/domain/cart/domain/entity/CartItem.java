@@ -1,6 +1,6 @@
 package com.safeking.shop.domain.cart.domain.entity;
 
-import com.safeking.shop.domain.admin.common.BaseTimeEntity;
+import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,4 +24,17 @@ public class CartItem extends BaseTimeEntity {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    private int count;
+
+    public CartItem(Item item, Cart cart,int count){
+        this.item=item;
+        this.count=count;
+        this.cart=cart;
+
+        cart.addCartItem(this);
+    }
+
+    public void changeCount(int count) {
+        this.count = count;
+    }
 }
