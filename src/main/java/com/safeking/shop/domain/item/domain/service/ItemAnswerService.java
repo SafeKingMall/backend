@@ -23,7 +23,7 @@ public class ItemAnswerService {
 
         ItemQuestion itemQuestion = itemQuestionRepository.findById(itemAnswerSaveDto.getItemQuestionId()).orElseThrow();
 
-        ItemAnswer itemAnswer = ItemAnswer.createItemAnswer(itemAnswerSaveDto.getAdmin(), itemQuestion, itemAnswerSaveDto.getContents());
+        ItemAnswer itemAnswer = ItemAnswer.createItemAnswer(itemAnswerSaveDto.getMember(), itemQuestion, itemAnswerSaveDto.getContents());
 
         itemQuestionRepository.save(itemQuestion);
 

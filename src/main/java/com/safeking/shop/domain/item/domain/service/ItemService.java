@@ -6,22 +6,23 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.CategoryItemRepository;
 import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
-import com.safeking.shop.domain.item.domain.service.servicedto.category.CategoryDto;
-import com.safeking.shop.domain.item.domain.service.servicedto.category.CategorySaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
+import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ItemService {
 
     private final CategoryRepository categoryRepository;
@@ -33,7 +34,7 @@ public class ItemService {
 
     public Long save(ItemSaveDto itemSaveDto){
 
-        Item item = Item.createItem(itemSaveDto.getName(), itemSaveDto.getQuantity(), itemSaveDto.getDescription(), itemSaveDto.getPrice(), itemSaveDto.getAdmin());
+        Item item = Item.createItem(itemSaveDto.getName(), itemSaveDto.getQuantity(), itemSaveDto.getDescription(), itemSaveDto.getPrice(), itemSaveDto.getAdminId());
 
         itemRepository.save(item);
 
@@ -47,7 +48,7 @@ public class ItemService {
         //기존에 item이 있다고 가정
         Item item = itemRepository.findById(itemUpdateDto.getId()).orElseThrow();
 
-        item.update(itemUpdateDto.getName(), itemUpdateDto.getQuantity(), itemUpdateDto.getPrice(), itemUpdateDto.getDescription());
+        item.update(itemUpdateDto.getName(), itemUpdateDto.getQuantity(), itemUpdateDto.getPrice(), itemUpdateDto.getDescription(), itemUpdateDto.getAdminId());
 
         List<Long> categories = itemUpdateDto.getCategories();
 
@@ -83,6 +84,29 @@ public class ItemService {
         }
     }
 
+    public ItemViewDto view(Long id){
+        Item item = itemRepository.findById(id).orElseThrow();
+        log.info("Item.viewYn : "+ item.getViewYn());
+        ItemViewDto itemViewDto = new ItemViewDto(item.getId(),
+                item.getName(),
+                item.getQuantity(),
+                item.getDescription(),
+                item.getPrice(),
+                item.getAdminId(),
+                null,
+                null,
+                item.getCreateDate().toString(),
+                item.getLastModifiedDate().toString(),
+                item.getViewYn()
+                );
+
+        return itemViewDto;
+    }
+
+    public Page<Item> List(Pageable pageable){
+        Page<Item> posts = itemRepository.findAll(pageable);
+        return posts;
+    }
 
 
 }

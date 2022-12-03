@@ -26,12 +26,19 @@ public class Item extends BaseTimeEntity {
 
     private int price;
 
+    @Column(name="view_yn")
+    @ColumnDefault("'Y'")
+    private String viewYn = "Y";
+
 
     //BaseEntity가 있는데 이게 꼭 필요한가?
+    /*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;
-
+    */
+    @Column(name = "admin_id")
+    private String adminId;
 //    @OneToMany(mappedBy = "item", orphanRemoval = true, cascade = CascadeType.ALL)
 //    private List<CategoryItem> categoryItems = new ArrayList<>();
 //    public void addCategoryItem(CategoryItem categoryItem){
@@ -51,7 +58,7 @@ public class Item extends BaseTimeEntity {
 //        }
 //        return item;
 //    }
-    public static Item createItem(String name, int quantity, String description,int price, Admin admin){
+    public static Item createItem(String name, int quantity, String description,int price, String adminId){
 
         Item item = new Item();
 
@@ -63,11 +70,12 @@ public class Item extends BaseTimeEntity {
 
         item.price=price;
 
-        item.admin=admin;
+        item.adminId=adminId;
 
         return item;
     }
-    public void update(String name,int quantity,int price,String description){
+    public void update(String name,int quantity,int price, String description, String adminId){
+
 
         this.name=name;
 
@@ -76,6 +84,8 @@ public class Item extends BaseTimeEntity {
         this.description=description;
 
         this.price=price;
+
+        this.adminId=adminId;
     }
 
     /**

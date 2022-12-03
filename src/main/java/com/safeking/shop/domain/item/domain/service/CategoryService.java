@@ -6,6 +6,8 @@ import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
 import com.safeking.shop.domain.item.domain.service.servicedto.category.CategorySaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.category.CategoryUpdateDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,5 +47,9 @@ public class CategoryService {
 
         categoryRepository.delete(category);
 
+    }
+
+    public Page<Category> list(Pageable pageable){
+        return categoryRepository.findAll(pageable);
     }
 }
