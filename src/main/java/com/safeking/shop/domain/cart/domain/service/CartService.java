@@ -30,7 +30,7 @@ public class CartService {
 
 
     public Long createCart(Member member){
-        if(cartRepository.findByMember(member).orElse(null) !=null)
+        if(cartRepository.findCartByUsername(member.getUsername()).orElse(null) !=null)
             throw new EntityExistsException("이미 장바구니가 존재합니다.");
 
         Cart cart = new Cart(member);
