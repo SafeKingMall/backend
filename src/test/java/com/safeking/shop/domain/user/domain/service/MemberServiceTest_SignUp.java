@@ -1,10 +1,14 @@
 package com.safeking.shop.domain.user.domain.service;
 
+import com.safeking.shop.domain.user.domain.entity.Address;
+import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
+import com.safeking.shop.domain.user.domain.service.dto.AuthenticationInfoDto;
 import com.safeking.shop.domain.user.domain.service.dto.CheckSignUp;
 import com.safeking.shop.domain.user.domain.service.dto.CriticalItemsDto;
+import com.safeking.shop.domain.user.domain.service.dto.MemberInfoDto;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -41,6 +45,7 @@ class MemberServiceTest_SignUp {
     @Autowired
     CustomBCryPasswordEncoder encoder;
     Long userId;
+    Address address = new Address("서울시", "마포대로", "111");
 
     @DisplayName("social_sign_up")
     @ParameterizedTest(name = "{index} {displayName}")
@@ -98,14 +103,89 @@ class MemberServiceTest_SignUp {
 
 
     @Test
+    @Order(2)
+    @DisplayName("2. addAuthenticationInfo")
     void addAuthenticationInfo() {
+        //given
+        AuthenticationInfoDto authenticationInfoDto = AuthenticationInfoDto.builder()
+                .name("user")
+                .birth("birth")
+                .phoneNumber("01012345678")
+                .build();
+        //when
+        memberService.addAuthenticationInfo(userId,authenticationInfoDto);
+
+        //then
+        Member findMember = memoryMemberRepository.findById(userId).orElseThrow();
+
+        assertThat(findMember)
+                .extracting("name","birth","phoneNumber")
+                .containsExactly("user","birth","01012345678");
     }
 
     @Test
+    @Order(3)
+    @DisplayName("3. addAuthenticationInfo")
     void addMemberInfo() {
+        //given
+        MemberInfoDto memberInfoDto = MemberInfoDto.builder()
+                .companyName("safeking")
+                .companyRegistrationNumber("111")
+                .corporateRegistrationNumber("222")
+                .representativeName("MS")
+                .address(address)
+                .contact("contact")
+                .build();
+        //when
+        memberService.addMemberInfo(userId,memberInfoDto);
+
+        //then
+        Member findMember = memoryMemberRepository.findById(userId).orElseThrow();
+
+        assertThat(findMember)
+                .extracting( "companyName"
+                        ,"companyRegistrationNumber"
+                        ,"corporateRegistrationNumber"
+                        ,"representativeName"
+                        ,"address"
+                        ,"contact"
+                )
+                .containsExactly(
+                        "safeking"
+                        ,"111"
+                        ,"222"
+                        ,"MS"
+                        ,address
+                        ,"contact"
+                );
     }
 
+
     @Test
+    @Order(4)
+    @DisplayName("4. changeMemoryToDB")
     void changeMemoryToDB() {
+        //given
+        Boolean agreements=true;
+        //when
+        memberService.changeMemoryToDB(userId,agreements);
+        //then
+        Member user = memberRepository.findByUsername("user").orElseThrow();
+        assertAll(
+                ()->assertThat(user.getName()).isEqualTo("user")
+                ,()->assertThat(user.getBirth()).isEqualTo("birth")
+                ,()->assertThat(user.getUsername()).isEqualTo("user")
+                ,()->assertThat(user.getEmail()).isEqualTo("email")
+                ,()->assertThat(user.getRoles()).isEqualTo("ROLE_USER")
+                ,()->assertThat(user.getPhoneNumber()).isEqualTo("01012345678")
+                ,()->assertThat(user.getCompanyName()).isEqualTo("safeking")
+                ,()->assertThat(user.getCompanyRegistrationNumber()).isEqualTo("111")
+                ,()->assertThat(user.getCorporateRegistrationNumber()).isEqualTo("222")
+                ,()->assertThat(user.getRepresentativeName()).isEqualTo("MS")
+                ,()->assertThat(user.getContact()).isEqualTo("contact")
+                ,()->assertThat(user.getAgreement()).isEqualTo(true)
+                ,()->assertThat(user.getAccountNonLocked()).isEqualTo(true)
+                ,()->assertThat(user.getStatus()).isEqualTo(MemberStatus.COMMON)
+        );
     }
 }

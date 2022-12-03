@@ -3,6 +3,7 @@ package com.safeking.shop.domain.user.web.request;
 import com.safeking.shop.domain.user.domain.entity.Address;
 import com.safeking.shop.domain.user.domain.service.dto.MemberUpdateDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.Pattern;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class UpdateRequest {
     @Length(max = 50)
     @NotEmpty(message = "빈 문자는 안됩니다.")
