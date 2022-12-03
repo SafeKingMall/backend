@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Commit
 class CartItemServiceTest {
     @Autowired
     CartItemService cartItemService;
