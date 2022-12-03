@@ -10,6 +10,7 @@ import com.safeking.shop.domain.user.domain.service.dto.AuthenticationInfoDto;
 import com.safeking.shop.domain.user.domain.service.dto.CriticalItemsDto;
 import com.safeking.shop.domain.user.domain.service.dto.MemberInfoDto;
 import com.safeking.shop.domain.user.web.request.signuprequest.CriticalItems;
+import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ class DormantMemberServiceTest {
     DormantMemberService dormantMemberService;
     @Autowired
     MemoryDormantRepository dormantRepository;
+    @Autowired
+    CustomBCryPasswordEncoder encoder;
 
     Long dormantId;
     Address address = new Address("서울시", "마포대로", "111");
@@ -64,9 +67,8 @@ class DormantMemberServiceTest {
         Member member = dormantRepository.findById(dormantId).orElseThrow();
 
         assertThat(member)
-                .extracting("username","password","email")
-                .containsExactly("dormant","changePassword","email");
-
+                .extracting("username","email")
+                .containsExactly("dormant","email");
     }
 
     @Test
