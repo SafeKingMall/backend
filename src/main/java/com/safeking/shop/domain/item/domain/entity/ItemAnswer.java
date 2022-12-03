@@ -19,8 +19,8 @@ public class ItemAnswer extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id")
-    private Admin admin;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_question_id")
@@ -28,10 +28,10 @@ public class ItemAnswer extends BaseTimeEntity {
 
     private String contents;
 
-    public static ItemAnswer createItemAnswer(Admin admin, ItemQuestion target, String contents) {
+    public static ItemAnswer createItemAnswer(Member member, ItemQuestion target, String contents) {
         ItemAnswer itemAnswer = new ItemAnswer();
 
-        itemAnswer.admin = admin;
+        itemAnswer.member = member;
 
         itemAnswer.contents = contents;
 

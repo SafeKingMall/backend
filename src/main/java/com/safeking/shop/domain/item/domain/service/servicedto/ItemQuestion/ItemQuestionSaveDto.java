@@ -14,6 +14,6 @@ public class ItemQuestionSaveDto {
 
     private Long itemId;
 
-    private Member member;//수정 가능, id OR member
+    private String memberId;//수정 가능, id OR member
 
 }
