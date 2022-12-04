@@ -31,7 +31,6 @@ public class InitDB {
         initService.initAdminTestV1();
         initService.initMemberTestV1();
         initService.initItemTestV1();
-        initService.initCacheDB();
         initService.initCategory();
     }
 
@@ -119,11 +118,6 @@ public class InitDB {
             em.persist(category3);
             em.persist(category4);
             em.persist(category5);
-        }
-
-        public void initCacheDB(){
-            memberRepository.findAll().stream()
-                    .forEach(member -> redisRepository.save(new RedisMember(member.getRoles(),member.getUsername())));
         }
     }
 
