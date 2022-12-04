@@ -6,6 +6,7 @@ import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.service.dto.AuthenticationInfoDto;
 import com.safeking.shop.domain.user.domain.service.dto.CriticalItemsDto;
 import com.safeking.shop.domain.user.domain.service.dto.MemberInfoDto;
+import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,13 +20,16 @@ public class DormantMemberService {
 
     private final MemoryDormantRepository dormantRepository;
     private final MemberRepository memberRepository;
+    private final CustomBCryPasswordEncoder encoder;
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
         Member dormant = memberRepository.findByUsername(criticalItemsDto.getUsername())
                 .orElseThrow(() -> new MemberNotFoundException("일치하는 회원이 없습니다."));
 
-        dormant.addCriticalItemsForDormant(criticalItemsDto.getPassword(),criticalItemsDto.getEmail());
+        String encodePassword = encoder.encode(criticalItemsDto.getPassword());
+
+        dormant.addCriticalItemsForDormant(encodePassword,criticalItemsDto.getEmail());
         dormant.addLastLoginTime();
 
         dormantRepository.save(dormant);
@@ -88,6 +92,7 @@ public class DormantMemberService {
                     ,dormant.getContact()
                     ,dormant.getAgreement()
                     ,dormant.getAccountNonLocked()
+                    ,dormant.getStatus()
             );
             member.addLastLoginTime();
             return member.getId();

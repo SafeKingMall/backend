@@ -5,23 +5,32 @@ import com.safeking.shop.domain.cart.domain.repository.CartItemRepository;
 import com.safeking.shop.domain.cart.domain.repository.CartRepository;
 import com.safeking.shop.domain.cart.domain.service.CartItemService;
 import com.safeking.shop.domain.cart.domain.service.CartService;
+import com.safeking.shop.domain.cart.web.response.CartItemResponse;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.annotation.Commit;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @Commit
+@ActiveProfiles("test")
 class CartQueryRepositoryTest {
 
     @Autowired CartQueryRepository cartQueryRepository;
@@ -40,7 +49,8 @@ class CartQueryRepositoryTest {
     CartItemService cartItemService;
     @Test
     void searchAll() {
-
+        //given
+        //1. item 10개 생성
         for (int i = 1; i <=10 ; i++) {
             Item item = new Item();
             item.setPrice(100);
@@ -48,7 +58,7 @@ class CartQueryRepositoryTest {
             item.setQuantity(i);
             itemRepository.save(item);
         }
-
+        //2. member 2명 생성
         Member user = GeneralMember.builder()
                 .username("testUser")
                 .password(encoder.encode("1234"))
@@ -63,26 +73,22 @@ class CartQueryRepositoryTest {
         memberRepository.save(user);
         memberRepository.save(user2);
 
+        //장바구니 생성
+        cartService.createCart(user);
+        cartService.createCart(user2);
 
-        Cart cart = new Cart(user);
-        cartRepository.save(cart);
-
+        //장바구니에 아이템 담기
         cartItemService.putCart(user.getUsername(),1L,3);
         cartItemService.putCart(user.getUsername(),2L,3);
         cartItemService.putCart(user.getUsername(),3L,3);
 
-        Cart cart2 = new Cart(user2);
-        cartRepository.save(cart2);
-
         cartItemService.putCart(user2.getUsername(),4L,3);
         cartItemService.putCart(user2.getUsername(),5L,3);
         cartItemService.putCart(user2.getUsername(),6L,3);
-
-        Long id = cartRepository.findCartByUsername(user2.getUsername()).orElseThrow().getId();
-
-//        cartQueryRepository.searchAll(cart).stream().forEach(item-> System.out.println("item.getItemName() = " + item.getItemName()));
-
-
+        //when then
+        List<CartItemResponse> cartItems = cartQueryRepository
+                .searchAll(user.getUsername(), PageRequest.of(0, 5))
+                .stream().collect(Collectors.toList());
 
     }
 }

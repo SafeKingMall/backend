@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity @Getter
@@ -23,7 +24,7 @@ public class Cart extends BaseTimeEntity {
     private Member member;
 
     @OneToMany(mappedBy = "cart")
-    private List<CartItem> cartItems;
+    private List<CartItem> cartItems=new ArrayList<>();
 
 
     public Cart(Member member){

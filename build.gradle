@@ -64,13 +64,14 @@ dependencies {
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 
-
     implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 }
 
 test {
     useJUnitPlatform()
 }
+
+
 
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"

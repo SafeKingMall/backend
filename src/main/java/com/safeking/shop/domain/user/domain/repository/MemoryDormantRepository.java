@@ -23,11 +23,6 @@ public class MemoryDormantRepository {
         return Optional.ofNullable(store.get(id));
 
     }
-    public boolean findDuplication(String username) {
-        //중복이 없다면 true
-        return store.values().stream().allMatch(member -> !member.getUsername().equals(username));
-
-    }
 
     public void update(Long id,Member member){
         store.replace(id,member);

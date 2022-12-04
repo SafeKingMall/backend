@@ -6,8 +6,7 @@ import com.safeking.shop.domain.user.web.response.MemberDetails;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

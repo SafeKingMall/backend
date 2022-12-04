@@ -19,7 +19,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
 public abstract class Member extends BaseMemberEntity {
-
+    public static long MEMBER_HUMAN_TIME=10l;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
@@ -89,6 +89,7 @@ public abstract class Member extends BaseMemberEntity {
                                         ,String contact
                                         ,Boolean agreement
                                         ,Boolean accountNonLocked
+                                        ,MemberStatus memberStatus
     ){
         this.name = name;
         this.birth = birth;
@@ -103,6 +104,7 @@ public abstract class Member extends BaseMemberEntity {
         this.contact = contact;
         this.agreement = agreement;
         this.accountNonLocked = accountNonLocked;
+        this.status=memberStatus;
     }
 
     public void updatePassword(String password){
@@ -177,7 +179,7 @@ public abstract class Member extends BaseMemberEntity {
     public void convertHumanAccount(){
         Duration between = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
         //지금은 임시로 10초로 설정
-        if(between.getSeconds()>=10l){
+        if(between.getSeconds()>=MEMBER_HUMAN_TIME){
             this.accountNonLocked=false;
             this.status=MemberStatus.HUMAN;
 

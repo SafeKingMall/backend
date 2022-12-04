@@ -18,7 +18,16 @@ public class MemberUpdateDto {
     private Address address;
 
     @Builder
-    public MemberUpdateDto(String name, String birth, String representativeName, String phoneNumber, String companyRegistrationNumber, String corporateRegistrationNumber, Address address) {
+    public MemberUpdateDto(
+            String name
+            , String birth
+            , String representativeName
+            , String phoneNumber
+            , String companyRegistrationNumber
+            , String corporateRegistrationNumber
+            , Address address
+    )
+    {
         this.name = name;
         this.birth = birth;
         this.representativeName = representativeName;
