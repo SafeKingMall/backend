@@ -171,7 +171,7 @@ public class OrderController {
                 .status(findOrderDetail.getStatus().getDescription())
                 .price(findOrderDetail.getPayment().getPrice())
                 .memo(findOrderDetail.getMemo())
-                .date(findOrderDetail.getCreateDate().toString())
+                .date(findOrderDetail.getCreateDate())
                 .orderItems(orderItems)
                 .payment(payment)
                 .delivery(delivery)

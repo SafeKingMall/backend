@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -13,7 +14,7 @@ public class AdminOrderListOrderResponse {
     private Long id;
     private String status;
     private int price;
-    private LocalDateTime date;
+    private String date;
     private int orderItemCount;
     private AdminOrderListOrderItemResponse orderItem;
     private AdminOrderListPaymentResponse payment;
@@ -25,7 +26,7 @@ public class AdminOrderListOrderResponse {
         this.id = id;
         this.status = status;
         this.price = price;
-        this.date = date;
+        this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         this.orderItemCount = orderItemCount;
         this.orderItem = orderItem;
         this.payment = payment;

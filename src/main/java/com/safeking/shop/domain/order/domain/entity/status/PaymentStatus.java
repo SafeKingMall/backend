@@ -3,9 +3,9 @@ package com.safeking.shop.domain.order.domain.entity.status;
 
 public enum PaymentStatus {
 
-    COMPLETE("결제 완료"),
-    CANCELING("결제 취소 중"),
-    CANCEL("결제 취소"),
+    COMPLETE("COMPLETE"),
+    CANCELING("CANCELING"),
+    CANCEL("CANCEL"),
 
     ;
 

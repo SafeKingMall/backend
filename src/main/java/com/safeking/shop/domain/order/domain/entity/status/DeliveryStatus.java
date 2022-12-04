@@ -2,9 +2,9 @@ package com.safeking.shop.domain.order.domain.entity.status;
 
 public enum DeliveryStatus {
 
-    PREPARATION("상품 준비"),
-    IN_DELIVERY("배송 중"),
-    COMPLETE("배송 완료");
+    PREPARATION("PREPARATION"),
+    IN_DELIVERY("IN_DELIVERY"),
+    COMPLETE("COMPLETE");
 
     private final String description;
 
