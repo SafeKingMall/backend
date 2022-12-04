@@ -27,18 +27,19 @@ import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/")
 public class ItemController {
 
     private final ItemService itemService;
 
-    @PostMapping("/item/admin")
+    @PostMapping("admin/item")
     public Long save(@RequestBody ItemSaveDto itemSaveDto, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         itemSaveDto.setAdminId(username);
         return itemService.save(itemSaveDto);
     }
 
-    @PutMapping("/item/admin/{itemId}")
+    @PutMapping("admin/item/{itemId}")
     public void update(@PathVariable Long itemId, @RequestBody ItemUpdateDto itemUpdateDto, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         itemUpdateDto.setAdminId(username);
@@ -46,13 +47,13 @@ public class ItemController {
         itemService.update(itemUpdateDto);
     }
 
-    @DeleteMapping("/item/admin/{itemId}")
+    @DeleteMapping("admin/item/{itemId}")
     public void delete(@PathVariable Long itemId){
 
         itemService.delete(itemId);
     }
 
-    @GetMapping("/item/admin/{itemId}")
+    @GetMapping("admin/item/{itemId}")
     public ItemViewResponse itemAdminView(@PathVariable Long itemId){
         ItemViewResponse itemViewResponse;
         itemViewResponse = new ItemViewResponse(itemService.view(itemId).getId()
@@ -69,7 +70,7 @@ public class ItemController {
         return itemViewResponse;
     }
 
-    @GetMapping("/item/admin/list")
+    @GetMapping("admin/item/list")
     public Page<ItemListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable){
         Page<ItemListResponse> itemLst = itemService.List(pageable).map(m -> ItemListResponse.builder()
                 .id(m.getId())
