@@ -162,8 +162,8 @@ public class MemberController {
         return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
     }
 
-    @GetMapping("/admin/cache/restoration")
-    public void cacheRestoration(){ cacheService.cacheRestoration(); }
+//    @GetMapping("/admin/cache/restoration")
+//    public void cacheRestoration(){ cacheService.cacheRestoration(); }
 
     @GetMapping("/admin/member/list")
     public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 15) Pageable pageable) {

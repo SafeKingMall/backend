@@ -5,9 +5,10 @@ import com.safeking.shop.domain.item.domain.entity.Category;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.user.domain.entity.Address;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
+import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class InitDB {
         initService.initAdminTestV1();
         initService.initMemberTestV1();
         initService.initItemTestV1();
-//        initService.initCacheDB();
+        initService.initCacheDB();
         initService.initCategory();
     }
 
@@ -41,7 +42,7 @@ public class InitDB {
         private final EntityManager em;
         private final CustomBCryPasswordEncoder encoder;
         private final MemberRepository memberRepository;
-        private final CacheMemberRepository cacheMemberRepository;
+        private final MemberRedisRepository redisRepository;
         private final CartService cartService;
 
         public void initAdminTestV1(){
@@ -120,9 +121,10 @@ public class InitDB {
             em.persist(category5);
         }
 
-//        public void initCacheDB(){
-//            memberRepository.findAll().stream().forEach(cacheMemberRepository::save);
-//        }
+        public void initCacheDB(){
+            memberRepository.findAll().stream()
+                    .forEach(member -> redisRepository.save(new RedisMember(member.getRoles(),member.getUsername())));
+        }
     }
 
 }

@@ -1,14 +1,13 @@
 package com.safeking.shop.domain.user.domain.service;
 
 import com.safeking.shop.domain.cart.domain.service.CartService;
-import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
+import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
-import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.*;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -34,7 +33,7 @@ public class MemberService {
     private final MemoryMemberRepository memoryMemberRepository;
     private final CustomBCryPasswordEncoder encoder;
     private final CartService cartService;
-    private final CacheMemberRepository cacheMemberRepository;
+    private final MemberRedisRepository cacheMemberRepository;
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
@@ -144,7 +143,7 @@ public class MemberService {
             //1. db에 저장, 2. 장바구니 생성, 3. 캐시 db에 저장
             memberRepository.save(member);
             cartService.createCart(member);
-            cacheMemberRepository.save(member);
+            cacheMemberRepository.save(new RedisMember(member.getRoles(),member.getUsername()));
 
             return member.getId();
 

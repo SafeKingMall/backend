@@ -1,6 +1,7 @@
 package com.safeking.shop.domain.user.domain.repository;
 
 import com.safeking.shop.domain.user.domain.entity.Address;
+import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CacheMemberRepositoryTest {
 
     @Autowired
-    CacheMemberRepository cacheMemberRepository;
+    MemberRedisRepository cacheMemberRepository;
     @Autowired
     CustomBCryPasswordEncoder encoder;
 
@@ -42,10 +43,11 @@ class CacheMemberRepositoryTest {
                 .agreement(true)
                 .build();
 
-        cacheMemberRepository.save(user);
+        cacheMemberRepository.save(new RedisMember(user.getRoles(),user.getUsername()));
         //when
-        Member findMember = cacheMemberRepository.findByUsername(user.getUsername()).orElseThrow();
+        RedisMember findMember = cacheMemberRepository.findByUsername(user.getUsername()).orElseThrow();
         //then
-        Assertions.assertThat(findMember).isEqualTo(user);
+        Assertions.assertThat(findMember.getRoles()).isEqualTo(user.getRoles());
+        Assertions.assertThat(findMember.getUsername()).isEqualTo(user.getUsername());
     }
 }
