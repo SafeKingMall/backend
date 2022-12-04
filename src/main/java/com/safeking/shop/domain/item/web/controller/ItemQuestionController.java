@@ -28,26 +28,27 @@ import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/")
 public class ItemQuestionController {
 
     private final ItemQuestionService itemQuestionService;
 
-    @PostMapping("/itemQna")
+    @PostMapping("user/itemQna")
     public Long save(@RequestBody ItemQuestionSaveDto itemQuestionSaveDto, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         itemQuestionSaveDto.setMemberId(username);
         return itemQuestionService.save(itemQuestionSaveDto);
     }
 
-    @PutMapping("/itemQna/{itemQnaId}")
-    public void update(@PathVariable Long itemQnaId, @RequestBody ItemQuestionUpdateDto itemQuestionUpdateDto){
+    @PutMapping("user/itemQna/{itemQnaId}")
+    public void update(@PathVariable Long itemQnaId, @RequestBody ItemQuestionUpdateDto itemQuestionUpdateDto,HttpServletRequest request){
         itemQuestionUpdateDto.setId(itemQnaId);
-        itemQuestionService.update(itemQuestionUpdateDto);
+        itemQuestionService.update(itemQuestionUpdateDto,TokenUtils.getUsername(request));
     }
 
-    @DeleteMapping("/itemQna/{itemQnaId}")
-    public void delete(@PathVariable Long itemQnaId){
-        itemQuestionService.delete(itemQnaId);
+    @DeleteMapping("user/itemQna/{itemQnaId}")
+    public void delete(@PathVariable Long itemQnaId,HttpServletRequest request){
+        itemQuestionService.delete(itemQnaId,TokenUtils.getUsername(request));
     }
 
     @GetMapping("/itemQna/{itemQnaId}")

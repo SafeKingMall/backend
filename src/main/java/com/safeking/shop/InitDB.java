@@ -1,6 +1,7 @@
 package com.safeking.shop;
 
 import com.safeking.shop.domain.cart.domain.service.CartService;
+import com.safeking.shop.domain.item.domain.entity.Category;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.user.domain.entity.Address;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
@@ -30,6 +31,7 @@ public class InitDB {
         initService.initMemberTestV1();
         initService.initItemTestV1();
         initService.initCacheDB();
+        initService.initCategory();
     }
 
     @Component
@@ -104,6 +106,18 @@ public class InitDB {
                 item.setQuantity(i);
                 em.persist(item);
             }
+        }
+        public void initCategory(){
+            Category category1 = new Category("중대사고예방");
+            Category category2 = new Category("화재사고예방");
+            Category category3 = new Category("누출사고예방");
+            Category category4 = new Category("해양사고예방");
+            Category category5 = new Category("안전사고예방");
+            em.persist(category1);
+            em.persist(category2);
+            em.persist(category3);
+            em.persist(category4);
+            em.persist(category5);
         }
 
         public void initCacheDB(){

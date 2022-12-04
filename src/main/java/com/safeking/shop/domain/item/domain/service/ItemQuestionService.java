@@ -3,13 +3,10 @@ package com.safeking.shop.domain.item.domain.service;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.item.domain.entity.Item;
-import com.safeking.shop.domain.item.domain.entity.ItemAnswer;
 import com.safeking.shop.domain.item.domain.entity.ItemQuestion;
-import com.safeking.shop.domain.item.domain.entity.QItemAnswer;
 import com.safeking.shop.domain.item.domain.repository.ItemAnswerRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemQuestionRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
-import com.safeking.shop.domain.item.domain.service.servicedto.ItemAnswer.ItemAnswerViewDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionListDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionUpdateDto;
@@ -24,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -59,17 +55,20 @@ public class ItemQuestionService {
 
     }
 
-    public void update(ItemQuestionUpdateDto itemQuestionUpdateDto){
+    public void update(ItemQuestionUpdateDto itemQuestionUpdateDto,String username){
 
         ItemQuestion itemQuestion = itemQuestionRepository.findById(itemQuestionUpdateDto.getId()).orElseThrow();
+        //임시로 만듦
+        if(!itemQuestion.getWriter().getUsername().equals(username)) throw new IllegalArgumentException("권한이 없습니다.");
 
         itemQuestion.update(itemQuestionUpdateDto.getTitle(),itemQuestionUpdateDto.getContents());
-
     }
 
-    public void delete(Long id){
+    public void delete(Long id, String username){
 
         ItemQuestion itemQuestion = itemQuestionRepository.findById(id).orElseThrow();
+        //임시로 만듦
+        if(!itemQuestion.getWriter().getUsername().equals(username)) throw new IllegalArgumentException("권한이 없습니다.");
 
         itemQuestionRepository.delete(itemQuestion);
 

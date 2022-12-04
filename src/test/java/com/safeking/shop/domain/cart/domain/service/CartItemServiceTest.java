@@ -63,7 +63,7 @@ class CartItemServiceTest {
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow();
 
         assertAll(
-                 ()->assertThat(cartItem.getCart().getMember().getUsername()).isEqualTo(username)
+                ()->assertThat(cartItem.getCart().getMember().getUsername()).isEqualTo(username)
                 ,()->assertThat(cartItem.getItem().getId()).isEqualTo(itemId)
         );
     }

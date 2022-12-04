@@ -34,7 +34,11 @@ public class CartItemService {
     }
 
     public void updateCartItem(String username, Long itemId, int count){
-        CartItem cartItem = cartItemRepository.findByItemIdAndUsername(itemId, username).orElseThrow(() -> new EntityNotFoundException("장바구니아이템이 존재하지 않습니다."));
+        CartItem cartItem
+                = cartItemRepository
+                .findByItemIdAndUsername(itemId, username)
+                .orElseThrow(() -> new EntityNotFoundException("장바구니아이템이 존재하지 않습니다."));
+
         cartItem.changeCount(count);
     }
 

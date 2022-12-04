@@ -28,7 +28,7 @@ public class SMSController {
     public ResponseEntity checkCode(@RequestBody @Validated SMSCode smsCode){
 
         return smsService.checkCode(smsCode.getCode(),smsCode.getClientPhoneNumber()) ?
-                new ResponseEntity(HttpStatus.OK) : ResponseEntity.badRequest().body(new Error(1500, "코드가 일치하지 않습니다."));
+                new ResponseEntity(HttpStatus.OK) : ResponseEntity.badRequest().body(new Error(1700, "코드가 일치하지 않습니다."));
 
     }
 
