@@ -1,6 +1,6 @@
 package com.safeking.shop.global.config;
 
-import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.filter.JwtAuthenticationFilter;
@@ -23,7 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig{
 
     private final CorsConfig corsConfig;
-    private final MemberRepository memberRepository;
+    private final MemberRedisRepository memberRepository;
 
     private final TokenUtils tokenUtils;
 

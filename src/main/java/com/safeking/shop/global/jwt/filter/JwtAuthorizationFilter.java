@@ -3,10 +3,12 @@ package com.safeking.shop.global.jwt.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
+import com.safeking.shop.domain.user.domain.entity.RedisMember;
+import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.safeking.shop.global.auth.PrincipalDetailsRedis;
 import com.safeking.shop.global.exception.CacheException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,9 +29,9 @@ import static com.safeking.shop.global.jwt.TokenUtils.*;
 //권한처리시 사용되는 필터
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private MemberRepository memberRepository;
+    private MemberRedisRepository memberRepository;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRedisRepository memberRepository) {
         super(authenticationManager);
         this.memberRepository = memberRepository;
     }
@@ -55,9 +57,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         if(username!=null){
 
-            Member member = memberRepository.findByUsername(username).orElseThrow(()->new CacheException("캐시에 문제가 있습니다."));
+            RedisMember redisMember = memberRepository.findByUsername(username).orElseThrow(() -> new CacheException("캐시에 문제가 있습니다."));
 
-            PrincipalDetails principalDetails = new PrincipalDetails(member);
+            PrincipalDetailsRedis principalDetails = new PrincipalDetailsRedis(redisMember);
 
             Authentication authentication
                     = new UsernamePasswordAuthenticationToken(principalDetails, null,principalDetails.getAuthorities());
