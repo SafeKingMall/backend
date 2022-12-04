@@ -6,6 +6,7 @@ import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.order.domain.entity.Payment;
+import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoDeliveryRequest;
 import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoPaymentRequest;
@@ -59,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
         // 주문 생성
         Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), orderItems);
         order.changePayment(payment);
+        orderRepository.save(order);
 
         return order.getId();
     }
@@ -122,6 +124,9 @@ public class OrderServiceImpl implements OrderService {
 
         if(delivery.getStatus().equals(COMPLETE) || delivery.getStatus().equals(IN_DELIVERY)) {
             throw new OrderException(ORDER_MODIFY_DELIVERY_DONE);
+        }
+        else if(findOrder.getStatus().equals(OrderStatus.CANCEL)) {
+            throw new OrderException(ORDER_MODIFY_FAIL);
         }
 
         delivery.changeDelivery(modifyInfoRequest.getDelivery().getReceiver(),

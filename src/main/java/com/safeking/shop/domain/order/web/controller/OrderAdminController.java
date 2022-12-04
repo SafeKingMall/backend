@@ -96,8 +96,9 @@ public class OrderAdminController {
                 .id(findOrderDetail.getId())
                 .status(findOrderDetail.getStatus().getDescription())
                 .price(findOrderDetail.getPayment().getPrice())
-                .adminMemo(findOrderDetail.getMemo())
-                .date(findOrderDetail.getCreateDate().toString())
+                .memo(findOrderDetail.getMemo())
+                .date(findOrderDetail.getCreateDate())
+                .adminMemo(findOrderDetail.getAdminMemo())
                 .orderItems(orderItems)
                 .payment(payment)
                 .delivery(delivery)
@@ -124,7 +125,7 @@ public class OrderAdminController {
         // 주문관리 상세 수정
         orderService.modifyOrderByAdmin(adminModifyInfoRequest, orderId);
 
-        return new ResponseEntity<>(new OrderBasicResponse(ADMIN_ORDER_DETAIL_FIND_SUCCESS), OK);
+        return new ResponseEntity<>(new OrderBasicResponse(ADMIN_ORDER_DETAIL_MODIFY_SUCCESS), OK);
     }
 
     /**
@@ -170,6 +171,11 @@ public class OrderAdminController {
                     .build();
 
             AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
+                    .id(o.getId())
+                    .status(o.getStatus().getDescription())
+                    .price(o.getPayment().getPrice())
+                    .date(o.getCreateDate())
+                    .orderItemCount(o.getOrderItems().size())
                     .orderItem(orderItem)
                     .payment(payment)
                     .member(member)

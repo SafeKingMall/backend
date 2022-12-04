@@ -13,8 +13,7 @@ import javax.validation.constraints.Pattern;
 public class ModifyInfoDeliveryRequest {
     @NotBlank(message = "받는 사람을 작성해주세요.")
     private String receiver;
-    @NotBlank
-    @Pattern(regexp = "[0-9]{10,11}", message = "10 ~ 11 자리의 숫자만 입력 가능합니다.")
+    @Pattern(regexp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$", message = "10 ~ 11 자리의 숫자만 입력 가능합니다.")
     private String phoneNumber;
     @NotBlank(message = "받는 주소를 작성해주세요.")
     private String address;
