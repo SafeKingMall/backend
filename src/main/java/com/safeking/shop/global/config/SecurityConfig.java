@@ -23,7 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig{
 
     private final CorsConfig corsConfig;
-    private final CacheMemberRepository cacheMemberRepository;
+    private final MemberRepository memberRepository;
 
     private final TokenUtils tokenUtils;
 
@@ -68,7 +68,7 @@ public class SecurityConfig{
             http
                     .addFilter(corsConfig.corsFilter())
                     .addFilter(new JwtAuthenticationFilter(authenticationManager,tokenUtils))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, cacheMemberRepository))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository))
             ;
 
         }

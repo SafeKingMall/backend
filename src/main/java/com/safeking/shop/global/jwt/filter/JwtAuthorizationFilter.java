@@ -4,6 +4,7 @@ package com.safeking.shop.global.jwt.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.safeking.shop.domain.user.domain.repository.CacheMemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.exception.CacheException;
@@ -26,11 +27,11 @@ import static com.safeking.shop.global.jwt.TokenUtils.*;
 //권한처리시 사용되는 필터
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private CacheMemberRepository cacheMemberRepository;
+    private MemberRepository memberRepository;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, CacheMemberRepository cacheMemberRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository) {
         super(authenticationManager);
-        this.cacheMemberRepository = cacheMemberRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -54,7 +55,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         if(username!=null){
 
-            Member member = cacheMemberRepository.findByUsername(username).orElseThrow(()->new CacheException("캐시에 문제가 있습니다."));
+            Member member = memberRepository.findByUsername(username).orElseThrow(()->new CacheException("캐시에 문제가 있습니다."));
 
             PrincipalDetails principalDetails = new PrincipalDetails(member);
 
