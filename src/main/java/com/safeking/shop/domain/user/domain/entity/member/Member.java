@@ -23,20 +23,25 @@ public abstract class Member extends BaseMemberEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
+
     private String name;
     private String birth;
     private String username;
     private String password;
     private String email;
     private String roles; //ROLE_USER
+
     private String phoneNumber;
     private String companyName;
     private String companyRegistrationNumber;
     private String corporateRegistrationNumber;
     private String representativeName;
+
     @Embedded
     private Address address;
+
     private String contact;
+
     private Boolean agreement;
     private Boolean accountNonLocked;
     @Enumerated(EnumType.STRING)

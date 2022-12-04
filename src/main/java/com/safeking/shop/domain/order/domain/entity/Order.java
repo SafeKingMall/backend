@@ -95,4 +95,8 @@ public class Order extends BaseTimeEntity {
     public void changePayment(Payment payment) {
         this.payment = payment;
     }
+
+    public void changeAdminMemoByAdmin(String adminMemo) {
+        this.adminMemo = adminMemo;
+    }
 }

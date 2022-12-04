@@ -1,6 +1,7 @@
 package com.safeking.shop.domain.order.domain.service;
 
 import com.safeking.shop.domain.order.domain.entity.Order;
+import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoRequest;
@@ -16,5 +17,7 @@ public interface OrderService {
     Page<Order> searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId); //주문 다건 조회
     void cancel(CancelRequest cancelRequest); //주문 취소
     Long order(Member member, OrderRequest orderRequest); //주문
-    Long modifyOrder(ModifyInfoRequest modifyInfoRequest); //주문 정보 수정
+    Long modifyOrder(ModifyInfoRequest modifyInfoRequest); //사용자 주문 정보 수정
+    Long modifyOrderByAdmin(AdminModifyInfoRequest modifyInfoRequest, Long orderId); //관리자 주문 정보 수정
+    Page<Order> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition);
 }

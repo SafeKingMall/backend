@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface OrderRepositoryCustom {
     Page<Order> findOrders(Pageable pageable, OrderSearchCondition condition, Long memberId);
+    Page<Order> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition);
 }

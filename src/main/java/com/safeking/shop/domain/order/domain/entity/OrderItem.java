@@ -28,9 +28,9 @@ public class OrderItem extends BaseTimeEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    private int orderPrice;
+    private Integer orderPrice;
 
-    private int count;
+    private Integer count;
 
     public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
         OrderItem orderItem = new OrderItem();
