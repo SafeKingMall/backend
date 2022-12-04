@@ -11,9 +11,7 @@ import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @Transactional
 @Commit
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CartItemRepositoryTest {
 
     @Autowired
@@ -46,7 +45,7 @@ class CartItemRepositoryTest {
     CartItemService cartItemService;
     @Autowired
     ItemRepository itemRepository;
-    @BeforeEach
+    @BeforeAll
     void init(){
         System.out.println("------------------------init------------------------");
         GeneralMember user = GeneralMember.builder()
@@ -61,58 +60,55 @@ class CartItemRepositoryTest {
         cartService.createCart(user);
         cartService.createCart(user2);
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 10; i++) {
             Item item = new Item();
             itemRepository.save(item);
+
+            String username = i % 2 == 0 ? user.getUsername() : user2.getUsername();
+            cartItemService.putCart(username,item.getId(),3);
         }
-
-        cartItemService.putCart(user.getUsername(),1L,3);
-        cartItemService.putCart(user.getUsername(),2L,3);
-
-        cartItemService.putCart(user2.getUsername(),2L,3);
-        cartItemService.putCart(user2.getUsername(),3L,3);
     }
     @Test
     void findByItemAndUsername() {
         //given
         //when
-        CartItem cartItem = cartItemRepository.findByItemIdAndUsername(1L, "testUser1").orElseThrow();
+        CartItem cartItem = cartItemRepository.findByItemIdAndUsername(2L, "testUser1").orElseThrow();
         //then
         assertAll(
-                ()->assertThat(cartItem.getItem().getId()).isEqualTo(1L),
+                ()->assertThat(cartItem.getItem().getId()).isEqualTo(2L),
                 ()->assertThat(cartItem.getCart().getMember().getUsername()).isEqualTo("testUser1")
         );
     }
-//    @Test
-//    void deleteCartItemBatch(){
-//        //given
-//        Long cartId=1L;
-//        //when
-//        cartItemRepository.deleteCartItemBatch(cartId);
-//        //then
-//        List<CartItemResponse> cartList
-//                = cartQueryRepository.searchAll("testUser1", PageRequest.of(0, 5))
-//                .stream().collect(Collectors.toList());
-//
-//        assertThat(cartList).isEmpty();
-//    }
-//    @Test
-//    void deleteCartItem(){
-//        //given
-//        Long cartId=1L;
-//        //when
-//        cartItemRepository.deleteCartItem(cartId,1L);
-//        //then
-//        assertThrows(NoSuchElementException.class,
-//                ()->cartItemRepository.findByCartIdAndItemId(cartId,1L).orElseThrow());
-//        //when
-//        cartItemRepository.deleteCartItem(cartId,2L,3L);
-//        //then
-//        assertThrows(NoSuchElementException.class,
-//                ()->cartItemRepository.findByCartIdAndItemId(cartId,2L).orElseThrow());
-//        assertThrows(NoSuchElementException.class,
-//                ()->cartItemRepository.findByCartIdAndItemId(cartId,3L).orElseThrow());
-//
-//
-//    }
+    @Test
+    void deleteCartItemBatch(){
+        //given
+        Long cartId=1L;
+        //when
+        cartItemRepository.deleteCartItemBatch(cartId);
+        //then
+        List<CartItemResponse> cartList
+                = cartQueryRepository.searchAll("testUser1", PageRequest.of(0, 5))
+                .stream().collect(Collectors.toList());
+
+        assertThat(cartList).isEmpty();
+    }
+    @Test
+    void deleteCartItem(){
+        //given
+        Long cartId=2L;
+        //when
+        cartItemRepository.deleteCartItem(cartId,1L);
+        //then
+        assertThrows(NoSuchElementException.class,
+                ()->cartItemRepository.findByCartIdAndItemId(cartId,1L).orElseThrow());
+        //when
+        cartItemRepository.deleteCartItem(cartId,3L,5L);
+        //then
+        assertThrows(NoSuchElementException.class,
+                ()->cartItemRepository.findByCartIdAndItemId(cartId,3L).orElseThrow());
+        assertThrows(NoSuchElementException.class,
+                ()->cartItemRepository.findByCartIdAndItemId(cartId,5L).orElseThrow());
+
+
+    }
 }
