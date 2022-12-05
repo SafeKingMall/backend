@@ -51,7 +51,7 @@ public class UpdateRequest {
                 .phoneNumber(phoneNumber)
                 .companyRegistrationNumber(companyRegistrationNumber)
                 .corporateRegistrationNumber(corporateRegistrationNumber)
-                .address(new Address(zipcode,basicAddress,detailedAddress))
+                .address(new Address(basicAddress,detailedAddress,zipcode))
                 .build();
     }
 

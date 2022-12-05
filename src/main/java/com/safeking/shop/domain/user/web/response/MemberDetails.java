@@ -2,9 +2,13 @@ package com.safeking.shop.domain.user.web.response;
 
 
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class MemberDetails {
 
     private String name;
