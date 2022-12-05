@@ -20,7 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 @Component
-@Profile("local")
+@Profile("dev")
 @RequiredArgsConstructor
 public class InitRedis {
 

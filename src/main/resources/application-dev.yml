@@ -1,12 +1,12 @@
 spring:
   config:
     activate:
-      on-profile: test
+      on-profile: dev
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/safeking
-    username: sa
-    password:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://board-project-mariadb.cfhzauu7smdq.ap-northeast-2.rds.amazonaws.com:3306/safeking_dev
+    username: safeking_dev
+    password: 1234
 
   batch:
     job:
@@ -16,7 +16,7 @@ spring:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         default_batch_fetch_size: 1000
@@ -24,3 +24,6 @@ spring:
     open-in-view: false
   logging.level:
     org.hibernate.SQL: debug
+  redis:
+    host: localhost
+    port: 6379
