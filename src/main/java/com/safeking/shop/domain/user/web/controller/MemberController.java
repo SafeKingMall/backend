@@ -5,6 +5,7 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
+import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.CacheService;
 import com.safeking.shop.domain.user.domain.service.DormantMemberService;
 import com.safeking.shop.domain.user.domain.service.MemberService;
@@ -59,7 +60,9 @@ public class MemberController {
     private final TokenUtils tokenUtils;
     private final SMSService smsService;
     private final DormantMemberService dormantMemberService;
-    private final CacheService cacheService;
+    private final MemoryMemberRepository memoryMemberRepository;
+    private final MemoryDormantRepository dormantRepository;
+
 
     @PostMapping("/signup/criticalItems")
     public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
@@ -90,6 +93,8 @@ public class MemberController {
         return memberService.changeMemoryToDB(memberId, agreement);
 
     }
+    @PostMapping("/signup/memoryClear/{memberId}")
+    public void memoryMemberRepoClear(@PathVariable Long memberId){ memoryMemberRepository.delete(memberId);}
 
     @PostMapping("/dormant/criticalItems")
     public Long dormantCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
@@ -121,6 +126,8 @@ public class MemberController {
         return dormantMemberService.revertCommonAccounts(memberId, agreement);
 
     }
+    @PostMapping("/dormant/memoryClear/{memberId}")
+    public void dormantMemoryRepoClear(@PathVariable Long memberId){dormantRepository.delete(memberId);}
 
 
     @GetMapping("/user/details")

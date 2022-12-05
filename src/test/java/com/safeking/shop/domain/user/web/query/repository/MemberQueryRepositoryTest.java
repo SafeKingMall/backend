@@ -6,6 +6,7 @@ import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -60,10 +62,11 @@ class MemberQueryRepositoryTest {
     @ValueSource(strings = {"user1","user2"})
     @NullAndEmptySource
     void searchAllCondition(String value) {
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        memberQueryRepository.searchAllCondition(value,pageRequest).stream()
-                .forEach(
-                        memberListDto -> System.out.println("memberListDto.getName() = " + memberListDto.getName())
-                );
+//        PageRequest pageRequest = PageRequest.of(0, 10);
+//        memberQueryRepository
+//                .searchAllCondition(value,pageRequest).stream()
+//                .forEach(member ->
+//                        assertThat(m)
+//                );
     }
 }
