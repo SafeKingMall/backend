@@ -32,9 +32,7 @@ public class MemoryClearJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final MemoryMemberRepository memoryMemberRepository;
     private final SMSMemoryRepository smsMemoryRepository;
-
-//    private final MemoryDormantRepository dormantRepository; 이거는 추후에 개발예정
-
+    private final MemoryDormantRepository dormantRepository;
     @Bean
     @Qualifier("memoryClearJobJob")
     public Job memoryClearJobJob(Step memoryClearJobStep){
@@ -64,6 +62,7 @@ public class MemoryClearJobConfig {
 
                 memoryMemberRepository.clearStore();
                 smsMemoryRepository.clearStore();
+                dormantRepository.clearStore();
 
                 return RepeatStatus.FINISHED;
             }
