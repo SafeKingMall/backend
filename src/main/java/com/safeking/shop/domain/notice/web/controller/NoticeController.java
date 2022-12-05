@@ -29,18 +29,19 @@ import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/")
 public class NoticeController {
 
     private final NoticeService noticeService;
 
-    @PostMapping("/admin/notice")
+    @PostMapping("admin/notice")
     public Long save(@RequestBody NoticeSaveDto noticeSaveDto, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         noticeSaveDto.setMemberId(username);
         return noticeService.save(noticeSaveDto);
     }
 
-    @PutMapping("/admin/notice/{noticeId}")
+    @PutMapping("admin/notice/{noticeId}")
     public void update(@PathVariable Long noticeId, @RequestBody NoticeUpdateDto noticeUpdateDto, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         noticeUpdateDto.setMemberId(username);
@@ -48,13 +49,13 @@ public class NoticeController {
         noticeService.update(noticeUpdateDto);
     }
 
-    @DeleteMapping("/admin/notice/{noticeId}")
+    @DeleteMapping("admin/notice/{noticeId}")
     public void delete(@PathVariable Long noticeId, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         noticeService.delete(noticeId);
     }
 
-    @GetMapping("/admin/notice/{noticeId}")
+    @GetMapping("admin/notice/{noticeId}")
     public NoticeViewResponse adminView(@PathVariable Long noticeId){
         NoticeViewDto noticeViewDto = noticeService.view(noticeId);
         return new NoticeViewResponse(noticeViewDto.getId(),
@@ -66,7 +67,7 @@ public class NoticeController {
         );
     }
 
-    @GetMapping("/admin/notice/list")
+    @GetMapping("admin/notice/list")
     public Page<NoticeListResponse> adminList(Pageable pageable){
         Page<NoticeListResponse> page = noticeService.list(pageable).map(m->NoticeListResponse.builder()
                 .id(m.getId())
@@ -79,7 +80,7 @@ public class NoticeController {
         return page;
     }
 
-    @GetMapping("/notice/{noticeId}")
+    @GetMapping("notice/{noticeId}")
     public NoticeViewResponse view(@PathVariable Long noticeId){
         NoticeViewDto noticeViewDto = noticeService.view(noticeId);
         return new NoticeViewResponse(noticeViewDto.getId(),
@@ -91,7 +92,7 @@ public class NoticeController {
         );
     }
 
-    @GetMapping("/notice/list")
+    @GetMapping("notice/list")
     public Page<NoticeListResponse> list(Pageable pageable){
         Page<NoticeListResponse> page = noticeService.list(pageable).map(m->NoticeListResponse.builder()
                 .id(m.getId())
