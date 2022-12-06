@@ -45,6 +45,8 @@ public class CartItemService {
     public void deleteCartItemFromCart(String username, Long... itemId){
 
         Cart cart = cartRepository.findCartByUsername(username).orElseThrow(() -> new EntityNotFoundException("장바구니가 없습니다."));
+        System.out.println("cart.getId() = " + cart.getId());
+        System.out.println("itemId = " + itemId);
         if(itemId!=null) cartItemRepository.deleteCartItem(cart.getId(), itemId);
 
     }
