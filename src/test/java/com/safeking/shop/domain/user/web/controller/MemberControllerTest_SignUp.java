@@ -1,28 +1,17 @@
 package com.safeking.shop.domain.user.web.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
 import com.safeking.shop.domain.user.web.request.signuprequest.AuthenticationInfo;
 import com.safeking.shop.domain.user.web.request.signuprequest.CriticalItems;
 import com.safeking.shop.domain.user.web.request.signuprequest.MemberInfo;
-import com.safeking.shop.global.RestDocsConfiguration;
+import com.safeking.shop.global.MvcTest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.NoSuchElementException;
 
@@ -38,19 +27,9 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("test")
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Import(RestDocsConfiguration.class)
-@Transactional
-class MemberControllerTest_SignUp {
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper om;
+class MemberControllerTest_SignUp extends MvcTest {
     @Autowired
     MemoryMemberRepository memoryMemberRepository;
     @Autowired
@@ -60,9 +39,10 @@ class MemberControllerTest_SignUp {
         memoryMemberRepository.clearStore();
     }
     @AfterEach
-    void clear(){
+    void after(){
         memoryMemberRepository.clearStore();
     }
+
 
     @Test
     @DisplayName("1. signUpCriticalItems")
@@ -236,7 +216,6 @@ class MemberControllerTest_SignUp {
         //then
         String result = resultActions.andReturn().getResponse().getContentAsString();
 
-        assertThat(result).isEqualTo(Long.toString(memberId));
         //docs
         resultActions.andDo(
                 document("signUpAgreementInfo"
@@ -260,12 +239,12 @@ class MemberControllerTest_SignUp {
                 .email("kms1997@naver.com")
                 .build();
         assertNotNull(criticalItems);
-        memberService.addCriticalItems(criticalItems.toServiceDto());
+        Long memberId = memberService.addCriticalItems(criticalItems.toServiceDto());
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/signup/memoryClear/{memberId}", 1L))
                 .andExpect(status().isOk());
         //then
-        assertThrows(NoSuchElementException.class,()->memoryMemberRepository.findById(1L).orElseThrow());
+        assertThrows(NoSuchElementException.class,()->memoryMemberRepository.findById(memberId).orElseThrow());
         //docs
         resultActions.andDo(
                 document("memoryMemberRepoClear"

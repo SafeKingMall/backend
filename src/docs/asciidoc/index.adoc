@@ -16,16 +16,16 @@ operation::signUpCriticalItems[snippets='http-request,request-fields,request-bod
 
 [[Member-signup-2]]
 === Member SIGN UP_2(2. 회원가입 인증 정보)
-operation::signUpAuthenticationInfo[snippets='http-request,request-fields,request-body,http-response,response-body']
+operation::signUpAuthenticationInfo[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
 
 [[Member-signup-3]]
 === Member SIGN UP_3(3. 회원가입 회원 정보)
-operation::signUpMemberInfo[snippets='http-request,request-fields,request-body,http-response,response-body']
+operation::signUpMemberInfo[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
 
 [[Member-signup-4]]
 === Member SIGN UP_4(4. 회원가입 회원 정보)
-operation::signUpAgreementInfo[snippets='http-request,request-fields,request-body,http-response,response-body']
+operation::signUpAgreementInfo[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
 
 [[Member-signup-DELETE]]
 === Member SIGN UP DELETE(메모리에서 회원 지우기)
-operation::memoryMemberRepoClear[snippets='http-request,request-fields,request-body,http-response,response-body']
+operation::memoryMemberRepoClear[snippets='http-request,path-parameters,request-body,http-response']

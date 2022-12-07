@@ -10,7 +10,9 @@ import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.web.request.UpdateRequest;
 import com.safeking.shop.domain.user.web.response.MemberDetails;
+import com.safeking.shop.global.MvcTest;
 import com.safeking.shop.global.RestDocsConfiguration;
+import com.safeking.shop.global.TestUserHelper;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import com.safeking.shop.global.jwt.filter.dto.LoginRequestDto;
 import org.junit.jupiter.api.*;
@@ -31,26 +33,18 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("test")
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Import(RestDocsConfiguration.class)
-@Transactional
-class MemberControllerTest_Info {
 
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper om;
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class MemberControllerTest_Info extends MvcTest {
+
     @Autowired
     CustomBCryPasswordEncoder encoder;
     @Autowired
     MemberRepository memberRepository;
     @Autowired
     MemberRedisRepository redisRepository;
+    @Autowired
+    TestUserHelper userHelper;
 
     String jwtToken=null;
     String USERNAME = "username";
@@ -58,44 +52,9 @@ class MemberControllerTest_Info {
 
     @BeforeEach
     void init() throws Exception {
-        GeneralMember member = GeneralMember.builder()
-                .name("user")
-                .birth("birth")
-                .username(USERNAME)
-                .password(encoder.encode("password"))
-                .email("email")
-                .roles("ROLE_USER")
-                .phoneNumber("01012345678")
-                .companyName("safeking")
-                .companyRegistrationNumber("111")
-                .corporateRegistrationNumber("222")
-                .representativeName("MS")
-                .contact("contact")
-                .address(new Address("seoul", "mapo", "111"))
-                .agreement(true)
-                .accountNonLocked(true)
-                .status(MemberStatus.COMMON)
-                .build();
-        member.addLastLoginTime();
-        memberRepository.save(member);
-
-        memberRepository.findAll().stream()
-                .forEach(user -> redisRepository.save(new RedisMember(user.getRoles(), user.getUsername())));
-
-        //given
-        String content = om.writeValueAsString(
-                new LoginRequestDto(USERNAME, "password"));
-        //when
-        MockHttpServletResponse response = mockMvc.perform(post("/api/v1/login")
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        //then
-        assertThat(response.getStatus()).isEqualTo(200);
-        jwtToken = response.getHeader(AUTH_HEADER);
+        userHelper.createMember();
+        generateToken();
     }
-
     @Test
     void showMemberDetails() throws Exception {
         //given
@@ -196,5 +155,19 @@ class MemberControllerTest_Info {
 
     @Test
     void socialLogin() {
+    }
+
+    private void generateToken() throws Exception {
+        String content = om.writeValueAsString(
+                new LoginRequestDto(TestUserHelper.USERNAME, TestUserHelper.PASSWORD));
+        //when
+        MockHttpServletResponse response = mockMvc.perform(post("/api/v1/login")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        //then
+        assertThat(response.getStatus()).isEqualTo(200);
+        jwtToken = response.getHeader(AUTH_HEADER);
     }
 }
