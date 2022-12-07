@@ -10,37 +10,34 @@ import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.web.request.UpdateRequest;
 import com.safeking.shop.domain.user.web.response.MemberDetails;
-import com.safeking.shop.global.auth.PrincipalDetails;
+import com.safeking.shop.global.RestDocsConfiguration;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
-import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.filter.dto.LoginRequestDto;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.SimpleArgumentConverter;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.safeking.shop.global.jwt.TokenUtils.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(RestDocsConfiguration.class)
 @Transactional
 class MemberControllerTest_Info {
 
@@ -55,12 +52,12 @@ class MemberControllerTest_Info {
     @Autowired
     MemberRedisRepository redisRepository;
 
-    String jwtToken;
-    String USERNAME="username";
+    String jwtToken=null;
+    String USERNAME = "username";
 
 
-    @BeforeAll
-    void init(){
+    @BeforeEach
+    void init() throws Exception {
         GeneralMember member = GeneralMember.builder()
                 .name("user")
                 .birth("birth")
@@ -83,11 +80,8 @@ class MemberControllerTest_Info {
         memberRepository.save(member);
 
         memberRepository.findAll().stream()
-                .forEach(user -> redisRepository.save(new RedisMember(user.getRoles(),user.getUsername())));
-    }
+                .forEach(user -> redisRepository.save(new RedisMember(user.getRoles(), user.getUsername())));
 
-    @BeforeEach
-    void login_user() throws Exception {
         //given
         String content = om.writeValueAsString(
                 new LoginRequestDto(USERNAME, "password"));
@@ -99,33 +93,33 @@ class MemberControllerTest_Info {
                 .andReturn().getResponse();
         //then
         assertThat(response.getStatus()).isEqualTo(200);
-        jwtToken=response.getHeader(AUTH_HEADER);
+        jwtToken = response.getHeader(AUTH_HEADER);
     }
 
     @Test
     void showMemberDetails() throws Exception {
         //given
-        String token=jwtToken;
+        String token = jwtToken;
         //when
         String responseData = mockMvc.perform(get("/api/v1/user/details")
-                        .header(AUTH_HEADER,token))
+                        .header(AUTH_HEADER, token))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         //then
         MemberDetails memberDetails = om.readValue(responseData, MemberDetails.class);
 
         Assertions.assertAll(
-                ()->assertThat(memberDetails.getName()).isEqualTo("user")
-                ,()->assertThat(memberDetails.getUsername()).isEqualTo("username")
-                ,()->assertThat(memberDetails.getBirth()).isEqualTo("birth")
-                ,()->assertThat(memberDetails.getRepresentativeName()).isEqualTo("MS")
-                ,()->assertThat(memberDetails.getPhoneNumber()).isEqualTo("01012345678")
-                ,()->assertThat(memberDetails.getCompanyRegistrationNumber()).isEqualTo("111")
-                ,()->assertThat(memberDetails.getCorporateRegistrationNumber()).isEqualTo("222")
-                ,()->assertThat(
+                () -> assertThat(memberDetails.getName()).isEqualTo("user")
+                , () -> assertThat(memberDetails.getUsername()).isEqualTo("username")
+                , () -> assertThat(memberDetails.getBirth()).isEqualTo("birth")
+                , () -> assertThat(memberDetails.getRepresentativeName()).isEqualTo("MS")
+                , () -> assertThat(memberDetails.getPhoneNumber()).isEqualTo("01012345678")
+                , () -> assertThat(memberDetails.getCompanyRegistrationNumber()).isEqualTo("111")
+                , () -> assertThat(memberDetails.getCorporateRegistrationNumber()).isEqualTo("222")
+                , () -> assertThat(
                         new Address(memberDetails.getBasicAddress()
-                        ,memberDetails.getDetailedAddress()
-                        ,memberDetails.getZipcode()))
+                                , memberDetails.getDetailedAddress()
+                                , memberDetails.getZipcode()))
                         .usingRecursiveComparison()
                         .isEqualTo(new Address("seoul", "mapo", "111"))
         );
@@ -134,7 +128,7 @@ class MemberControllerTest_Info {
     @Test
     void update() throws Exception {
         //given
-        String token=jwtToken;
+        String token = jwtToken;
         UpdateRequest updateRequest = UpdateRequest.builder()
                 .name("nameChange")
                 .birth("birthChange")
@@ -158,17 +152,17 @@ class MemberControllerTest_Info {
         Member member = memberRepository.findByUsername(USERNAME).orElseThrow();
 
         assertAll(
-                ()->assertThat(member.getName()).isEqualTo("nameChange")
-                ,()->assertThat(member.getUsername()).isEqualTo("username")
-                ,()->assertThat(member.getBirth()).isEqualTo("birthChange")
-                ,()->assertThat(member.getRepresentativeName()).isEqualTo("representativeNameChange")
-                ,()->assertThat(member.getPhoneNumber()).isEqualTo("01082460887")
-                ,()->assertThat(member.getCompanyRegistrationNumber()).isEqualTo("companyRegistrationNumberChange")
-                ,()->assertThat(member.getCorporateRegistrationNumber()).isEqualTo("corporateRegistrationNumberChange")
-                ,()->assertThat(
+                () -> assertThat(member.getName()).isEqualTo("nameChange")
+                , () -> assertThat(member.getUsername()).isEqualTo("username")
+                , () -> assertThat(member.getBirth()).isEqualTo("birthChange")
+                , () -> assertThat(member.getRepresentativeName()).isEqualTo("representativeNameChange")
+                , () -> assertThat(member.getPhoneNumber()).isEqualTo("01082460887")
+                , () -> assertThat(member.getCompanyRegistrationNumber()).isEqualTo("companyRegistrationNumberChange")
+                , () -> assertThat(member.getCorporateRegistrationNumber()).isEqualTo("corporateRegistrationNumberChange")
+                , () -> assertThat(
                         new Address(updateRequest.getBasicAddress()
-                                ,updateRequest.getDetailedAddress()
-                                ,updateRequest.getZipcode()))
+                                , updateRequest.getDetailedAddress()
+                                , updateRequest.getZipcode()))
                         .usingRecursiveComparison()
                         .isEqualTo(new Address("basicAddressChange"
                                 , "detailedAddressChange"

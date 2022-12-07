@@ -1,6 +1,7 @@
 package com.safeking.shop.domain.user.web.request.signuprequest;
 
 import com.safeking.shop.domain.user.domain.service.dto.AuthenticationInfoDto;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.context.annotation.Lazy;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Getter
+@Builder
 public class AuthenticationInfo {
 
     @Length(max = 50)

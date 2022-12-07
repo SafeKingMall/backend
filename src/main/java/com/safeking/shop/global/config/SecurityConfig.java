@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,7 +33,7 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 //        httpSecurity.addFilterBefore(new MyFilter3(), SecurityContextHolderFilter.class);
-        httpSecurity.csrf().disable();
+        httpSecurity.csrf().disable().cors();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .formLogin().disable()
@@ -42,6 +43,8 @@ public class SecurityConfig{
 
                 .and()
                 .authorizeRequests()
+
+                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 
                 .antMatchers("/api/v1/user/**")
                 .access("hasRole('ROLE_USER')or hasRole('ROLE_MANAGER')or hasRole('ROLE_ADMIN')")

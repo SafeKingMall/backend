@@ -1,5 +1,6 @@
-//package com.safeking.shop.domain.user.web.controller;
+//package com.safeking.shop.global;
 //
+//import com.fasterxml.jackson.core.JsonProcessingException;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import com.safeking.shop.domain.user.domain.entity.Address;
 //import com.safeking.shop.domain.user.domain.entity.MemberStatus;
@@ -8,43 +9,23 @@
 //import com.safeking.shop.domain.user.domain.entity.member.Member;
 //import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 //import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-//import com.safeking.shop.domain.user.web.request.UpdateRequest;
-//import com.safeking.shop.domain.user.web.response.MemberDetails;
 //import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 //import com.safeking.shop.global.jwt.filter.dto.LoginRequestDto;
-//import org.junit.jupiter.api.*;
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-//import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-//import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.http.MediaType;
 //import org.springframework.mock.web.MockHttpServletResponse;
-//import org.springframework.test.context.ActiveProfiles;
+//import org.springframework.restdocs.RestDocumentationContextProvider;
+//import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+//import org.springframework.stereotype.Component;
 //import org.springframework.test.web.servlet.MockMvc;
 //import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.web.context.WebApplicationContext;
 //
 //import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 //import static org.assertj.core.api.Assertions.assertThat;
-//import static org.junit.jupiter.api.Assertions.assertAll;
-//import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-//import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-//import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//
-//@ActiveProfiles("test")
-//@SpringBootTest
-//@AutoConfigureMockMvc
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-//@Transactional
-//@AutoConfigureRestDocs
-//class MemberControllerTest_docs {
-//
-//    @Autowired
-//    MockMvc mockMvc;
-//    @Autowired
-//    ObjectMapper om;
+//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+//@Component
+//public class TestUserHelper extends MvcTestHelper{
 //    @Autowired
 //    CustomBCryPasswordEncoder encoder;
 //    @Autowired
@@ -52,16 +33,12 @@
 //    @Autowired
 //    MemberRedisRepository redisRepository;
 //
-//    String jwtToken;
-//    String USERNAME="username";
 //
-//
-//    @BeforeAll
-//    void init(){
+//    public Member createMember(){
 //        GeneralMember member = GeneralMember.builder()
 //                .name("user")
 //                .birth("birth")
-//                .username(USERNAME)
+//                .username("username")
 //                .password(encoder.encode("password"))
 //                .email("email")
 //                .roles("ROLE_USER")
@@ -80,42 +57,44 @@
 //        memberRepository.save(member);
 //
 //        memberRepository.findAll().stream()
-//                .forEach(user -> redisRepository.save(new RedisMember(user.getRoles(),user.getUsername())));
+//                .forEach(user -> redisRepository.save(new RedisMember(user.getRoles(), user.getUsername())));
+//
+//        return member;
 //    }
 //
-//    @BeforeEach
-//    void login_user() throws Exception {
-//        //given
+//    public String generateToken() throws Exception {
+//        GeneralMember member = GeneralMember.builder()
+//                .name("user")
+//                .birth("birth")
+//                .username("username")
+//                .password(encoder.encode("password"))
+//                .email("email")
+//                .roles("ROLE_USER")
+//                .phoneNumber("01012345678")
+//                .companyName("safeking")
+//                .companyRegistrationNumber("111")
+//                .corporateRegistrationNumber("222")
+//                .representativeName("MS")
+//                .contact("contact")
+//                .address(new Address("seoul", "mapo", "111"))
+//                .agreement(true)
+//                .accountNonLocked(true)
+//                .status(MemberStatus.COMMON)
+//                .build();
+//        member.addLastLoginTime();
+//        memberRepository.save(member);
+//
+//        memberRepository.findAll().stream()
+//                .forEach(user -> redisRepository.save(new RedisMember(user.getRoles(), user.getUsername())));
+//
 //        String content = om.writeValueAsString(
-//                new LoginRequestDto(USERNAME, "password"));
+//                new LoginRequestDto(member.getUsername(), "password"));
 //        //when
 //        MockHttpServletResponse response = mockMvc.perform(post("/api/v1/login")
 //                        .content(content)
 //                        .contentType(MediaType.APPLICATION_JSON)
 //                        .accept(MediaType.APPLICATION_JSON))
 //                .andReturn().getResponse();
-//        //then
-//        assertThat(response.getStatus()).isEqualTo(200);
-//        jwtToken=response.getHeader(AUTH_HEADER);
+//        return response.getHeader(AUTH_HEADER);
 //    }
-//
-//    @Test
-//    void showMemberDetails() throws Exception {
-//        //given
-//        String token=jwtToken;
-//        //when
-//        mockMvc.perform(get("/api/v1/user/details")
-//                        .header(AUTH_HEADER,token))
-//                .andExpect(status().isOk())
-//                .andDo(
-//                        document("user-userDetail"
-//                        ,responseFields(
-//                                fieldWithPath()
-//                                )
-//                        )
-//                )
-//
-//    }
-//
-//
 //}

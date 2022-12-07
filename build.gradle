@@ -106,6 +106,7 @@ task copyDocument(type: Copy) {
     dependsOn asciidoctor
     from file("build/docs/asciidoc")
     into file("src/main/resources/static/docs")
+
 }
 
 // build 의 의존작업 명시
