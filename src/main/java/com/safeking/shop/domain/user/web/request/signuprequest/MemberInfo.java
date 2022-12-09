@@ -17,7 +17,7 @@ public class MemberInfo {
     @NotEmpty(message = "빈 문자는 안됩니다.")
     private String companyName;
 
-    @Length(max = 50)
+    @Pattern(regexp = "([0-9]{3})-?([0-9]{2})-?([0-9]{5})",message = "ex)123-12-12345")
     @NotEmpty(message = "빈 문자는 안됩니다.")
     private String companyRegistrationNumber;
 

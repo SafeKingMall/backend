@@ -91,7 +91,7 @@ class MemberControllerTest_SignUp extends MvcTest {
 
         AuthenticationInfo authenticationInfo = AuthenticationInfo.builder()
                 .name("name")
-                .birth("971202")
+                .birth("20001202")
                 .phoneNumber("01082460887")
                 .build();
         String requestData = om.writeValueAsString(authenticationInfo);
@@ -132,8 +132,8 @@ class MemberControllerTest_SignUp extends MvcTest {
 
         MemberInfo memberInfo = MemberInfo.builder()
                 .companyName("safeking")
-                .companyRegistrationNumber("111")
-                .corporateRegistrationNumber("222")
+                .companyRegistrationNumber("111-22-12345")
+                .corporateRegistrationNumber("111111-1234567")
                 .representativeName("ms")
                 .basicAddress("서울시")
                 .detailedAddress("마포대로")

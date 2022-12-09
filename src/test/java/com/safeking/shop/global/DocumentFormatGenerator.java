@@ -19,7 +19,7 @@ public interface DocumentFormatGenerator {
         return key("format").value("10 ~ 11 자리의 숫자만 입력 가능합니다.");
     }
     static Attributes.Attribute BirthValidation() {
-        return key("format").value("6자리의 생년월일, ex)971202");
+        return key("format").value("8자리의 생년월일, ex)19971202");
     }
     static Attributes.Attribute InputValidation() {
         return key("format").value("빈 문자여서는 안되며 50글자이내여야 합니다.");
@@ -27,4 +27,8 @@ public interface DocumentFormatGenerator {
     static Attributes.Attribute BooleanValidation() {
         return key("format").value("null이어서는 안되며 boolean형이어야 합니다.");
     }
+    static Attributes.Attribute companyRegistrationNumberValidation() {
+        return key("format").value("ex) 123-12-12345");
+    }
+
 }
