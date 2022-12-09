@@ -2,6 +2,9 @@ package com.safeking.shop.global.jwt.filter;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safeking.shop.domain.user.domain.entity.RedisMember;
+import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.jwt.TokenUtils;
@@ -30,10 +33,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final AuthenticationManager authenticationManager;
     private final TokenUtils tokenUtils;
     private ObjectMapper om;
+    private MemberRedisRepository memberRepository;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, TokenUtils tokenUtils) {
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, TokenUtils tokenUtils,MemberRedisRepository memberRepository) {
         this.authenticationManager = authenticationManager;
         this.tokenUtils = tokenUtils;
+        this.memberRepository=memberRepository;
 
         setFilterProcessesUrl("/api/v1/login");
     }
@@ -57,6 +63,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             Authentication authentication
                     = authenticationManager.authenticate(authenticationToken);
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            Member loginMember = principalDetails.getMember();
+            //4. redis 의 집어넣기
+            memberRepository.save(new RedisMember(loginMember.getRoles(),loginMember.getUsername()));
 
             return authentication;
 

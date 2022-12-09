@@ -70,7 +70,7 @@ public class SecurityConfig{
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http
                     .addFilter(corsConfig.corsFilter())
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager,tokenUtils))
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager, tokenUtils, memberRepository))
                     .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository))
             ;
 

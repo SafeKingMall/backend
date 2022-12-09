@@ -57,6 +57,7 @@ class MemberControllerTest_Info extends MvcTest {
     }
     @Test
     void showMemberDetails() throws Exception {
+        System.out.println("showMemberDetails");
         //given
         String token = jwtToken;
         //when
@@ -160,6 +161,8 @@ class MemberControllerTest_Info extends MvcTest {
     private void generateToken() throws Exception {
         String content = om.writeValueAsString(
                 new LoginRequestDto(TestUserHelper.USERNAME, TestUserHelper.PASSWORD));
+
+        System.out.println("login begin");
         //when
         MockHttpServletResponse response = mockMvc.perform(post("/api/v1/login")
                         .content(content)
@@ -167,6 +170,8 @@ class MemberControllerTest_Info extends MvcTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         //then
+        System.out.println("login end");
+
         assertThat(response.getStatus()).isEqualTo(200);
         jwtToken = response.getHeader(AUTH_HEADER);
     }
