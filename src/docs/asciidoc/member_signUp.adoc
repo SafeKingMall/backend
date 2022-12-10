@@ -29,3 +29,4 @@ operation::signUpAgreementInfo[snippets='http-request,path-parameters,request-fi
 [[Member-signup-DELETE]]
 === Member SIGN UP DELETE(메모리에서 회원 지우기)
 operation::memoryMemberRepoClear[snippets='http-request,path-parameters,request-body,http-response']
+

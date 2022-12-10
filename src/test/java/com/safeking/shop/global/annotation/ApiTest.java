@@ -20,6 +20,5 @@ import java.lang.annotation.Target;
 @AutoConfigureMockMvc//mockMvc 를 자동으로 설정
 @AutoConfigureRestDocs// resdocs 를 자동으로 설정
 @Import(RestDocsConfiguration.class)
-@Transactional
 public @interface ApiTest {
 }

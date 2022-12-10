@@ -27,8 +27,7 @@ public interface DocumentFormatGenerator {
     static Attributes.Attribute BooleanValidation() {
         return key("format").value("null이어서는 안되며 boolean형이어야 합니다.");
     }
-    static Attributes.Attribute companyRegistrationNumberValidation() {
-        return key("format").value("ex) 123-12-12345");
-    }
+    static Attributes.Attribute companyRegistrationNumberValidation() {return key("format").value("ex) 123-12-12345");}
+    static Attributes.Attribute JwtTokenValidation() {return key("format").value("ex) Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");}
 
 }

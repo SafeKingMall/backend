@@ -8,8 +8,9 @@ import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-import com.safeking.shop.domain.user.web.request.UpdateRequest;
+import com.safeking.shop.domain.user.web.request.*;
 import com.safeking.shop.domain.user.web.response.MemberDetails;
+import com.safeking.shop.domain.user.web.response.MemberListDto;
 import com.safeking.shop.global.MvcTest;
 import com.safeking.shop.global.RestDocsConfiguration;
 import com.safeking.shop.global.TestUserHelper;
@@ -21,20 +22,36 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sound.midi.Patch;
+
+import static com.safeking.shop.global.DocumentFormatGenerator.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 class MemberControllerTest_Info extends MvcTest {
 
     @Autowired
@@ -47,9 +64,6 @@ class MemberControllerTest_Info extends MvcTest {
     TestUserHelper userHelper;
 
     String jwtToken=null;
-    String USERNAME = "username";
-
-
     @BeforeEach
     void init() throws Exception {
         userHelper.createMember();
@@ -61,16 +75,16 @@ class MemberControllerTest_Info extends MvcTest {
         //given
         String token = jwtToken;
         //when
-        String responseData = mockMvc.perform(get("/api/v1/user/details")
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/user/details")
                         .header(AUTH_HEADER, token))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk());
         //then
-        MemberDetails memberDetails = om.readValue(responseData, MemberDetails.class);
+        String result = resultActions.andReturn().getResponse().getContentAsString();
+        MemberDetails memberDetails = om.readValue(result, MemberDetails.class);
 
         Assertions.assertAll(
                 () -> assertThat(memberDetails.getName()).isEqualTo("user")
-                , () -> assertThat(memberDetails.getUsername()).isEqualTo("username")
+                , () -> assertThat(memberDetails.getUsername()).isEqualTo(TestUserHelper.USER_USERNAME)
                 , () -> assertThat(memberDetails.getBirth()).isEqualTo("birth")
                 , () -> assertThat(memberDetails.getRepresentativeName()).isEqualTo("MS")
                 , () -> assertThat(memberDetails.getPhoneNumber()).isEqualTo("01012345678")
@@ -83,6 +97,27 @@ class MemberControllerTest_Info extends MvcTest {
                         .usingRecursiveComparison()
                         .isEqualTo(new Address("seoul", "mapo", "111"))
         );
+        //docs
+        resultActions.andDo(
+                document("showMemberDetails"
+                        ,requestHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,responseFields(
+                                fieldWithPath("name").description("이름")
+                                ,fieldWithPath("username").description("회원 ID")
+                                ,fieldWithPath("birth").description("생일")
+                                ,fieldWithPath("representativeName").description("대표자명")
+                                ,fieldWithPath("phoneNumber").description("핸드폰 번호")
+                                ,fieldWithPath("companyRegistrationNumber").description("사업자 등록 번호")
+                                ,fieldWithPath("corporateRegistrationNumber").description("법인 등록 번호")
+                                ,fieldWithPath("basicAddress").description("기본 주소")
+                                ,fieldWithPath("detailedAddress").description("상세 주소")
+                                ,fieldWithPath("zipcode").description("우편 번호")
+                        )
+
+                )
+        );
     }
 
     @Test
@@ -91,78 +126,256 @@ class MemberControllerTest_Info extends MvcTest {
         String token = jwtToken;
         UpdateRequest updateRequest = UpdateRequest.builder()
                 .name("nameChange")
-                .birth("birthChange")
+                .birth("19971202")
                 .representativeName("representativeNameChange")
                 .phoneNumber("01082460887")
-                .companyRegistrationNumber("companyRegistrationNumberChange")
-                .corporateRegistrationNumber("corporateRegistrationNumberChange")
-                .basicAddress("basicAddressChange")
-                .detailedAddress("detailedAddressChange")
-                .zipcode("zipcodeChange")
+                .companyRegistrationNumber("111-12-12345")
+                .corporateRegistrationNumber("111111-1234567")
+                .basicAddress("서울시")
+                .detailedAddress("마포대로")
+                .zipcode("111")
                 .build();
         String content = om.writeValueAsString(updateRequest);
         //when
-        mockMvc.perform(put("/api/v1/user/update")
-                        .header(AUTH_HEADER, token)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse().getContentAsString();
+        ResultActions resultActions = mockMvc.perform(put("/api/v1/user/update")
+                .header(AUTH_HEADER, token)
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
         //then
-        Member member = memberRepository.findByUsername(USERNAME).orElseThrow();
+        Member member = memberRepository.findByUsername(TestUserHelper.USER_USERNAME).orElseThrow();
 
         assertAll(
                 () -> assertThat(member.getName()).isEqualTo("nameChange")
-                , () -> assertThat(member.getUsername()).isEqualTo("username")
-                , () -> assertThat(member.getBirth()).isEqualTo("birthChange")
+                , () -> assertThat(member.getUsername()).isEqualTo(TestUserHelper.USER_USERNAME)
+                , () -> assertThat(member.getBirth()).isEqualTo("19971202")
                 , () -> assertThat(member.getRepresentativeName()).isEqualTo("representativeNameChange")
                 , () -> assertThat(member.getPhoneNumber()).isEqualTo("01082460887")
-                , () -> assertThat(member.getCompanyRegistrationNumber()).isEqualTo("companyRegistrationNumberChange")
-                , () -> assertThat(member.getCorporateRegistrationNumber()).isEqualTo("corporateRegistrationNumberChange")
+                , () -> assertThat(member.getCompanyRegistrationNumber()).isEqualTo("111-12-12345")
+                , () -> assertThat(member.getCorporateRegistrationNumber()).isEqualTo("111111-1234567")
                 , () -> assertThat(
                         new Address(updateRequest.getBasicAddress()
                                 , updateRequest.getDetailedAddress()
                                 , updateRequest.getZipcode()))
                         .usingRecursiveComparison()
-                        .isEqualTo(new Address("basicAddressChange"
-                                , "detailedAddressChange"
-                                , "zipcodeChange"))
+                        .isEqualTo(new Address("서울시"
+                                , "마포대로"
+                                , "111"))
+        );
+        //docs
+        resultActions.andDo(
+                document("updateMemberDetails"
+                        ,requestHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,requestFields(
+                                fieldWithPath("name").attributes(InputValidation()).description("name")
+                                ,fieldWithPath("birth").attributes(BirthValidation()).description("birth")
+                                ,fieldWithPath("representativeName").attributes(InputValidation()).description("대표자 명")
+                                ,fieldWithPath("phoneNumber").attributes(PhoneNumberValidation()).description("phoneNumber")
+                                ,fieldWithPath("companyRegistrationNumber").attributes(companyRegistrationNumberValidation()).description("사업자 등록 번호")
+                                ,fieldWithPath("corporateRegistrationNumber").optional().attributes(InputValidation()).description("법인 번호")
+                                ,fieldWithPath("basicAddress").attributes(InputValidation()).description("기본 주소")
+                                ,fieldWithPath("detailedAddress").attributes(InputValidation()).description("상세 주소")
+                                ,fieldWithPath("zipcode").attributes(InputValidation()).description("우편 번호")
+                        )
+
+                )
         );
     }
 
     @Test
-    void updatePassword() {
+    void updatePassword() throws Exception {
+        //given
+        String token=jwtToken;
+
+        UpdatePWRequest updatePWRequest = new UpdatePWRequest("password1234*");
+        String content = om.writeValueAsString(updatePWRequest);
+        //when
+        ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/v1/user/update/password")
+                .header(AUTH_HEADER, token)
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        //docs
+        resultActions.andDo(
+                document("updatePassword"
+                        ,requestHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,requestFields(
+                                fieldWithPath("password").attributes(PWValidation()).description("password")
+                        )
+                )
+        );
     }
 
     @Test
-    void idDuplicationCheck() {
+    void idDuplicationCheck() throws Exception {
+        //given
+        String token=jwtToken;
+
+        IdDuplicationRequest idDuplicationRequest = new IdDuplicationRequest(TestUserHelper.USER_USERNAME);
+        String content = om.writeValueAsString(idDuplicationRequest);
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/id/duplication")
+                        .header(AUTH_HEADER, token)
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        //then
+        String result = resultActions.andReturn().getResponse().getContentAsString();
+        assertThat(result).isEqualTo("false");
+        //docs
+        resultActions.andDo(
+                document("idDuplicationCheck"
+                        ,requestHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,requestFields(
+                                fieldWithPath("username").attributes(IdValidation()).description("회원 ID")
+                        )
+                )
+        );
     }
 
     @Test
-    void idFind() {
+    void idFind() throws Exception {
+//        //given
+//        String token=jwtToken;
+//
+//        new IdFindRequest()
+//        String content = om.writeValueAsString(idDuplicationRequest);
+//        //when
+//        ResultActions resultActions = mockMvc.perform(post("/api/v1/id/find")
+//                        .header(AUTH_HEADER, token)
+//                        .content(content)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//        //docs
+//        resultActions.andDo(
+//                document("idDuplicationCheck"
+//                        ,requestHeaders(
+//                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+//                        )
+//                        ,requestFields(
+//                                fieldWithPath("username").attributes(IdValidation()).description("회원 ID")
+//                        )
+//                )
+//        );
     }
 
     @Test
-    void sendTemporaryPassword() {
+    void sendTemporaryPassword() throws Exception {
+        //given
+        PWFindRequest pwFindRequest = new PWFindRequest(TestUserHelper.USER_USERNAME);
+        String content = om.writeValueAsString(pwFindRequest);
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/temporaryPassword")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        //docs
+        resultActions.andDo(
+                document("sendTemporaryPassword"
+                        ,requestFields(
+                                fieldWithPath("username").attributes(IdValidation()).description("회원 ID")
+                        )
+                )
+        );
+    }
+    @Test
+    void showMemberList() throws Exception {
+        //given
+        //1) admin create
+        userHelper.createADMIN();
+        //2) member create
+        for (int i = 1; i <= 30; i++) {
+            Member user = GeneralMember.builder()
+                    .name("user"+i)
+                    .username("testUser" + i)
+                    .password(encoder.encode("testUser" + i + "*"))
+                    .accountNonLocked(true)
+                    .status(MemberStatus.COMMON)
+                    .build();
+            user.addLastLoginTime();
+            memberRepository.save(user);
+        }
+        //3) admin login
+        generateTokenAdmin();
+        //when
+        ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/admin/member/list")
+                        .header(AUTH_HEADER,jwtToken)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+                        .param("name","user1")
+                        .param("page","0"))
+                .andExpect(status().isOk());
+        //then
+        resultActions
+                .andExpect(jsonPath("content[0].name").value("user1"))
+                .andExpect(jsonPath("totalPages").value("1"))
+                .andExpect(jsonPath("totalElements").value("11"))
+                .andExpect(jsonPath("size").value("15"))
+                .andExpect(jsonPath("numberOfElements").value("11"))
+        ;
+        //docs
+        resultActions.andDo(
+                document("showMemberList"
+                        ,requestHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,requestParameters(
+                                parameterWithName("name").optional().description("회원 이름")
+                                ,parameterWithName("page").optional().description("page 는 0부터 시작")
+                        )
+                        ,responseFields(
+                                fieldWithPath("content").type(JsonFieldType.ARRAY).description("회원 리스트")
+                                    ,fieldWithPath("content.[].memberId").type(JsonFieldType.NUMBER).description("회원 ID")
+                                    ,fieldWithPath("content.[].name").description("회원 이름")
+                                    ,fieldWithPath("content.[].memberStatus").description("회원 상태")
+
+                                ,fieldWithPath("pageable").type(JsonFieldType.OBJECT).description("pageable 정보")
+
+                                    ,fieldWithPath("pageable.sort").type(JsonFieldType.OBJECT).description("정렬")
+                                        ,fieldWithPath("pageable.sort.sorted").description("정렬")
+                                        ,fieldWithPath("pageable.sort.unsorted").description("비 정렬")
+                                        ,fieldWithPath("pageable.sort.empty").description("empty")
+
+                                    ,fieldWithPath("pageable.offset").description("offset")
+                                    ,fieldWithPath("pageable.pageSize").description("기본 15개로 설정")
+                                    ,fieldWithPath("pageable.pageNumber").description("페이지 번호")
+                                    ,fieldWithPath("pageable.paged").description("paged")
+                                    ,fieldWithPath("pageable.unpaged").description("unpaged")
+
+                                ,fieldWithPath("last").description("마지막 페이지 여부")
+                                ,fieldWithPath("totalElements").description("전체의 데이터 수")
+                                ,fieldWithPath("totalPages").description("전체 페이지의 수")
+                                ,fieldWithPath("size").description("몇개의 데이터를 뿌릴지 여부 기본 15개")
+                                ,fieldWithPath("number").description("페이지 번호")
+
+                                ,fieldWithPath("sort").type(JsonFieldType.OBJECT).description("empty")
+                                    ,fieldWithPath("sort.empty").description("empty")
+                                    ,fieldWithPath("sort.sorted").description("정렬")
+                                    ,fieldWithPath("sort.unsorted").description("비 정렬")
+
+                                ,fieldWithPath("first").description("처음 페이지 인가")
+                                ,fieldWithPath("numberOfElements").description("페이지의 데이터 갯수")
+                                ,fieldWithPath("empty").description("비어 있는 가")
+                        )
+                )
+        );
+
     }
 
-    @Test
-    void showMemberList() {
-    }
-
-    @Test
-    void humanConverterBatch() {
-    }
-
-    @Test
-    void socialLogin() {
-    }
 
     private void generateToken() throws Exception {
         String content = om.writeValueAsString(
-                new LoginRequestDto(TestUserHelper.USERNAME, TestUserHelper.PASSWORD));
-
-        System.out.println("login begin");
+                new LoginRequestDto(TestUserHelper.USER_USERNAME, TestUserHelper.USER_PASSWORD));
         //when
         MockHttpServletResponse response = mockMvc.perform(post("/api/v1/login")
                         .content(content)
@@ -170,8 +383,19 @@ class MemberControllerTest_Info extends MvcTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         //then
-        System.out.println("login end");
-
+        assertThat(response.getStatus()).isEqualTo(200);
+        jwtToken = response.getHeader(AUTH_HEADER);
+    }
+    private void generateTokenAdmin() throws Exception {
+        String content = om.writeValueAsString(
+                new LoginRequestDto(TestUserHelper.ADMIN_USERNAME, TestUserHelper.ADMIN_PASSWORD));
+        //when
+        MockHttpServletResponse response = mockMvc.perform(post("/api/v1/login")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        //then
         assertThat(response.getStatus()).isEqualTo(200);
         jwtToken = response.getHeader(AUTH_HEADER);
     }

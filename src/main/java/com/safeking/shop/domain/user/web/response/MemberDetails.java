@@ -22,9 +22,9 @@ public class MemberDetails {
     private String companyRegistrationNumber;
     private String corporateRegistrationNumber;
 
-    private String zipcode;
     private String basicAddress;
     private String detailedAddress;
+    private String zipcode;
 
     public MemberDetails(Member member) {
         this.name = member.getName();

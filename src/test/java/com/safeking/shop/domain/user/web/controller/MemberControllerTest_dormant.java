@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
-class MemberControllerTest_SignUp extends MvcTest {
+class MemberControllerTest_dormant extends MvcTest {
     @Autowired
     MemoryMemberRepository memoryMemberRepository;
     @Autowired

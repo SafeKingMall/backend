@@ -1,8 +1,10 @@
 package com.safeking.shop.domain.user.web.controller;
 
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
+import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
+import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
@@ -62,8 +64,18 @@ public class MemberController {
     private final DormantMemberService dormantMemberService;
     private final MemoryMemberRepository memoryMemberRepository;
     private final MemoryDormantRepository dormantRepository;
+    private final MemberRedisRepository redisRepository;
 
 
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request){
+        RedisMember redisMember = redisRepository
+                .findByUsername(getUsername(request))
+                .orElseThrow(() -> new MemberNotFoundException("redis member not found"));
+
+        redisRepository.delete(redisMember);
+
+    }
     @PostMapping("/signup/criticalItems")
     public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
 
@@ -169,12 +181,8 @@ public class MemberController {
         return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
     }
 
-//    @GetMapping("/admin/cache/restoration")
-//    public void cacheRestoration(){ cacheService.cacheRestoration(); }
-
     @GetMapping("/admin/member/list")
     public Page<MemberListDto> showMemberList(String name, @PageableDefault(page = 0, size = 15) Pageable pageable) {
-
         return memberQueryRepository.searchAllCondition(name, pageable);
     }
 
