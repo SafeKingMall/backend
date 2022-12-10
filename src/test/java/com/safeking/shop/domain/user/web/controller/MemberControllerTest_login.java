@@ -6,6 +6,7 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.MemberService;
+import com.safeking.shop.domain.user.domain.service.RedisService;
 import com.safeking.shop.domain.user.domain.service.dto.CheckSignUp;
 import com.safeking.shop.domain.user.web.request.UpdateRequest;
 import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
@@ -62,6 +63,8 @@ class MemberControllerTest_login extends MvcTest {
     TestUserHelper userHelper;
     @Autowired
     MemberService memberService;
+    @Autowired
+    RedisService redisService;
     String jwtToken=null;
 
 
@@ -70,6 +73,7 @@ class MemberControllerTest_login extends MvcTest {
     void init(){
         userHelper.createMember();
         userHelper.createADMIN();
+        redisService.deleteAll();
     }
 
     @Order(2)
@@ -138,8 +142,10 @@ class MemberControllerTest_login extends MvcTest {
         for (Member member : all) {
             memberRepository.delete(member);
         }
+        redisService.deleteAll();
     }
     @Test
+    @DisplayName("소셜 로그인")
     public void socialLogin() throws Exception {
         //social signup
         String registrationId="kakao";
@@ -196,8 +202,10 @@ class MemberControllerTest_login extends MvcTest {
                         )
                 )
         );
-
+        redisService.deleteAll();
 
     }
+
+
 
 }

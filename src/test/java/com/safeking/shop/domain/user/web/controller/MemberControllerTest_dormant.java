@@ -1,12 +1,20 @@
 package com.safeking.shop.domain.user.web.controller;
 
+import com.safeking.shop.domain.user.domain.entity.Address;
+import com.safeking.shop.domain.user.domain.entity.MemberStatus;
+import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
+import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
+import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
+import com.safeking.shop.domain.user.domain.service.DormantMemberService;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
 import com.safeking.shop.domain.user.web.request.signuprequest.AuthenticationInfo;
 import com.safeking.shop.domain.user.web.request.signuprequest.CriticalItems;
 import com.safeking.shop.domain.user.web.request.signuprequest.MemberInfo;
 import com.safeking.shop.global.MvcTest;
+import com.safeking.shop.global.TestUserHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -34,9 +42,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class MemberControllerTest_dormant extends MvcTest {
     @Autowired
-    MemoryMemberRepository memoryMemberRepository;
+    MemoryDormantRepository memoryMemberRepository;
     @Autowired
-    MemberService memberService;
+    DormantMemberService memberService;
+    @Autowired
+    MemberRepository memberRepository;
     @BeforeEach
     void before(){
         memoryMemberRepository.clearStore();
@@ -45,11 +55,23 @@ class MemberControllerTest_dormant extends MvcTest {
     void after(){
         memoryMemberRepository.clearStore();
     }
+    Long memberId=null;
 
 
+    @BeforeEach
+    public void init(){
+        GeneralMember member = GeneralMember.builder()
+                .username("kms199711")
+                .roles("ROLE_USER")
+                .accountNonLocked(false)
+                .status(MemberStatus.HUMAN)
+                .build();
+        GeneralMember generalMember = memberRepository.save(member);
+        memberId=generalMember.getId();
+    }
     @Test
-    @DisplayName("1. signUpCriticalItems")
-    void signUpCriticalItems() throws Exception {
+    @DisplayName("1. dormantCriticalItems")
+    void dormantCriticalItems() throws Exception {
         //given
         CriticalItems criticalItems = CriticalItems.builder()
                 .username("kms199711")
@@ -60,7 +82,7 @@ class MemberControllerTest_dormant extends MvcTest {
         String content = om.writeValueAsString(criticalItems);
 
         //when
-        ResultActions resultActions = mockMvc.perform(post("/api/v1/signup/criticalItems")
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/dormant/criticalItems")
 
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -69,52 +91,22 @@ class MemberControllerTest_dormant extends MvcTest {
         //then
         String result = resultActions.andReturn().getResponse().getContentAsString();
 
-        assertThat(result).isEqualTo("1");
+        assertThat(result).isEqualTo(memberId.toString());
         //docs
         resultActions.andDo(
-                        document("signUpCriticalItems"
+                        document("dormantCriticalItems"
                         ,requestFields(
-                                fieldWithPath("username").attributes(IdValidation()).description("username")
+                                fieldWithPath("username").attributes(IdValidation()).description("기존 회원의 아이디")
                                 ,fieldWithPath("password").attributes(PWValidation()).description("password")
                                 ,fieldWithPath("email").type(JsonFieldType.STRING).attributes(EmailValidation()).description("email")
                                 )
                         )
                 );
     }
+
     @Test
-    @DisplayName("1. socialSignUp")
-    void socialSignUp() throws Exception {
-        //given
-        String registrationId="kakao";
-
-        Map<String, Object> data =new HashMap<>();
-        data.put("id","123456789");
-        data.put("email","kms199719@naver.com");
-
-        String content = om.writeValueAsString(data);
-        //when
-        ResultActions resultActions = mockMvc.perform(post("/api/v1/oauth/{registrationId}",registrationId)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        //then
-        String result = resultActions.andReturn().getResponse().getContentAsString();
-
-        assertThat(result).isEqualTo("1");
-        //docs
-        resultActions.andDo(
-                document("socialSignUp"
-                        ,requestFields(
-                                fieldWithPath("id").attributes(IdValidation()).description("id")
-                                ,fieldWithPath("email").attributes(EmailValidation()).description("email")
-                        )
-                )
-        );
-    }
-    @Test
-    @DisplayName("2. signUpAuthenticationInfo")
-    void signUpAuthenticationInfo() throws Exception {
+    @DisplayName("2. dormantAuthenticationInfo")
+    void dormantAuthenticationInfo() throws Exception {
         //given
         CriticalItems criticalItems = CriticalItems.builder()
                 .username("kms199711")
@@ -130,7 +122,7 @@ class MemberControllerTest_dormant extends MvcTest {
                 .build();
         String requestData = om.writeValueAsString(authenticationInfo);
         //when
-        ResultActions resultActions = mockMvc.perform(post("/api/v1/signup/authenticationInfo/{memberId}",memberId)
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/dormant/authenticationInfo/{memberId}",memberId)
                         .content(requestData)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -141,7 +133,7 @@ class MemberControllerTest_dormant extends MvcTest {
         assertThat(result).isEqualTo(Long.toString(memberId));
         //docs
         resultActions.andDo(
-                document("signUpAuthenticationInfo"
+                document("dormantAuthenticationInfo"
                 ,pathParameters(
                         parameterWithName("memberId").description("임시 회원 아이디")
                         )
@@ -154,8 +146,8 @@ class MemberControllerTest_dormant extends MvcTest {
         );
     }
     @Test
-    @DisplayName("3. signUpMemberInfo")
-    void signUpMemberInfo() throws Exception {
+    @DisplayName("3. dormantMemberInfo")
+    void dormantMemberInfo() throws Exception {
          //given
         CriticalItems criticalItems = CriticalItems.builder()
                 .username("kms199711")
@@ -176,7 +168,7 @@ class MemberControllerTest_dormant extends MvcTest {
                 .build();
         String requestData = om.writeValueAsString(memberInfo);
         //when
-        ResultActions resultActions = mockMvc.perform(post("/api/v1/signup/memberInfo/{memberId}", memberId)
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/dormant/memberInfo/{memberId}", memberId)
                         .content(requestData)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -187,7 +179,7 @@ class MemberControllerTest_dormant extends MvcTest {
         assertThat(result).isEqualTo(Long.toString(memberId));
         //docs
         resultActions.andDo(
-                document("signUpMemberInfo"
+                document("dormantMemberInfo"
                         ,pathParameters(
                                 parameterWithName("memberId").description("임시 회원 아이디")
                         )
@@ -207,8 +199,8 @@ class MemberControllerTest_dormant extends MvcTest {
 
     }
     @Test
-    @DisplayName("4. signUpAgreementInfo")
-    void signUpAgreementInfo() throws Exception {
+    @DisplayName("4. dormantAgreementInfo")
+    void dormantAgreementInfo() throws Exception {
         //given
         CriticalItems criticalItems = CriticalItems.builder()
                 .username("kms199711")
@@ -242,7 +234,7 @@ class MemberControllerTest_dormant extends MvcTest {
                 .build();
         String requestData = om.writeValueAsString(agreementInfo);
         //when
-        ResultActions resultActions = mockMvc.perform(post("/api/v1/signup/agreementInfo/{memberId}",memberId)
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/dormant/agreementInfo/{memberId}",memberId)
                         .content(requestData)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -252,38 +244,13 @@ class MemberControllerTest_dormant extends MvcTest {
 
         //docs
         resultActions.andDo(
-                document("signUpAgreementInfo"
+                document("dormantAgreementInfo"
                         ,pathParameters(
                                 parameterWithName("memberId").description("임시 회원 아이디")
                         )
                         ,requestFields(
                                 fieldWithPath("userAgreement").attributes(InputValidation()).description("userAgreement")
                                 ,fieldWithPath("infoAgreement").attributes(BooleanValidation()).description("infoAgreement")
-                        )
-                )
-        );
-    }
-    @Test
-    @DisplayName("memoryMemberRepoClear")
-    void memoryMemberRepoClear() throws Exception {
-        //given
-        CriticalItems criticalItems = CriticalItems.builder()
-                .username("kms199711")
-                .password("kms199711*")
-                .email("kms1997@naver.com")
-                .build();
-        assertNotNull(criticalItems);
-        Long memberId = memberService.addCriticalItems(criticalItems.toServiceDto());
-        //when
-        ResultActions resultActions = mockMvc.perform(post("/api/v1/signup/memoryClear/{memberId}", 1L))
-                .andExpect(status().isOk());
-        //then
-        assertThrows(NoSuchElementException.class,()->memoryMemberRepository.findById(memberId).orElseThrow());
-        //docs
-        resultActions.andDo(
-                document("memoryMemberRepoClear"
-                        ,pathParameters(
-                                parameterWithName("memberId").description("임시 회원 아이디")
                         )
                 )
         );

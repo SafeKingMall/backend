@@ -31,6 +31,7 @@ public class MemoryDormantRepository {
     public void delete(Long id){store.remove(id);}
 
     public void clearStore() {
+        sequence=new AtomicLong(0);
         store.clear();
     }
 }

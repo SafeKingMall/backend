@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Getter
-@RedisHash(value = "member", timeToLive = -1L)
+@RedisHash(value = "member", timeToLive = 43200)//12시간
 public class RedisMember {
     @Id
     private String id;

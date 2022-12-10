@@ -38,7 +38,7 @@ public class MemberQueryRepository {
                 .select(new QMemberListDto(member.id, member.name, member.status.stringValue()))
                 .from(member)
                 .where(usernameEq(name))
-                .orderBy(member.id.asc())
+                .orderBy(member.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -46,7 +46,8 @@ public class MemberQueryRepository {
         JPAQuery<Long> CountQuery = queryFactory
                 .select(member.count())
                 .from(member)
-                .where(usernameEq(name));
+                .where(usernameEq(name))
+                ;
 
         return PageableExecutionUtils.getPage(result,pageable,CountQuery::fetchOne);
     }

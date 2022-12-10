@@ -38,10 +38,10 @@ import javax.sound.midi.Patch;
 
 import static com.safeking.shop.global.DocumentFormatGenerator.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
+import static com.safeking.shop.global.jwt.TokenUtils.REFRESH_HEADER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -64,12 +64,14 @@ class MemberControllerTest_Info extends MvcTest {
     TestUserHelper userHelper;
 
     String jwtToken=null;
+    String refreshToken=null;
     @BeforeEach
     void init() throws Exception {
         userHelper.createMember();
         generateToken();
     }
     @Test
+    @DisplayName("회원 상세")
     void showMemberDetails() throws Exception {
         System.out.println("showMemberDetails");
         //given
@@ -121,6 +123,7 @@ class MemberControllerTest_Info extends MvcTest {
     }
 
     @Test
+    @DisplayName("회원 수정")
     void update() throws Exception {
         //given
         String token = jwtToken;
@@ -186,6 +189,7 @@ class MemberControllerTest_Info extends MvcTest {
     }
 
     @Test
+    @DisplayName("회원 비밀번호 변경")
     void updatePassword() throws Exception {
         //given
         String token=jwtToken;
@@ -213,6 +217,7 @@ class MemberControllerTest_Info extends MvcTest {
     }
 
     @Test
+    @DisplayName("아이디 중복 검사")
     void idDuplicationCheck() throws Exception {
         //given
         String token=jwtToken;
@@ -270,6 +275,7 @@ class MemberControllerTest_Info extends MvcTest {
     }
 
     @Test
+    @DisplayName("임시 비밀번호 발급")
     void sendTemporaryPassword() throws Exception {
         //given
         PWFindRequest pwFindRequest = new PWFindRequest(TestUserHelper.USER_USERNAME);
@@ -290,6 +296,7 @@ class MemberControllerTest_Info extends MvcTest {
         );
     }
     @Test
+    @DisplayName("회원 리스트 조회")
     void showMemberList() throws Exception {
         //given
         //1) admin create
@@ -313,11 +320,12 @@ class MemberControllerTest_Info extends MvcTest {
                         .header(AUTH_HEADER,jwtToken)
                         .accept(MediaType.APPLICATION_JSON_UTF8)
                         .param("name","user1")
-                        .param("page","0"))
+                        .param("page","0")
+                        .param("size","15"))
                 .andExpect(status().isOk());
         //then
         resultActions
-                .andExpect(jsonPath("content[0].name").value("user1"))
+                .andExpect(jsonPath("content[0].name").value("user19"))
                 .andExpect(jsonPath("totalPages").value("1"))
                 .andExpect(jsonPath("totalElements").value("11"))
                 .andExpect(jsonPath("size").value("15"))
@@ -332,6 +340,7 @@ class MemberControllerTest_Info extends MvcTest {
                         ,requestParameters(
                                 parameterWithName("name").optional().description("회원 이름")
                                 ,parameterWithName("page").optional().description("page 는 0부터 시작")
+                                ,parameterWithName("size").optional().description("size 는 기본 15")
                         )
                         ,responseFields(
                                 fieldWithPath("content").type(JsonFieldType.ARRAY).description("회원 리스트")
@@ -371,6 +380,27 @@ class MemberControllerTest_Info extends MvcTest {
         );
 
     }
+    @Test
+    @DisplayName("refresh token 발급")
+    void refreshToken() throws Exception {
+        //given
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/refresh")
+                        .header(REFRESH_HEADER,refreshToken))
+                .andExpect(status().isOk());
+        //docs
+        resultActions.andDo(
+                document("refreshToken"
+                        ,requestHeaders(
+                                headerWithName(REFRESH_HEADER).attributes(RefreshTokenValidation()).description("refreshToken")
+                        )
+                        ,responseHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                                ,headerWithName(REFRESH_HEADER).attributes(RefreshTokenValidation()).description("refreshToken")
+                        )
+                )
+        );
+    }
 
 
     private void generateToken() throws Exception {
@@ -385,6 +415,7 @@ class MemberControllerTest_Info extends MvcTest {
         //then
         assertThat(response.getStatus()).isEqualTo(200);
         jwtToken = response.getHeader(AUTH_HEADER);
+        refreshToken = response.getHeader(REFRESH_HEADER);
     }
     private void generateTokenAdmin() throws Exception {
         String content = om.writeValueAsString(
