@@ -19,7 +19,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @GetMapping("/category/list")
+    @GetMapping("category/list")
     public Page<CategoryListResponse> categoryList(@PageableDefault(size=10) Pageable pageable){
         Page<CategoryListResponse> list = categoryService.list(pageable).map(m -> CategoryListResponse.builder()
                 .id(m.getId())
