@@ -1,4 +1,4 @@
-= Member-INFO-API
+= JWT-ERROR-API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs

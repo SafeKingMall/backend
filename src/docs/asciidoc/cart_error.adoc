@@ -1,4 +1,4 @@
-= Cart-API
+= Cart-Error-API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs

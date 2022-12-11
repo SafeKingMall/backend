@@ -1,0 +1,30 @@
+= Member-Dormant-Social-API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Member-Dormant-Social-API]]
+== Member API (소셜계정 휴면 계정 복구)
+
+[[Member-dormant-social-1]]
+=== 1. 필수 정보 입력
+|===
+| 설명 | 소셜 로그인이 휴면계정으로 전환된다면 로그인이 되지 않고 HttpStatus 403과 임시 회원 아이디가 발급
+임시 회원 아이디로 아래의 api를 진행하여 소셜 휴면 복구 진행하시면 됩니다.
+|===
+operation::dormantCriticalItems_social[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
+
+[[Member-dormant-social-2]]
+=== 2. 인증 정보 입력
+operation::dormantAuthenticationInfo_social[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
+
+[[Member-dormant-social-3]]
+=== 3. 회원 정보 입력
+operation::dormantMemberInfo_social[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
+
+[[Member-dormant-social-4]]
+=== 4. 회원 동의 여부
+operation::dormantAgreementInfo_social[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']

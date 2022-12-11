@@ -196,6 +196,10 @@ public class MemberController {
 
         CheckSignUp checkSignUp = memberService.socialLogin(registrationId, data);
 
+        if (checkSignUp.isLock()){
+            response.setStatus(403);
+            return checkSignUp.getId();
+        }
         if(!checkSignUp.isCheck()){return checkSignUp.getId();}
 
         //jwt 발행

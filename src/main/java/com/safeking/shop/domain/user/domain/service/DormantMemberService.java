@@ -72,7 +72,6 @@ public class DormantMemberService {
             //휴먼의 개인 정보수집, 휴먼 계정에서 일반 계정으로 변환
             dormant.addAgreement(true);
             dormant.revertCommonAccounts();
-
             //필요한 게 다 있는지 check하는 로직
             if(!dormant.isCheckedItem())throw new IllegalArgumentException("필수 항목들을 모두 기입해주세요");
 

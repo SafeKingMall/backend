@@ -52,7 +52,7 @@ public class TestUserHelper {
                 .password(encoder.encode("testUser1234*"))
                 .email("email")
                 .roles("ROLE_USER")
-                .phoneNumber("01012345678")
+                .phoneNumber("01082460887")
                 .companyName("safeking")
                 .companyRegistrationNumber("111")
                 .corporateRegistrationNumber("222")

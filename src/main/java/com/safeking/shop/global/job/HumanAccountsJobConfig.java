@@ -49,9 +49,6 @@ public class HumanAccountsJobConfig {
                 .from(humanAccountsJobStep)
                 .end()
                 .build();
-        //배치가 실패시에 알림기능 log and email, 수동조작기능 추가
-
-
     }
 
     @JobScope
@@ -68,8 +65,7 @@ public class HumanAccountsJobConfig {
         return stepBuilderFactory.get("conditionalFailStep")
                 .tasklet((contribution, chunkContext) -> {
                     log.error("conditional Fail Step");
-                    //지금 현재 문자 잔액 부족!!
-//                    smsService.sendErrorMessage("01082460887");
+                    smsService.sendErrorMessage("01082460887");
                     return RepeatStatus.FINISHED;
                 })
                 .build();

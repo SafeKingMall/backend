@@ -8,6 +8,7 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.*;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -35,6 +36,7 @@ public class MemberService {
     private final CustomBCryPasswordEncoder encoder;
     private final CartService cartService;
     private final MemberRedisRepository cacheMemberRepository;
+    private final MemoryDormantRepository dormantRepository;
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
@@ -93,6 +95,10 @@ public class MemberService {
             memoryMemberRepository.save(oauthMember);
 
             return CheckSignUp.createSignUpUser(oauthMember.getId(),false);
+        } else if (!oauthMember.getAccountNonLocked()) {
+
+            oauthMember.addCriticalItemsForDormant(encoder.encode(password),email);
+            return CheckSignUp.createDormant(dormantRepository.save(oauthMember),false,true);
         } else {
             log.info("Oauth 를 톤해 회원가입을 한 적이 있다.");
             return CheckSignUp.createLoginUser(oauthMember.getUsername(),true);

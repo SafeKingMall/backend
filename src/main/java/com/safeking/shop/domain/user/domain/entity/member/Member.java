@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
 public abstract class Member extends BaseMemberEntity {
-    public static long MEMBER_HUMAN_TIME=10l;
+    public static long MEMBER_HUMAN_TIME=33l;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
@@ -144,7 +145,7 @@ public abstract class Member extends BaseMemberEntity {
         return getPrerequisiteItem().stream().allMatch(item->item!=null);
     }
 
-    private List<Object> getPrerequisiteItem() {
+    public List<Object> getPrerequisiteItem() {
         List<Object> prerequisiteItem =new ArrayList<>();
 
         prerequisiteItem.add(this.name);
@@ -177,9 +178,9 @@ public abstract class Member extends BaseMemberEntity {
     }
 
     public void convertHumanAccount(){
-        Duration between = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
-        //지금은 임시로 10초로 설정
-        if(between.getSeconds()>=MEMBER_HUMAN_TIME){
+        long between = ChronoUnit.DAYS.between(this.getLastLoginTime(), LocalDateTime.now());
+
+        if(between>=MEMBER_HUMAN_TIME){
             this.accountNonLocked=false;
             this.status=MemberStatus.HUMAN;
 

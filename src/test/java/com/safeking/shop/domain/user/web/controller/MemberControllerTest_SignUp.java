@@ -109,7 +109,7 @@ class MemberControllerTest_SignUp extends MvcTest {
         String registrationId="kakao";
 
         Map<String, Object> data =new HashMap<>();
-        data.put("id","123456789");
+        data.put("id","1234567890");
         data.put("email","kms199719@naver.com");
 
         String content = om.writeValueAsString(data);
@@ -126,6 +126,9 @@ class MemberControllerTest_SignUp extends MvcTest {
         //docs
         resultActions.andDo(
                 document("socialSignUp"
+                        ,pathParameters(
+                                parameterWithName("registrationId").description("kakao or google")
+                        )
                         ,requestFields(
                                 fieldWithPath("id").attributes(IdValidation()).description("id")
                                 ,fieldWithPath("email").attributes(EmailValidation()).description("email")

@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,6 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -252,7 +255,7 @@ class MemberControllerTest_login extends MvcTest {
         //given
         String content = om.writeValueAsString(data);
         //when
-        ResultActions resultActions = mockMvc.perform(post("/api/v1/oauth/{registrationId}",registrationId)
+        ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/api/v1/oauth/{registrationId}",registrationId)
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -266,6 +269,9 @@ class MemberControllerTest_login extends MvcTest {
         //docs
         resultActions.andDo(
                 document("socialLogin"
+                        ,pathParameters(
+                                parameterWithName("registrationId").description("kakao or google")
+                        )
                         ,requestFields(
                                 fieldWithPath("id").attributes(IdValidation()).description("카카오 일시는 id, 구글일 시에는 sub")
                                 ,fieldWithPath("email").attributes(EmailValidation()).description("email")

@@ -34,5 +34,21 @@ operation::sendTemporaryPassword[snippets='http-request,request-fields,request-b
 operation::showMemberList[snippets='http-request,request-headers,request-parameters,http-response,response-fields,response-body']
 
 [[Member-7]]
-=== 7. refreshToken 발급
+=== 7. 아이디 찾기
+operation::idFind[snippets='http-request,request-fields,http-response,response-body']
+
+[[Member-7-1]]
+=== 7_1. 아이디 찾기 오류 (코드가 일치하지 않는 경우)
+operation::idFind_error1[snippets='http-request,request-fields,http-response,response-body,response-fields']
+
+[[Member-7-2]]
+=== 7_2. 아이디 찾기 오류 (회원가입시 지정한 번호와 일치 하지 않는 경우)
+operation::idFind_error2[snippets='http-request,request-fields,http-response,response-body,response-fields']
+
+
+[[Member-8]]
+=== 8. refreshToken 발급
+|===
+| 설명 | 토큰이 만료가 되서 error code 812 가 나온다면 refresh Token api 에 jwtToken과 refreshToken을 요청
+|===
 operation::refreshToken[snippets='http-request,request-headers,http-response,response-headers']

@@ -20,7 +20,7 @@ operation::login[snippets='http-request,request-fields,http-response,response-bo
 | 설명 | 회원가입시에는 response-body에 임시 id,로그인 시에는 response-body에는 null
 |===
 
-operation::socialLogin[snippets='http-request,request-fields,http-response,response-body']
+operation::socialLogin[snippets='http-request,path-parameters,request-fields,http-response,response-body']
 
 [[Login_2]]
 === 1_2. 휴면계정 로그인
