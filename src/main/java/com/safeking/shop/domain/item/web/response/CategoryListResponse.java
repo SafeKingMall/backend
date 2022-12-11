@@ -12,4 +12,6 @@ public class CategoryListResponse {
     private String name;
     private String createDate;
     private String lastModifiedDate;
+
+    private int sort;
 }
