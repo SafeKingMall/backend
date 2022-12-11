@@ -128,17 +128,18 @@ public class ItemService {
         Date now = new Date();
         String nowDt = format.format(now);
 
-        String path = uploadPath + "item/"+ itemId.toString() +"/"+ nowDt +"/";
+        String urlPath = "/file/item/"+ itemId.toString() +"/"+ nowDt +"/" +realName;
+        String path = uploadPath + urlPath;
         File folder = new File(path);
         if(!folder.exists()){
             folder.mkdirs();
         }
 
-        String fullPath = path+realName;
+        String fullPath = path;
         file.transferTo(new java.io.File(fullPath));
 
         Item item = itemRepository.findById(itemId).orElseThrow();
-        ItemPhoto itemPhoto = ItemPhoto.create(fullPath, item);
+        ItemPhoto itemPhoto = ItemPhoto.create(urlPath, item);
         itemPhotoRepository.save(itemPhoto);
     }
 }
