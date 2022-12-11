@@ -29,7 +29,7 @@ public interface DocumentFormatGenerator {
     }
     static Attributes.Attribute companyRegistrationNumberValidation() {return key("format").value("ex) 123-12-12345");}
     static Attributes.Attribute JwtTokenValidation() {return key("format").value("ex) Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");}
-    static Attributes.Attribute RefreshTokenValidation() {return key("format").value("ex) eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");}
+    static Attributes.Attribute RefreshTokenValidation() {return key("format").value("ex) Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");}
     static Attributes.Attribute CountValidation() {return key("format").value("Max size: 50000");}
     static Attributes.Attribute ItemIdValidation() {return key("format").value("ex) /api/v1/user/cartItem?itemId= 2 &itemId= 4 &itemId= 6");}
 

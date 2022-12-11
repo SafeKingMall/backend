@@ -1,0 +1,33 @@
+= Member-INFO-API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[JWT-ERROR-API]]
+== JWT ERROR API
+
+[[jwtError-1]]
+=== 1. jwt 양식에 맞지 않을 시
+operation::JWTDecodeException[snippets='http-request,request-headers,http-response,response-body,response-fields']
+
+[[jwtError-2]]
+=== 2. signature 문제가 있을 시
+operation::SignatureVerificationException[snippets='http-request,request-headers,http-response,response-body,response-fields']
+
+[[jwtError-3]]
+=== 3. 권한처리 실패 시
+|===
+| 설명 | 상태코드 403만 응답
+|===
+operation::no_authority[snippets='http-request,request-headers,http-response,response-body']
+
+[[jwtError-4]]
+=== 4. 토큰이 없을 시
+|===
+| 설명 | 상태코드 403만 응답
+|===
+operation::no_token[snippets='http-request,request-headers,http-response,response-body']
+

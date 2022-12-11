@@ -49,7 +49,7 @@ public class ExControllerAdvice {
     public ResponseEntity<Error> EntityNotFoundExceptionExHandler(EntityNotFoundException e){
         log.error("[EntityNotFoundException] ex",e);
 
-        return new ResponseEntity<>(new Error(300,e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new Error(300,e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -57,7 +57,7 @@ public class ExControllerAdvice {
     public ResponseEntity<Error> EntityExistsExceptionExHandler(EntityExistsException e){
         log.error("[EntityExistsException] ex",e);
 
-        return new ResponseEntity<>(new Error(301,e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Error(301,e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler

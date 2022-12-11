@@ -12,9 +12,9 @@ import com.safeking.shop.global.jwt.Tokens;
 import com.safeking.shop.global.jwt.filter.dto.LoginRequestDto;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -36,7 +36,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private MemberRedisRepository memberRepository;
 
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, TokenUtils tokenUtils,MemberRedisRepository memberRepository) {
+    public JwtAuthenticationFilter(
+            AuthenticationManager authenticationManager
+            ,TokenUtils tokenUtils
+            ,MemberRedisRepository memberRepository
+            ) {
+
         this.authenticationManager = authenticationManager;
         this.tokenUtils = tokenUtils;
         this.memberRepository=memberRepository;
@@ -62,6 +67,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             //3. loadByUsername 을 실행
             Authentication authentication
                     = authenticationManager.authenticate(authenticationToken);
+
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
             Member loginMember = principalDetails.getMember();
             //4. redis 의 집어넣기
@@ -69,11 +75,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             return authentication;
 
+        } catch (LockedException e){
+            generateResponseData(response,403, new Error(1401, e.getMessage()));
         } catch (Exception e) {
-            Error errorResponse = new Error(1400, e.getMessage());
-
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            generateResponseData(response, errorResponse);
+            generateResponseData(response,401, new Error(1400, e.getMessage()));
         }
         return null;
     }
@@ -85,16 +90,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Tokens tokens = tokenUtils.createTokens(authResult);
 
+        //header 에 추가
         response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
-        response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
-        generateResponseData(response, roles);
+        response.addHeader(REFRESH_HEADER,BEARER+tokens.getRefreshToken());
+        generateResponseData(response, 200, roles);
 
     }
 
-    private void generateResponseData(HttpServletResponse response, Object object) throws IOException {
+
+    private void generateResponseData(HttpServletResponse response,int httpStatusCode, Object object) throws IOException {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
+        response.setStatus(httpStatusCode);
         om.writeValue(response.getWriter(), object);
     }
 }

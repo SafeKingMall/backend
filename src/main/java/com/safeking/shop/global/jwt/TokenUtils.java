@@ -69,7 +69,7 @@ public class TokenUtils {
             case refresh:
                 return new Date(System.currentTimeMillis() + (60000 * 10));
             case access:
-                return new Date(System.currentTimeMillis() + (60000 * 12));
+                return new Date(System.currentTimeMillis() + (60000 * 60));
         }
         return null;
     }

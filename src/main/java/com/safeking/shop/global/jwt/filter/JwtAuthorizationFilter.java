@@ -3,7 +3,9 @@ package com.safeking.shop.global.jwt.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
@@ -13,6 +15,7 @@ import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.auth.PrincipalDetailsRedis;
 import com.safeking.shop.global.exception.CacheException;
+import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,7 +38,6 @@ import static com.safeking.shop.global.jwt.TokenUtils.*;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private MemberRedisRepository memberRepository;
-    private ObjectMapper om;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRedisRepository memberRepository) {
         super(authenticationManager);
@@ -73,4 +75,5 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
         chain.doFilter(request,response);
     }
+
 }

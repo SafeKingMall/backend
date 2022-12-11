@@ -1,5 +1,7 @@
 package com.safeking.shop.global.jwt.controller;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.auth.PrincipalDetails;
@@ -29,11 +31,7 @@ public class jwtController {
     @GetMapping("/api/v1/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response){
 
-        String refreshToken=request.getHeader(REFRESH_HEADER);
-
-        if(refreshToken==null) throw new TokenNotFoundException("Refresh Token 이 유효하지 않습니다.");
-
-        String username = verify(refreshToken);
+        String username = getUsername(request);
 
         if(username!=null){
             //authentication 을 생성
@@ -42,10 +40,22 @@ public class jwtController {
             Tokens tokens = tokenUtils.createTokens(authentication);
 
             response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
-            response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
+            response.addHeader(REFRESH_HEADER,BEARER+tokens.getRefreshToken());
 
         }
 
+    }
+
+    private static String getUsername(HttpServletRequest request) {
+
+        if(request.getHeader(REFRESH_HEADER) ==null||!request.getHeader(REFRESH_HEADER).startsWith("Bearer"))
+            throw new TokenNotFoundException("토큰이 없습니다.");
+
+        String jwToken= request.getHeader(REFRESH_HEADER).replace(BEARER,"");
+
+        String username = JWT.require(Algorithm.HMAC512("safeKing")).build()
+                .verify(jwToken).getClaim("username").asString();
+        return username;
     }
 
     private Authentication createAuthentication(String username) {

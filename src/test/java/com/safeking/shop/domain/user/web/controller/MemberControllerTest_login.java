@@ -123,12 +123,12 @@ class MemberControllerTest_login extends MvcTest {
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
         //then
         String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
         Error error = om.readValue(contentAsString, Error.class);
 
-        assertThat(error.getCode()).isEqualTo(1400);
+        assertThat(error.getCode()).isEqualTo(1401);
         assertThat(error.getMessage()).isEqualTo("User account is locked");
         //docs
         resultActions.andDo(
@@ -138,7 +138,7 @@ class MemberControllerTest_login extends MvcTest {
                                 ,fieldWithPath("password").attributes(PWValidation()).description("password")
                         )
                         ,responseFields(
-                                fieldWithPath("code").description("error_code 는 1400")
+                                fieldWithPath("code").description("error_code 는 1401")
                                 ,fieldWithPath("message").description("error_message 는 User account is locked")
                         )
                 )
@@ -146,9 +146,9 @@ class MemberControllerTest_login extends MvcTest {
 
     }
     @Order(4)
-    @DisplayName("dormant_login")
+    @DisplayName("아이디와 비밀번호가 맞지 않을 때")
     @ParameterizedTest
-    @CsvSource({"dormant12345,dormant1234*,ROLE_USER"})
+    @CsvSource({"wrong12345,wrong1234*,ROLE_USER"})
     void no_account_login(String username,String password, String role) throws Exception {
         //given
         String content = om.writeValueAsString(
@@ -167,7 +167,7 @@ class MemberControllerTest_login extends MvcTest {
         assertThat(error.getMessage()).isEqualTo("member not found");
         //docs
         resultActions.andDo(
-                document("no_account_login"
+                document("bad_login"
                         ,requestFields(
                                 fieldWithPath("username").attributes(IdValidation()).description("username")
                                 ,fieldWithPath("password").attributes(PWValidation()).description("password")
@@ -178,7 +178,6 @@ class MemberControllerTest_login extends MvcTest {
                         )
                 )
         );
-
     }
 
     @Order(5)

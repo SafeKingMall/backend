@@ -1,0 +1,23 @@
+= Cart-API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Cart-ERROR-API]]
+== Cart API
+
+[[CART-ERROR-1]]
+=== 1. 장바구니에 담을 시에 아이템이 없는 경우
+operation::putCart_error1[snippets='http-request,request-headers,request-fields,http-response,response-body,response-fields']
+
+[[CART-ERROR-2]]
+=== 2. 장바구니에 같은 아이템이 존재하는 경우
+operation::putCart_error2[snippets='http-request,request-headers,request-fields,http-response,response-body,response-fields']
+
+[[CART-ERROR-3]]
+=== 3. 장바구니 수정시 아이템이 존재하지 않는 경우
+operation::updateCartItem_error[snippets='http-request,request-headers,request-fields,http-response,response-body,response-fields']
+

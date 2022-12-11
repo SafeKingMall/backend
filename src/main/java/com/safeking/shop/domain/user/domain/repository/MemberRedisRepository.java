@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface MemberRedisRepository extends CrudRepository<RedisMember,String> {
 
     Optional<RedisMember>findByUsername(String username);
+
 }
