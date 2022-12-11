@@ -11,6 +11,7 @@ import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.*;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
+import com.safeking.shop.global.exception.AgreementException;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import com.safeking.shop.global.oauth.provider.GoogleUserInfo;
 import com.safeking.shop.global.oauth.provider.KakaoUserInfo;
@@ -130,7 +131,7 @@ public class MemberService {
     public Long changeMemoryToDB(Long id, Boolean agreement){
 
         try{
-            if(!agreement)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
+            if(!agreement)throw new AgreementException("약관 동의를 하지 않았습니다.");
 
             Member member = memoryMemberRepository.findById(id)
                     .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));

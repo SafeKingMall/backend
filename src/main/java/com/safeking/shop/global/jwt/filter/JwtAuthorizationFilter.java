@@ -3,14 +3,19 @@ package com.safeking.shop.global.jwt.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.global.Error;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.global.auth.PrincipalDetailsRedis;
 import com.safeking.shop.global.exception.CacheException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,6 +35,7 @@ import static com.safeking.shop.global.jwt.TokenUtils.*;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private MemberRedisRepository memberRepository;
+    private ObjectMapper om;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRedisRepository memberRepository) {
         super(authenticationManager);
@@ -50,10 +56,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         String jwToken=request.getHeader(AUTH_HEADER).replace(BEARER,"");
 
-
-
         String username= JWT.require(Algorithm.HMAC512("safeKing")).build()
-                .verify(jwToken).getClaim("username").asString();
+                    .verify(jwToken).getClaim("username").asString();
 
         if(username!=null){
 

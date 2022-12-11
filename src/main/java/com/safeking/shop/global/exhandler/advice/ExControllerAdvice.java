@@ -1,6 +1,7 @@
 package com.safeking.shop.global.exhandler.advice;
 
 import com.safeking.shop.global.Error;
+import com.safeking.shop.global.exception.AgreementException;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import com.safeking.shop.global.exception.CacheException;
 import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
@@ -91,14 +92,20 @@ public class ExControllerAdvice {
         log.error("[usernameNotFoundExHandler] ex",e);
 
         return new ResponseEntity<>(
-                new Error(1100,e.getMessage()),HttpStatus.NOT_FOUND);
+                new Error(1100,e.getMessage()),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<Error> MemberNotFoundExceptionExHandler(MemberNotFoundException e){
         log.error("[MemberNotFoundExceptionExHandler] ex",e);
 
-        return new ResponseEntity<>(new Error(1200,e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new Error(1200,e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler
+    public ResponseEntity<Error> AgreementExceptionExHandler(AgreementException e){
+        log.error("[AgreementExceptionExHandler] ex",e);
+
+        return new ResponseEntity<>(new Error(1111,e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -13,6 +13,7 @@ import com.safeking.shop.domain.user.web.request.signuprequest.AgreementInfo;
 import com.safeking.shop.domain.user.web.request.signuprequest.AuthenticationInfo;
 import com.safeking.shop.domain.user.web.request.signuprequest.MemberInfo;
 import com.safeking.shop.domain.user.web.response.MemberDetails;
+import com.safeking.shop.global.Error;
 import com.safeking.shop.global.MvcTest;
 import com.safeking.shop.global.TestUserHelper;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -40,11 +41,9 @@ import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,6 +72,8 @@ class MemberControllerTest_login extends MvcTest {
     void init(){
         userHelper.createMember();
         userHelper.createADMIN();
+        userHelper.createDormant();
+
         redisService.deleteAll();
     }
 
@@ -109,8 +110,78 @@ class MemberControllerTest_login extends MvcTest {
         );
 
     }
-
     @Order(3)
+    @DisplayName("dormant_login")
+    @ParameterizedTest
+    @CsvSource({"dormant1234,dormant1234*,ROLE_USER"})
+    void login_dormant(String username,String password, String role) throws Exception {
+        //given
+        String content = om.writeValueAsString(
+                new LoginRequestDto(username, password));
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/login")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+        //then
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        Error error = om.readValue(contentAsString, Error.class);
+
+        assertThat(error.getCode()).isEqualTo(1400);
+        assertThat(error.getMessage()).isEqualTo("User account is locked");
+        //docs
+        resultActions.andDo(
+                document("login_dormant"
+                        ,requestFields(
+                                fieldWithPath("username").attributes(IdValidation()).description("username")
+                                ,fieldWithPath("password").attributes(PWValidation()).description("password")
+                        )
+                        ,responseFields(
+                                fieldWithPath("code").description("error_code 는 1400")
+                                ,fieldWithPath("message").description("error_message 는 User account is locked")
+                        )
+                )
+        );
+
+    }
+    @Order(4)
+    @DisplayName("dormant_login")
+    @ParameterizedTest
+    @CsvSource({"dormant12345,dormant1234*,ROLE_USER"})
+    void no_account_login(String username,String password, String role) throws Exception {
+        //given
+        String content = om.writeValueAsString(
+                new LoginRequestDto(username, password));
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/login")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+        //then
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        Error error = om.readValue(contentAsString, Error.class);
+
+        assertThat(error.getCode()).isEqualTo(1400);
+        assertThat(error.getMessage()).isEqualTo("member not found");
+        //docs
+        resultActions.andDo(
+                document("no_account_login"
+                        ,requestFields(
+                                fieldWithPath("username").attributes(IdValidation()).description("username")
+                                ,fieldWithPath("password").attributes(PWValidation()).description("password")
+                        )
+                        ,responseFields(
+                                fieldWithPath("code").description("error_code 는 1400")
+                                ,fieldWithPath("message").description("error_message 는 member not found")
+                        )
+                )
+        );
+
+    }
+
+    @Order(5)
     @DisplayName("logout")
     @Test
     public void logout() throws Exception {
@@ -134,7 +205,7 @@ class MemberControllerTest_login extends MvcTest {
 
 
     }
-    @Order(4)
+    @Order(6)
     @DisplayName("rollback")
     @Test
     public void rollback(){

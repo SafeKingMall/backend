@@ -11,6 +11,7 @@ import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.web.request.*;
 import com.safeking.shop.domain.user.web.response.MemberDetails;
 import com.safeking.shop.domain.user.web.response.MemberListDto;
+import com.safeking.shop.global.Error;
 import com.safeking.shop.global.MvcTest;
 import com.safeking.shop.global.RestDocsConfiguration;
 import com.safeking.shop.global.TestUserHelper;
@@ -206,6 +207,38 @@ class MemberControllerTest_Info extends MvcTest {
         //docs
         resultActions.andDo(
                 document("updatePassword"
+                        ,requestHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,requestFields(
+                                fieldWithPath("password").attributes(PWValidation()).description("password")
+                        )
+                )
+        );
+    }
+    @Test
+    @DisplayName("토큰이 유효하지 않을 시")
+    void MemberNotFound() throws Exception {
+        //given
+        String NoValidToken=jwtToken+"no";
+
+        UpdatePWRequest updatePWRequest = new UpdatePWRequest("password1234*");
+        String content = om.writeValueAsString(updatePWRequest);
+        //when
+        ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/v1/user/update/password")
+                        .header(AUTH_HEADER, NoValidToken)
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+        //then
+        String result = resultActions.andReturn().getResponse().getContentAsString();
+        Error error = om.readValue(result, Error.class);
+        System.out.println("error.getMessage() = " + error.getMessage());
+        System.out.println("error.getMessage() = " + error.getCode());
+        //docs
+        resultActions.andDo(
+                document("MemberNotFound"
                         ,requestHeaders(
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
                         )

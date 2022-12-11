@@ -86,4 +86,15 @@ public class TestUserHelper {
 
         return admin;
     }
+    public Member createDormant(){
+        GeneralMember dormant = GeneralMember.builder()
+                .username("dormant1234")
+                .password(encoder.encode("dormant1234*"))
+                .roles("ROLE_USER")
+                .accountNonLocked(false)
+                .status(MemberStatus.HUMAN)
+                .build();
+        memberRepository.save(dormant);
+        return dormant;
+    }
 }
