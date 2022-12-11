@@ -16,7 +16,7 @@ spring:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         default_batch_fetch_size: 1000
