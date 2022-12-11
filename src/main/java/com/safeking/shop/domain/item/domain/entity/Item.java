@@ -32,6 +32,9 @@ public class Item extends BaseTimeEntity {
     private String viewYn = "Y";
 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
     //BaseEntity가 있는데 이게 꼭 필요한가?
     /*
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,7 +62,7 @@ public class Item extends BaseTimeEntity {
 //        }
 //        return item;
 //    }
-    public static Item createItem(String name, int quantity, String description,int price, String adminId){
+    public static Item createItem(String name, int quantity, String description,int price, String adminId, Category category){
 
         Item item = new Item();
 
@@ -73,9 +76,11 @@ public class Item extends BaseTimeEntity {
 
         item.adminId=adminId;
 
+        item.category=category;
+
         return item;
     }
-    public void update(String name,int quantity,int price, String description, String adminId){
+    public void update(String name,int quantity,int price, String description, String adminId, Category category){
 
 
         this.name=name;
@@ -87,6 +92,8 @@ public class Item extends BaseTimeEntity {
         this.price=price;
 
         this.adminId=adminId;
+
+        this.category=category;
     }
 
     /**

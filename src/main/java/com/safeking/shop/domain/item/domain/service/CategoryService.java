@@ -1,10 +1,11 @@
 package com.safeking.shop.domain.item.domain.service;
 
 import com.safeking.shop.domain.item.domain.entity.Category;
-import com.safeking.shop.domain.item.domain.repository.CategoryItemRepository;
 import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
 import com.safeking.shop.domain.item.domain.service.servicedto.category.CategorySaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.category.CategoryUpdateDto;
+import com.safeking.shop.domain.item.web.request.CategorySaveRequest;
+import com.safeking.shop.domain.item.web.request.CategoryUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,13 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CategoryService {
 
-    private final CategoryItemRepository categoryItemRepository;
-
     private final CategoryRepository categoryRepository;
 
-    public Long save(CategorySaveDto categorySaveDto){
+    public Long save(CategorySaveRequest categorySaveRequest){
 
-        Category category = new Category(categorySaveDto.getName());
+        Category category = Category.create(categorySaveRequest.getName(), categorySaveRequest.getSort());
 
         categoryRepository.save(category);
 
@@ -30,20 +29,17 @@ public class CategoryService {
 
     }
 
-    public void update(CategoryUpdateDto categoryUpdateDto){
+    public void update(CategoryUpdateRequest categoryUpdateRequest){
 
-        Category category = categoryRepository.findById(categoryUpdateDto.getId()).orElseThrow();
+        Category category = categoryRepository.findById(categoryUpdateRequest.getId()).orElseThrow();
 
-        category.updateName(categoryUpdateDto.getName());
+        category.update(categoryUpdateRequest.getName(), categoryUpdateRequest.getSort());
 
     }
 
     public void delete(Long id){
 
         Category category = categoryRepository.findById(id).orElseThrow();
-
-        //CategoryItem을 먼저 삭제
-        categoryItemRepository.deleteByCategory(category);
 
         categoryRepository.delete(category);
 

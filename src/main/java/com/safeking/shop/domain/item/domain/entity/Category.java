@@ -19,11 +19,18 @@ public class Category extends BaseTimeEntity {
 
     private String name;
 
-    public Category(String name){
-        this.name=name;
-    }
+    private int sort;
 
-    public void updateName(String name) {
+    public static Category create(String name, int sort){
+
+        Category category = new Category();
+        category.name = name;
+        category.sort = sort;
+        return category;
+    }
+    public void update(String name, int sort) {
+
         this.name=name;
+        this.sort=sort;
     }
 }

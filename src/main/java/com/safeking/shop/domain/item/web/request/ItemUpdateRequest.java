@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.item.domain.service.servicedto.item;
+package com.safeking.shop.domain.item.web.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemUpdateDto {
+public class ItemUpdateRequest {
 
     private Long id;
 
@@ -23,9 +23,9 @@ public class ItemUpdateDto {
 
     private int price;
 
-    private List<Long> categories;
-
     private String adminId;
+
+    private Long categoryId;
 
 
 }

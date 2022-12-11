@@ -6,6 +6,8 @@ import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import com.safeking.shop.domain.item.web.request.ItemRequest;
+import com.safeking.shop.domain.item.web.request.ItemSaveRequest;
+import com.safeking.shop.domain.item.web.request.ItemUpdateRequest;
 import com.safeking.shop.domain.item.web.response.ItemListResponse;
 import com.safeking.shop.domain.item.web.response.ItemResponse;
 import com.safeking.shop.domain.item.web.response.ItemViewResponse;
@@ -33,18 +35,18 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping("admin/item")
-    public Long save(@RequestBody ItemSaveDto itemSaveDto, HttpServletRequest request){
+    public Long save(@RequestBody ItemSaveRequest itemSaveRequest, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
-        itemSaveDto.setAdminId(username);
-        return itemService.save(itemSaveDto);
+        itemSaveRequest.setAdminId(username);
+        return itemService.save(itemSaveRequest);
     }
 
     @PutMapping("admin/item/{itemId}")
-    public void update(@PathVariable Long itemId, @RequestBody ItemUpdateDto itemUpdateDto, HttpServletRequest request){
+    public void update(@PathVariable Long itemId, @RequestBody ItemUpdateRequest itemUpdateRequest, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
-        itemUpdateDto.setAdminId(username);
-        itemUpdateDto.setId(itemId);
-        itemService.update(itemUpdateDto);
+        itemUpdateRequest.setAdminId(username);
+        itemUpdateRequest.setId(itemId);
+        itemService.update(itemUpdateRequest);
     }
 
     @DeleteMapping("admin/item/{itemId}")
@@ -62,7 +64,6 @@ public class ItemController {
                 , itemService.view(itemId).getDescription()
                 , itemService.view(itemId).getPrice()
                 , itemService.view(itemId).getAdminId()
-                , itemService.view(itemId).getCategories()
                 , itemService.view(itemId).getCategoryName()
                 , itemService.view(itemId).getCreateDate()
                 , itemService.view(itemId).getLastModifiedDate()
@@ -92,7 +93,6 @@ public class ItemController {
                 , itemViewDto.getDescription()
                 , ("Y".equals(itemViewDto.getViewYn())?itemViewDto.getPrice():null)
                 , itemViewDto.getAdminId()
-                , itemViewDto.getCategories()
                 , itemViewDto.getCategoryName()
                 , itemViewDto.getCreateDate()
                 , itemViewDto.getLastModifiedDate()
