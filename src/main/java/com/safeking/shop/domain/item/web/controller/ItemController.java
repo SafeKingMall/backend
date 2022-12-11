@@ -19,8 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
@@ -57,29 +59,25 @@ public class ItemController {
 
     @GetMapping("admin/item/{itemId}")
     public ItemViewResponse itemAdminView(@PathVariable Long itemId){
+        ItemViewDto itemViewDto = itemService.view(itemId);
         ItemViewResponse itemViewResponse;
-        itemViewResponse = new ItemViewResponse(itemService.view(itemId).getId()
-                , itemService.view(itemId).getName()
-                , itemService.view(itemId).getQuantity()
-                , itemService.view(itemId).getDescription()
-                , itemService.view(itemId).getPrice()
-                , itemService.view(itemId).getAdminId()
-                , itemService.view(itemId).getCategoryName()
-                , itemService.view(itemId).getCreateDate()
-                , itemService.view(itemId).getLastModifiedDate()
+        itemViewResponse = new ItemViewResponse(itemViewDto.getId()
+                , itemViewDto.getName()
+                , itemViewDto.getQuantity()
+                , itemViewDto.getDescription()
+                , itemViewDto.getPrice()
+                , itemViewDto.getAdminId()
+                , itemViewDto.getCategoryName()
+                , itemViewDto.getCreateDate()
+                , itemViewDto.getLastModifiedDate()
+                , itemViewDto.getFileName()
         );
         return itemViewResponse;
     }
 
     @GetMapping("admin/item/list")
     public Page<ItemListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemListResponse> itemLst = itemService.List(pageable).map(m -> ItemListResponse.builder()
-                .id(m.getId())
-                .name(m.getName())
-                .createDate(m.getCreateDate().toString())
-                .lastModifiedDate(m.getLastModifiedDate().toString())
-                .build()
-        );
+        Page<ItemListResponse> itemLst = itemService.List(pageable);
         return itemLst;
     }
 
@@ -96,21 +94,19 @@ public class ItemController {
                 , itemViewDto.getCategoryName()
                 , itemViewDto.getCreateDate()
                 , itemViewDto.getLastModifiedDate()
+                , itemViewDto.getFileName()
         );
         return itemViewResponse;
     }
 
     @GetMapping("/item/list")
     public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemListResponse> itemLst = itemService.List(pageable).map(m -> ItemListResponse.builder()
-                .id(m.getId())
-                .name(m.getName())
-                .createDate(m.getCreateDate().toString())
-                .lastModifiedDate(m.getLastModifiedDate().toString())
-                .price(("Y".equals(m.getViewYn())?m.getPrice():null))
-                .build()
-        );
+        Page<ItemListResponse> itemLst = itemService.List(pageable);
         return itemLst;
     }
 
+    @PostMapping("admin/itemPhoto/{itemId}")
+    public void savePhoto(@RequestParam(name = "file") MultipartFile file, @PathVariable Long itemId) throws IOException {
+        itemService.photoUpload(file, itemId);
+    }
 }

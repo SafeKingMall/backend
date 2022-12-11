@@ -21,5 +21,11 @@ public class ItemPhoto extends BaseTimeEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    public static ItemPhoto create(String fileName, Item item){
+        ItemPhoto itemPhoto = new ItemPhoto();
+        itemPhoto.fileName = fileName;
+        itemPhoto.item = item;
+        return  itemPhoto;
+    }
 
 }

@@ -14,4 +14,6 @@ public class ItemListResponse {
     private String categoryName;
     private String createDate;
     private String lastModifiedDate;
+
+    private String fileName;
 }
