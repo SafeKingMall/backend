@@ -91,7 +91,6 @@ public class MemoryClearJobConfig {
         return new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                log.info("Run memoryClearJobTasklet");
 
                 memoryMemberRepository.clearStore();
                 smsMemoryRepository.clearStore();

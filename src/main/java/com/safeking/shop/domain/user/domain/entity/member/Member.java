@@ -21,6 +21,7 @@ import java.util.List;
 @DiscriminatorColumn
 public abstract class Member extends BaseMemberEntity {
     public static long MEMBER_HUMAN_TIME=33l;
+//    public static long MEMBER_HUMAN_TIME=15l;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
@@ -179,6 +180,7 @@ public abstract class Member extends BaseMemberEntity {
 
     public void convertHumanAccount(){
         long between = ChronoUnit.DAYS.between(this.getLastLoginTime(), LocalDateTime.now());
+//        Duration between1 = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
 
         if(between>=MEMBER_HUMAN_TIME){
             this.accountNonLocked=false;

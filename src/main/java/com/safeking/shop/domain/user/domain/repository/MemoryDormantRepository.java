@@ -3,6 +3,8 @@ package com.safeking.shop.domain.user.domain.repository;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +31,9 @@ public class MemoryDormantRepository {
     }
 
     public void delete(Long id){store.remove(id);}
+    public List<Member> findAll(){
+        return new ArrayList<>(store.values());
+    }
 
     public void clearStore() {
         sequence=new AtomicLong(0);

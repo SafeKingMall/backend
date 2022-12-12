@@ -85,7 +85,6 @@ public class HumanAccountsJobConfig {
     @Transactional
     public Tasklet humanAccountsJobTasklet() {
         return (contribution, chunkContext) -> {
-            log.info("Run humanAccountsJobTasklet");
             memberService.humanAccountConverterBatch();
 //            throw new Exception("test");
             return RepeatStatus.FINISHED;

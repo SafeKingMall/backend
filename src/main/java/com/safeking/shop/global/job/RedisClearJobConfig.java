@@ -88,8 +88,6 @@ public class RedisClearJobConfig {
         return new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                log.info("redisClearJobTasklet");
-
                 redisService.deleteAll();
                 return RepeatStatus.FINISHED;
             }
