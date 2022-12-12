@@ -19,24 +19,19 @@ public class MemoryMemberRepository {
         return member.getId();
     }
     public Optional<Member> findById(Long id) {
-
         return Optional.ofNullable(store.get(id));
+    }
 
-    }
-    public List<Member> findAll(){
-        return new ArrayList<>(store.values());
-    }
     public boolean findDuplication(String username) {
         //중복이 없다면 true
         return store.values().stream().allMatch(member -> !member.getUsername().equals(username));
-
     }
 
     public void update(Long id,Member member){
         store.replace(id,member);
     }
-
     public void delete(Long id){store.remove(id);}
+    public List<Member> findAll(){ return new ArrayList<>(store.values()); }
 
     public void clearStore() {
         sequence=new AtomicLong(0);

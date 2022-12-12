@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.safeking.shop.global.exhandler.erroconst.ErrorConst.LOGIN_EX_CODE;
+import static com.safeking.shop.global.exhandler.erroconst.ErrorConst.LOGIN_LOCK_EX_CODE;
 import static com.safeking.shop.global.jwt.TokenUtils.*;
 
 @Slf4j
@@ -52,7 +54,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     //로그인 시에 실행이 되는 필터
     @SneakyThrows
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(
+            HttpServletRequest request
+            , HttpServletResponse response
+    ) throws AuthenticationException {
         log.info("attemptAuthentication 실행");
 
         try {
@@ -76,14 +81,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return authentication;
 
         } catch (LockedException e){
-            generateResponseData(response,403, new Error(1401, e.getMessage()));
+            generateResponseData(response,403, new Error(LOGIN_LOCK_EX_CODE, e.getMessage()));
         } catch (Exception e) {
-            generateResponseData(response,401, new Error(1400, e.getMessage()));
+            generateResponseData(response,401, new Error(LOGIN_EX_CODE, e.getMessage()));
         }
         return null;
     }
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(
+            HttpServletRequest request
+            , HttpServletResponse response
+            , FilterChain chain
+            , Authentication authResult) throws IOException
+    {
         log.info("일반로그인 user 에게 JWT 토큰 발행");
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
         String roles = principalDetails.getMember().getRoles();
@@ -94,15 +104,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
         response.addHeader(REFRESH_HEADER,BEARER+tokens.getRefreshToken());
         generateResponseData(response, 200, roles);
-
     }
 
 
-    private void generateResponseData(HttpServletResponse response,int httpStatusCode, Object object) throws IOException {
-
+    private void generateResponseData(
+            HttpServletResponse response
+            , int httpStatusCode
+            , Object object
+    ) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.setStatus(httpStatusCode);
+
         om.writeValue(response.getWriter(), object);
     }
 }

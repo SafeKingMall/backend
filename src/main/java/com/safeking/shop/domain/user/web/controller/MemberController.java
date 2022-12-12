@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+import static com.safeking.shop.global.exhandler.erroconst.ErrorConst.SOCIAL_ACCOUNT_LOCK_EX_CODE;
 import static com.safeking.shop.global.jwt.TokenUtils.*;
 
 @RestController
@@ -74,7 +75,6 @@ public class MemberController {
                 .orElseThrow(() -> new MemberNotFoundException("redis member not found"));
 
         redisRepository.delete(redisMember);
-
     }
     @PostMapping("/signup/criticalItems")
     public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
@@ -83,7 +83,10 @@ public class MemberController {
     }
 
     @PostMapping("/signup/authenticationInfo/{memberId}")
-    public Long signUpAuthenticationInfo(@PathVariable Long memberId, @RequestBody @Validated AuthenticationInfo authenticationInfo) {
+    public Long signUpAuthenticationInfo(
+            @PathVariable Long memberId
+            , @RequestBody @Validated AuthenticationInfo authenticationInfo
+    ) {
 
         return memberService.addAuthenticationInfo(memberId, authenticationInfo.toServiceDto());
 
@@ -132,7 +135,6 @@ public class MemberController {
     public Long dormantAgreementInfo(@PathVariable Long memberId, @RequestBody @Validated AgreementInfo agreementInfo) {
 
         Boolean agreement = null;
-
         agreement = agreementInfo.getInfoAgreement() & agreementInfo.getUserAgreement();
 
         return dormantMemberService.revertCommonAccounts(memberId, agreement);
@@ -144,17 +146,23 @@ public class MemberController {
 
     @GetMapping("/user/details")
     public MemberDetails showMemberDetails(HttpServletRequest request) {
-        return memberQueryService.showMemberDetails(TokenUtils.getUsername(request));
+        return memberQueryService.showMemberDetails(
+                TokenUtils.getUsername(request)
+        );
     }
 
     @PutMapping("/user/update")
     public void update(@RequestBody @Validated UpdateRequest updateRequest, HttpServletRequest request) {
-        memberService.updateMemberInfo(TokenUtils.getUsername(request), updateRequest.toServiceDto());
+        memberService.updateMemberInfo(
+                TokenUtils.getUsername(request)
+                , updateRequest.toServiceDto());
     }
 
     @PatchMapping("/user/update/password")
     public void updatePassword(@RequestBody @Validated UpdatePWRequest updatePWRequest, HttpServletRequest request) {
-        memberService.updatePassword(TokenUtils.getUsername(request), updatePWRequest.getPassword());
+        memberService.updatePassword(
+                TokenUtils.getUsername(request)
+                , updatePWRequest.getPassword());
     }
 
     @PostMapping("/id/duplication")
@@ -167,7 +175,8 @@ public class MemberController {
     public ResponseEntity idFind(@RequestBody @Validated IdFindRequest request) {
         if (smsService.checkCode(request.getCode(), request.getClientPhoneNumber())) {
 
-            return new ResponseEntity<>(memberRepository.findByPhoneNumber(request.getClientPhoneNumber())
+            return new ResponseEntity<>(memberRepository
+                    .findByPhoneNumber(request.getClientPhoneNumber())
                     .orElseThrow(() -> new MemberNotFoundException("등록된 휴대번호와 일치하는 회원이 없습니다."))
                     .getUsername(), HttpStatus.OK);
         }
@@ -192,12 +201,15 @@ public class MemberController {
     }
 
     @PostMapping("/oauth/{registrationId}")
-    public Long socialLogin(@PathVariable String registrationId, @RequestBody Map<String, Object> data, HttpServletResponse response) {
-
+    public Long socialLogin(
+            @PathVariable String registrationId
+            , @RequestBody Map<String, Object> data
+            , HttpServletResponse response)
+    {
         CheckSignUp checkSignUp = memberService.socialLogin(registrationId, data);
 
         if (checkSignUp.isLock()){
-            response.setStatus(403);
+            response.setStatus(SOCIAL_ACCOUNT_LOCK_EX_CODE);
             return checkSignUp.getId();
         }
         if(!checkSignUp.isCheck()){return checkSignUp.getId();}
@@ -219,11 +231,13 @@ public class MemberController {
         PrincipalDetails principalDetails = new PrincipalDetails(member);
 
         Authentication authentication
-                = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+                = new UsernamePasswordAuthenticationToken(
+                        principalDetails
+                        , null
+                        , principalDetails.getAuthorities()
+        );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }
-
-
 }

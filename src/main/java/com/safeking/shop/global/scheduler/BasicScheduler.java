@@ -35,7 +35,12 @@ public class BasicScheduler {
 
     @Scheduled(cron = "0 15 4 ? * *")
 //    @Scheduled(cron = "*/10 * * * * *")
-    public void humanAccountJobRun() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public void humanAccountJobRun()
+            throws JobInstanceAlreadyCompleteException
+            , JobExecutionAlreadyRunningException
+            , JobParametersInvalidException
+            , JobRestartException
+    {
         log.info("휴면계정 BATCH");
         JobParameters jobParameters = new JobParameters(
                 Collections.singletonMap("requestTime", new JobParameter(String.valueOf(LocalDateTime.now().getDayOfMonth())))
@@ -45,7 +50,12 @@ public class BasicScheduler {
         jobLauncher.run(humanAccountsJob,jobParameters);
     }
     @Scheduled(cron = "0 20 4 ? * *")
-    public void memoryClearJobRun() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public void memoryClearJobRun()
+            throws JobInstanceAlreadyCompleteException
+            , JobExecutionAlreadyRunningException
+            , JobParametersInvalidException
+            , JobRestartException
+    {
         log.info("memory BATCH");
         JobParameters jobParameters = new JobParameters(
                 Collections.singletonMap("requestTime", new JobParameter(String.valueOf(LocalDateTime.now().getDayOfMonth())))
@@ -54,7 +64,11 @@ public class BasicScheduler {
         jobLauncher.run(memoryClearJobJob,jobParameters);
     }
     @Scheduled(cron = "0 25 4 ? * *")
-    public void redisClearJobRun() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public void redisClearJobRun()
+            throws JobInstanceAlreadyCompleteException
+            , JobExecutionAlreadyRunningException
+            , JobParametersInvalidException
+            , JobRestartException {
         log.info("redis BATCH");
         JobParameters jobParameters = new JobParameters(
                 Collections.singletonMap("requestTime", new JobParameter(String.valueOf(LocalDateTime.now().getDayOfMonth())))

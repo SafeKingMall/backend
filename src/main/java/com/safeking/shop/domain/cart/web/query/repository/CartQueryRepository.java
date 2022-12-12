@@ -37,7 +37,8 @@ public class CartQueryRepository {
                 .orderBy(cartItem.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetch();
+                .fetch()
+                ;
 
         JPAQuery<Long> CountQuery = queryFactory
                 .select(cartItem.count())

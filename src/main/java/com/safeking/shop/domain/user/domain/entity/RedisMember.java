@@ -28,7 +28,6 @@ public class RedisMember {
         if(this.roles.length()>0){
             return Arrays.asList(this.roles.split(","));
         }
-
         return new ArrayList<>();
     }
 }

@@ -45,7 +45,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(
+            HttpServletRequest request
+            , HttpServletResponse response
+            , FilterChain chain
+    ) throws IOException, ServletException {
 //        super.doFilterInternal(request, response, chain);
         log.info("JwtAuthorizationFilter 실행, 인증이 필요");
         
@@ -64,14 +68,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if(username!=null){
 
             RedisMember redisMember = memberRepository.findByUsername(username).orElseThrow(() -> new CacheException("캐시에 문제가 있습니다."));
-
             PrincipalDetailsRedis principalDetails = new PrincipalDetailsRedis(redisMember);
 
             Authentication authentication
                     = new UsernamePasswordAuthenticationToken(principalDetails, null,principalDetails.getAuthorities());
             //시큐리티 세션=> 권한처리
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
         }
         chain.doFilter(request,response);
     }

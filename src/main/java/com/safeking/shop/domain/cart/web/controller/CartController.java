@@ -26,19 +26,22 @@ public class CartController {
 
     @PostMapping("user/cartItem")
     public void putCart(HttpServletRequest request, @RequestBody BasicRequest basicRequest){
-
-        cartItemService.putCart(TokenUtils.getUsername(request), basicRequest.getItemId(), basicRequest.getCount());
+        cartItemService.putCart(
+                TokenUtils.getUsername(request)
+                , basicRequest.getItemId()
+                , basicRequest.getCount());
     }
 
     @PatchMapping("user/cartItem")
     public void updateCartItem(HttpServletRequest request,@RequestBody BasicRequest basicRequest){
-
-        cartItemService.updateCartItem(TokenUtils.getUsername(request),basicRequest.getItemId(), basicRequest.getCount());
+        cartItemService.updateCartItem(
+                TokenUtils.getUsername(request)
+                ,basicRequest.getItemId()
+                , basicRequest.getCount());
     }
 
     @DeleteMapping("user/cartItem")
     public void deleteCartItem(HttpServletRequest request,Long... itemId){
-
         cartItemService.deleteCartItemFromCart(TokenUtils.getUsername(request),itemId);
     }
     
@@ -48,9 +51,7 @@ public class CartController {
     }
     @DeleteMapping("/user/cart/{username}")
     public void deleteCart(@PathVariable String username){
-
         cartService.deleteCart(username);
-
     }
 
 
