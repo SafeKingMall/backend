@@ -24,4 +24,6 @@ public class ItemViewDto {
     private String lastModifiedDate;
     private String viewYn;
 
+    private String fileName;
+
 }
