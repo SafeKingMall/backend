@@ -19,7 +19,6 @@ public class ItemViewDto {
     private String description;
     private int price;
     private String adminId;
-    private List<Long> categories;
     private String categoryName;
     private String createDate;
     private String lastModifiedDate;

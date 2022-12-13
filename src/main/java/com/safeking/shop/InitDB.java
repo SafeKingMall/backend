@@ -111,11 +111,11 @@ public class InitDB {
             }
         }
         public void initCategory(){
-            Category category1 = new Category("중대사고예방");
-            Category category2 = new Category("화재사고예방");
-            Category category3 = new Category("누출사고예방");
-            Category category4 = new Category("해양사고예방");
-            Category category5 = new Category("안전사고예방");
+            Category category1 = Category.create("중대사고예방", 1);
+            Category category2 = Category.create("화재사고예방", 2);
+            Category category3 = Category.create("누출사고예방", 3);
+            Category category4 = Category.create("해양사고예방", 4);
+            Category category5 = Category.create("안전사고예방", 5);
             em.persist(category1);
             em.persist(category2);
             em.persist(category3);
