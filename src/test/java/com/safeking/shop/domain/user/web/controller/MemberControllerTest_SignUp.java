@@ -349,6 +349,7 @@ class MemberControllerTest_SignUp extends MvcTest {
         //given
         CriticalItems criticalItems = createCriticalItems("kms199711", "kms199711*", "kms1997@naver.com");
         assertNotNull(criticalItems);
+
         Long memberId = memberService.addCriticalItems(criticalItems.toServiceDto());
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/signup/memoryClear/{memberId}", 1L))

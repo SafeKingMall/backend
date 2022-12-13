@@ -28,6 +28,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CartItemServiceTest {
+    /**
+     *  @TestMethodOrder(MethodOrderer.OrderAnnotation.class): 태스트에 순서가 부여가 된다.
+     **/
     @Autowired
     CartItemService cartItemService;
     @Autowired
@@ -45,13 +48,7 @@ class CartItemServiceTest {
     @DisplayName("1. 장바구니 담기")
     void putCart() {
         //init
-        GeneralMember user = GeneralMember.builder()
-                .username("TestUser1")
-                .build();
-        memberRepository.save(user);
-        cartService.createCart(user);
-        Item savedItem = itemRepository.save(new Item());
-
+        Item savedItem = init();
         //given
         String username="TestUser1";
         Long itemId=savedItem.getId();
@@ -64,17 +61,13 @@ class CartItemServiceTest {
         );
     }
 
+
     @Test
     @DisplayName("2. 장바구니 아이템 수정하기")
     void updateCartItem() {
+        //init
+        Item savedItem = init();
         //given
-        GeneralMember user = GeneralMember.builder()
-                .username("TestUser1")
-                .build();
-        memberRepository.save(user);
-        cartService.createCart(user);
-        Item savedItem = itemRepository.save(new Item());
-
         String username="TestUser1";
         Long itemId=savedItem.getId();
 
@@ -95,21 +88,27 @@ class CartItemServiceTest {
     @DisplayName("장바구니 아이템 삭제하기")
     void deleteCartItemFromCart() {
         //given
+        Item savedItem = init();
+
+        String username="TestUser1";
+        Long itemId=savedItem.getId();
+
+        cartItemService.putCart(username, itemId, 3);
+        //when
+        cartItemService.deleteCartItemFromCart(username,itemId);
+        //then
+        assertThrows(NoSuchElementException.class,
+                ()->cartItemRepository.findByItemIdAndUsername(itemId,username).orElseThrow());
+    }
+
+
+    private Item init() {
         GeneralMember user = GeneralMember.builder()
                 .username("TestUser1")
                 .build();
         memberRepository.save(user);
         cartService.createCart(user);
         Item savedItem = itemRepository.save(new Item());
-
-        String username="TestUser1";
-        Long itemId=savedItem.getId();
-
-        Long cartItemId = cartItemService.putCart(username, itemId, 3);
-        //when
-        cartItemService.deleteCartItemFromCart(username,itemId);
-        //then
-        assertThrows(NoSuchElementException.class,
-                ()->cartItemRepository.findByItemIdAndUsername(itemId,username).orElseThrow());
+        return savedItem;
     }
 }

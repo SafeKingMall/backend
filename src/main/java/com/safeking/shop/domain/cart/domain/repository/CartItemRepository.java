@@ -13,14 +13,27 @@ import org.springframework.security.core.parameters.P;
 
 import java.util.Optional;
 
+/**
+ * <CQS>
+ * cud 쿼리는 @Query 사용
+ * 조회 쿼리는 queryDsl 사용
+ **/
 public interface CartItemRepository extends JpaRepository<CartItem,Long> {
-
+    /**
+     * 중간 테이블의 join
+     * 초기화가 필요한 부분만 join fetch 사용
+     **/
     @Query("select ci from CartItem ci join fetch ci.cart c join fetch c.member m where ci.item.id=:itemId and m.username =:username")
     Optional<CartItem> findByItemIdAndUsername(@Param("itemId") Long itemId, @Param("username") String username);
-
+    /**
+     * @Modifying 사용: bulk 수정 쿼리
+     **/
     @Modifying
     @Query("delete from CartItem c where c.cart.id=:cartId")
     void deleteCartItemBatch(@Param("cartId") Long cartId);
+    /**
+     * In 사용: 최적화
+     **/
     @Modifying
     @Query("delete from CartItem c where c.item.id in :ItemIds and c.cart.id=:CartId")
     void deleteCartItem(@Param("CartId") Long cartId ,@Param("ItemIds") Long... itemIds);

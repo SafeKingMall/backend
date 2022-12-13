@@ -79,7 +79,6 @@ class MemberControllerTest_login extends MvcTest {
 
         redisService.deleteAll();
     }
-
     @Order(2)
     @DisplayName("login")
     @ParameterizedTest(name = "{index} {displayName}")

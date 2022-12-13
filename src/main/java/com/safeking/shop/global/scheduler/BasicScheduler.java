@@ -24,6 +24,9 @@ import java.util.Collections;
 @RequiredArgsConstructor
 @Slf4j
 public class BasicScheduler {
+    /**
+     * 1. @Qualifier: 모두 다른 JOB 을 Autowired
+     **/
     @Qualifier("humanAccountsJob")
     private final Job humanAccountsJob;
     @Qualifier("memoryClearJobJob")

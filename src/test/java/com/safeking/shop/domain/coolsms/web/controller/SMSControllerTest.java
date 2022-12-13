@@ -33,7 +33,7 @@ class SMSControllerTest extends MvcTest {
     @DisplayName("회원에게 code 전송")
     void sendCodeToClient() throws Exception {
         //given
-        PhoneNumber phoneNumber = new PhoneNumber("01082460887");
+        PhoneNumber phoneNumber = new PhoneNumber("01022421190");
 
         String content = om.writeValueAsString(phoneNumber);
         //when

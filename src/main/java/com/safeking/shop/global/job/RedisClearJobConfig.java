@@ -27,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class RedisClearJobConfig {
-
+    /**
+     * Redis 의 얘기치 못한 데이터가 쌓이는 것을 방지
+     **/
     private final JobBuilderFactory jobBuilderFactory;
 
     private final StepBuilderFactory stepBuilderFactory;

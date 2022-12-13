@@ -34,8 +34,12 @@ import java.io.IOException;
 import static com.safeking.shop.global.jwt.TokenUtils.*;
 
 @Slf4j
-//권한처리시 사용되는 필터
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+    /**
+     * 1. 권한처리시 사용되는 필터
+     * 2. jwt 바탕으로 Authentication 영역의 redisMember 객체의 username 을 조회
+     * 3. username 바탕으로 권한처리
+     **/
 
     private MemberRedisRepository memberRepository;
 

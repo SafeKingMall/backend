@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@SpringBatchTest
 class MemoryMemberRepositoryTest {
     @Autowired
     CustomBCryPasswordEncoder encoder;

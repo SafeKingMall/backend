@@ -54,7 +54,9 @@ public class MemberService {
 
         return generalMember.getId();
     }
-
+    /**
+     * Client Credentails Grant Type 방식
+     **/
     public CheckSignUp socialLogin(String registrationId, Map<String, Object> data) {
 
         Oauth2UserInfo oauth2UserInfo = null;

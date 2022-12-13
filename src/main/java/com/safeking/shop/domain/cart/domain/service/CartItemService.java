@@ -21,24 +21,26 @@ public class CartItemService {
     private final ItemRepository itemRepository;
 
     public Long putCart(String username, Long itemId, int count){
+        // 1. username 바탕으로 cart 를 먼저 조회
         Cart cart = cartRepository
                 .findCartByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("장바구니가 없습니다."));
-
+        // 2. 담은 item 을 조회
         Item item = itemRepository
                 .findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("아이템이 없습니다."));
 
-        //기존 장바구니에 같은 아이템이 있는 지 확인
+        /**
+         * 3. 같은 상품이 담기면 exception
+         **/
         CartItem cartItem = cartItemRepository
                 .findByItemIdAndUsername(itemId,username)
                 .orElse(null);
-
         if (cartItem != null) throw new EntityExistsException("동일한 상품이 장바구니에 있습니다.");
 
         CartItem newCartItem = CartItem.createCartItem(item, cart, count);
-
         cartItemRepository.save(newCartItem);
+
         return newCartItem.getId();
     }
 
@@ -52,7 +54,6 @@ public class CartItemService {
     }
 
     public void deleteCartItemFromCart(String username, Long... itemId){
-
         Cart cart = cartRepository
                 .findCartByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("장바구니가 없습니다."));

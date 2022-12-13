@@ -28,7 +28,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CartItemRepositoryTest {
-
+    /**
+     * 1. @SpringBootTest: 모든 bean 을 생성 --> 밑에 @Autowired 가 가능해짐
+     * 2. @ActiveProfiles("test"): @Profile("test") 인것은 실행, ex) @Profile("local") 은 실행이 안됨
+     * 3. @Transactional: 테스트 시 마다 rollback 을 시켜줌, * 중요: identity 전략시에 id의 값은 rollback 이 안됨
+     * 4. @TestInstance(TestInstance.Lifecycle.PER_CLASS): 변수를 사용할 수가 있게 된다.
+     **/
     @Autowired
     CartItemRepository cartItemRepository;
     @Autowired
@@ -47,14 +52,8 @@ class CartItemRepositoryTest {
     Long cartId2=null;
     @BeforeEach
     void init(){
-        GeneralMember user = GeneralMember.builder()
-                .username("USER1")
-                .build();
-        GeneralMember user2 = GeneralMember.builder()
-                .username("USER2")
-                .build();
-        memberRepository.save(user);
-        memberRepository.save(user2);
+        GeneralMember user = generateGeneralMember("USER1");
+        GeneralMember user2 = generateGeneralMember("USER2");
 
         cartId = cartService.createCart(user);
         cartId2 = cartService.createCart(user2);
@@ -65,6 +64,7 @@ class CartItemRepositoryTest {
         cartItemService.putCart(user.getUsername(),itemId1,3);
         cartItemService.putCart(user2.getUsername(),itemId2,4);
     }
+
     @Test
     void findByItemAndUsername() {
         //given
@@ -96,5 +96,18 @@ class CartItemRepositoryTest {
         //then
         assertThrows(NoSuchElementException.class,
                 ()->cartItemRepository.findByCartIdAndItemId(cartId,itemId1).orElseThrow());
+    }
+
+    private GeneralMember generateGeneralMember(String USER1) {
+        GeneralMember user = getGeneralMember(USER1);
+        memberRepository.save(user);
+        return user;
+    }
+
+    private static GeneralMember getGeneralMember(String USER1) {
+        GeneralMember user = GeneralMember.builder()
+                .username(USER1)
+                .build();
+        return user;
     }
 }

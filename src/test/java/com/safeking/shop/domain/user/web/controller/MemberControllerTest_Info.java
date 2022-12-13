@@ -88,7 +88,9 @@ class MemberControllerTest_Info extends MvcTest {
         //then
         String result = resultActions.andReturn().getResponse().getContentAsString();
         MemberDetails memberDetails = om.readValue(result, MemberDetails.class);
-
+        /**
+         * usingRecursiveComparison: 객체의 값을 비교하고 싶을 때 사용
+         **/
         Assertions.assertAll(
                 () -> assertThat(memberDetails.getName()).isEqualTo("user")
                 , () -> assertThat(memberDetails.getUsername()).isEqualTo(TestUserHelper.USER_USERNAME)
@@ -126,7 +128,6 @@ class MemberControllerTest_Info extends MvcTest {
                 )
         );
     }
-
     @Test
     @DisplayName("회원 수정")
     void update() throws Exception {
@@ -435,6 +436,9 @@ class MemberControllerTest_Info extends MvcTest {
                         .param("size","15"))
                 .andExpect(status().isOk());
         //then
+        /**
+         * jsonPath 를 사용하면 json 객체에 바로 다가갈 수 있다.
+         **/
         resultActions
                 .andExpect(jsonPath("content[0].name").value("user19"))
                 .andExpect(jsonPath("totalPages").value("1"))

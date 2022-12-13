@@ -14,8 +14,8 @@ public enum MemberStatus {
 
     public static String getDescription(String status) {
 
-        if(status=="COMMON")return COMMON.description;
-        else if(status=="HUMAN")return COMMON.description;
+        if (status == "COMMON") return COMMON.description;
+        else if (status == "HUMAN") return COMMON.description;
         else return COMMON.description;
 
     }

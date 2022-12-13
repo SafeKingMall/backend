@@ -24,7 +24,10 @@ import static com.safeking.shop.domain.user.domain.entity.member.QMember.member;
 public class CartQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-
+    /**
+     * on을 이용한 한방 쿼리: Join(categoryItem).on(item.eq(categoryItem.item))
+     * on 절을 이용시: cartItem.item <-- 이런 형식 x
+     **/
     public Page<CartItemResponse> searchAll(String username, Pageable pageable){
         List<CartItemResponse> result = queryFactory
                 .select(new QCartItemResponse(item.id, item.name, item.price, item.quantity, categoryItem.category.name))

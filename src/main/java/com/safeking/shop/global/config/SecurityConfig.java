@@ -27,7 +27,6 @@ public class SecurityConfig{
 
     private final CorsConfig corsConfig;
     private final MemberRedisRepository memberRepository;
-
     private final TokenUtils tokenUtils;
     private final ObjectMapper om;
 

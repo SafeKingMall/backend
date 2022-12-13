@@ -26,9 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class HumanAccountsJobConfig {
-
+    /**
+     * 휴면 계정 Batch
+     **/
     private final JobBuilderFactory jobBuilderFactory;
-
     private final StepBuilderFactory stepBuilderFactory;
     private final MemberService memberService;
     private final SMSService smsService;

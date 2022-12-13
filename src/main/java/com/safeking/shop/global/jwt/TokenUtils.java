@@ -14,6 +14,9 @@ import java.util.Date;
 @Slf4j
 @Component
 public class TokenUtils {
+    /**
+     * 토큰과 관련된 로직을 모아 Utils 생성
+     **/
     public static final String AUTH_HEADER = "Authorization";
     public static final String REFRESH_HEADER = "refresh-token";
     public static final String BEARER = "Bearer ";

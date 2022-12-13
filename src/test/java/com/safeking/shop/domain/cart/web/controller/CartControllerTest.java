@@ -106,9 +106,8 @@ class CartControllerTest extends MvcTest {
         //given
         int updateCount=4;
         Long itemId=putItemIdList.get(0);
-        System.out.println("itemId = " + itemId);
-        BasicRequest basicRequest = new BasicRequest(itemId, updateCount);
 
+        BasicRequest basicRequest = new BasicRequest(itemId, updateCount);
         String content = om.writeValueAsString(basicRequest);
         //when
         ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/v1/user/cartItem")

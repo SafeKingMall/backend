@@ -18,7 +18,10 @@ import static com.safeking.shop.global.exhandler.erroconst.ErrorConst.*;
 
 @Slf4j
 public class JwtAuthenticationExceptionFilter extends AbstractExceptionFilter {
-
+    /**
+     * 1. BasicAuthenticationFilter 의 exception 을 잡아줌
+     * 2. custom error 형식으로 response
+     **/
     public JwtAuthenticationExceptionFilter(ObjectMapper objectMapper) {
         super(objectMapper);
     }

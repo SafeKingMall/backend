@@ -81,14 +81,11 @@ class MemberControllerTest_dormant extends MvcTest {
     @DisplayName("1. dormantCriticalItems")
     void dormantCriticalItems() throws Exception {
         //given
-        CriticalItems criticalItems = CriticalItems.builder()
-                .username("kms199711")
-                .password("kms199711*")
-                .email("kms1997@naver.com")
-                .build();
-
+        CriticalItems criticalItems = getCriticalItems();
         String content = om.writeValueAsString(criticalItems);
-
+        /**
+         * post 요청시에 contentType 과 accept 를 설정
+         **/
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/dormant/criticalItems")
 
@@ -111,23 +108,14 @@ class MemberControllerTest_dormant extends MvcTest {
                         )
                 );
     }
-
     @Test
     @DisplayName("2. dormantAuthenticationInfo")
     void dormantAuthenticationInfo() throws Exception {
         //given
-        CriticalItems criticalItems = CriticalItems.builder()
-                .username("kms199711")
-                .password("kms199711*")
-                .email("kms1997@naver.com")
-                .build();
+        CriticalItems criticalItems = getCriticalItems();
         Long memberId = memberService.addCriticalItems(criticalItems.toServiceDto());
 
-        AuthenticationInfo authenticationInfo = AuthenticationInfo.builder()
-                .name("name")
-                .birth("20001202")
-                .phoneNumber("01082460887")
-                .build();
+        AuthenticationInfo authenticationInfo = getAuthenticationInfo();
         String requestData = om.writeValueAsString(authenticationInfo);
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/dormant/authenticationInfo/{memberId}",memberId)
@@ -140,6 +128,9 @@ class MemberControllerTest_dormant extends MvcTest {
 
         assertThat(result).isEqualTo(Long.toString(memberId));
         //docs
+        /**
+         * pathParameters 가 있다면  RestDocumentationRequestBuilders.post 를 사용
+         **/
         resultActions.andDo(
                 document("dormantAuthenticationInfo"
                 ,pathParameters(
@@ -153,27 +144,15 @@ class MemberControllerTest_dormant extends MvcTest {
                 )
         );
     }
+
     @Test
     @DisplayName("3. dormantMemberInfo")
     void dormantMemberInfo() throws Exception {
          //given
-        CriticalItems criticalItems = CriticalItems.builder()
-                .username("kms199711")
-                .password("kms199711*")
-                .email("kms1997@naver.com")
-                .build();
+        CriticalItems criticalItems = getCriticalItems();
         Long memberId = memberService.addCriticalItems(criticalItems.toServiceDto());
 
-        MemberInfo memberInfo = MemberInfo.builder()
-                .companyName("safeking")
-                .companyRegistrationNumber("111-22-12345")
-                .corporateRegistrationNumber("111111-1234567")
-                .representativeName("ms")
-                .basicAddress("서울시")
-                .detailedAddress("마포대로")
-                .zipcode("111")
-                .contact("01012345678")
-                .build();
+        MemberInfo memberInfo = getMemberInfo();
         String requestData = om.writeValueAsString(memberInfo);
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/dormant/memberInfo/{memberId}", memberId)
@@ -203,43 +182,21 @@ class MemberControllerTest_dormant extends MvcTest {
                         )
                 )
         );
-
-
     }
     @Test
     @DisplayName("4. dormantAgreementInfo")
     void dormantAgreementInfo() throws Exception {
         //given
-        CriticalItems criticalItems = CriticalItems.builder()
-                .username("kms199711")
-                .password("kms199711*")
-                .email("kms1997@naver.com")
-                .build();
+        CriticalItems criticalItems = getCriticalItems();
         Long memberId = memberService.addCriticalItems(criticalItems.toServiceDto());
 
-        AuthenticationInfo authenticationInfo = AuthenticationInfo.builder()
-                .name("name")
-                .birth("971202")
-                .phoneNumber("01082460887")
-                .build();
+        AuthenticationInfo authenticationInfo = getAuthenticationInfo();
         memberService.addAuthenticationInfo(memberId,authenticationInfo.toServiceDto());
 
-        MemberInfo memberInfo = MemberInfo.builder()
-                .companyName("safeking")
-                .companyRegistrationNumber("111")
-                .corporateRegistrationNumber("222")
-                .representativeName("ms")
-                .basicAddress("서울시")
-                .detailedAddress("마포대로")
-                .zipcode("111")
-                .contact("01012345678")
-                .build();
+        MemberInfo memberInfo = getMemberInfo();
         memberService.addMemberInfo(memberId,memberInfo.toServiceDto());
 
-        AgreementInfo agreementInfo = AgreementInfo.builder()
-                .userAgreement(true)
-                .infoAgreement(true)
-                .build();
+        AgreementInfo agreementInfo = getAgreementInfo();
         String requestData = om.writeValueAsString(agreementInfo);
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/dormant/agreementInfo/{memberId}",memberId)
@@ -263,6 +220,15 @@ class MemberControllerTest_dormant extends MvcTest {
                 )
         );
     }
+
+    private static AgreementInfo getAgreementInfo() {
+        AgreementInfo agreementInfo = AgreementInfo.builder()
+                .userAgreement(true)
+                .infoAgreement(true)
+                .build();
+        return agreementInfo;
+    }
+
     private OauthMember createDormant() {
         OauthMember oauthMember = OauthMember.builder()
                 .username("kakao_123456789")
@@ -273,4 +239,37 @@ class MemberControllerTest_dormant extends MvcTest {
         memberRepository.save(oauthMember);
         return oauthMember;
     }
+    private static MemberInfo getMemberInfo() {
+        MemberInfo memberInfo = MemberInfo.builder()
+                .companyName("safeking")
+                .companyRegistrationNumber("111-22-12345")
+                .corporateRegistrationNumber("111111-1234567")
+                .representativeName("ms")
+                .basicAddress("서울시")
+                .detailedAddress("마포대로")
+                .zipcode("111")
+                .contact("01012345678")
+                .build();
+        return memberInfo;
+    }
+
+    private static AuthenticationInfo getAuthenticationInfo() {
+        AuthenticationInfo authenticationInfo = AuthenticationInfo.builder()
+                .name("name")
+                .birth("20001202")
+                .phoneNumber("01082460887")
+                .build();
+        return authenticationInfo;
+    }
+
+    private static CriticalItems getCriticalItems() {
+        CriticalItems criticalItems = CriticalItems.builder()
+                .username("kms199711")
+                .password("kms199711*")
+                .email("kms1997@naver.com")
+                .build();
+        return criticalItems;
+    }
+
+
 }

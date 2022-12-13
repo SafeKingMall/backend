@@ -37,6 +37,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Transactional
 class MemberServiceTest_SignUp {
+    /**
+     * 1. @ParameterizedTest: 파라미터마다 test 실행
+     * 2. @CsvSource: 파라미터의 변수를 입력, @ParameterizedTest 와 같이 사용
+     * 3. ArgumentsAggregator: @CsvSource 변수를 통해 다른 값을 return 할 수 있음
+     **/
 
     @Autowired
     MemberRepository memberRepository;

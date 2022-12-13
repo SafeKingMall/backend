@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public abstract class AbstractExceptionFilter extends OncePerRequestFilter {
-
+    /**
+     *
+     **/
     protected final ObjectMapper objectMapper;
 
     protected AbstractExceptionFilter(ObjectMapper objectMapper) {

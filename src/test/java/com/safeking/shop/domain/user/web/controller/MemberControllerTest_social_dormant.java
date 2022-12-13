@@ -177,11 +177,7 @@ class MemberControllerTest_social_dormant extends MvcTest {
                         )
                 )
         );
-
-
     }
-
-
     @Test
     @DisplayName("4. dormantAgreementInfo_social")
     void dormantAgreementInfo_social() throws Exception {

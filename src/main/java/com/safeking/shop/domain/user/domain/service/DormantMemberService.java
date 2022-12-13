@@ -60,7 +60,10 @@ public class DormantMemberService {
         );
         return dormant.getId();
     }
-
+    /**
+     * 휴면계정 복구 정보가 다 들어올 시에만 휴면계정 복구
+     * member field 의 accountNonLocked 가 false -> true
+     **/
     public Long revertCommonAccounts(Long id, Boolean agreement){
 
         try{

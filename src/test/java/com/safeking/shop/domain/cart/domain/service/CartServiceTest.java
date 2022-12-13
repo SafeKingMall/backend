@@ -39,9 +39,7 @@ class CartServiceTest {
     @DisplayName("장바구니 생성")
     void createCart() {
         //given
-        GeneralMember user = GeneralMember.builder()
-                .username("TestUser1")
-                .build();
+        GeneralMember user = getGeneralMember();
         GeneralMember generalMember = memberRepository.save(user);
         //when
         Long cartId = cartService.createCart(user);
@@ -50,14 +48,15 @@ class CartServiceTest {
         assertThat(cart.getMember().getId()).isEqualTo(generalMember.getId());
     }
 
+
+
     @Test
     @DisplayName("장바구니 삭제")
     void deleteCart() {
         //given
-        GeneralMember user = GeneralMember.builder()
-                .username("TestUser1")
-                .build();
+        GeneralMember user = getGeneralMember();
         GeneralMember generalMember = memberRepository.save(user);
+
         cartService.createCart(generalMember);
 
         Item item = new Item();
@@ -69,5 +68,12 @@ class CartServiceTest {
         //then
         assertThrows(NoSuchElementException.class,
                 ()->cartRepository.findCartByUsername(generalMember.getUsername()).orElseThrow());
+    }
+
+    private static GeneralMember getGeneralMember() {
+        GeneralMember user = GeneralMember.builder()
+                .username("TestUser1")
+                .build();
+        return user;
     }
 }

@@ -7,6 +7,7 @@ import com.safeking.shop.global.Error;
 import com.safeking.shop.global.MvcTest;
 import com.safeking.shop.global.TestUserHelper;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
+import com.safeking.shop.global.exhandler.erroconst.ErrorConst;
 import com.safeking.shop.global.jwt.filter.dto.LoginRequestDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 
 import static com.safeking.shop.global.DocumentFormatGenerator.JwtTokenValidation;
 import static com.safeking.shop.global.DocumentFormatGenerator.RefreshTokenValidation;
+import static com.safeking.shop.global.exhandler.erroconst.ErrorConst.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static com.safeking.shop.global.jwt.TokenUtils.REFRESH_HEADER;
 import static org.assertj.core.api.Assertions.*;
@@ -35,7 +37,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
-public class JwtTokenErrorTest  extends MvcTest {
+public class JwtTokenErrorTest extends MvcTest {
+    /**
+     * 1. MvcTest: api test 시 설정들을 모아 놓음
+     * 2. @ApiTest: custom annotation, 필수 어노테이션을 모아 놓음
+     * 3. TestUserHelper: user 관련 test code 필요 로직을 모아 놓음
+     **/
     @Autowired
     CustomBCryPasswordEncoder encoder;
     @Autowired
@@ -64,10 +71,14 @@ public class JwtTokenErrorTest  extends MvcTest {
         //then
         Error error = getError(resultActions);
         assertAll(
-                ()->assertThat(error.getCode()).isEqualTo(811)
+                ()->assertThat(error.getCode()).isEqualTo(JWT_DECODE_EX_CODE)
                 ,()->assertThat(error.getMessage()).isEqualTo("잘못된 jwt 양식입니다.")
         );
         //docs
+        /**
+         * 1. attributes: key value 형식
+         * 2. resources 하위에 정확한 페키지 명 아래에 snippet 문서가 있어야 custom restdocs 를 생성
+         **/
         resultActions.andDo(
                 document("JWTDecodeException"
                         ,requestHeaders(
@@ -95,7 +106,7 @@ public class JwtTokenErrorTest  extends MvcTest {
         //then
         Error error = getError(resultActions);
         assertAll(
-                ()->assertThat(error.getCode()).isEqualTo(813)
+                ()->assertThat(error.getCode()).isEqualTo(SIGNATURE_VERIFICATION_EX_CODE)
                 ,()->assertThat(error.getMessage()).isEqualTo("잘못된 서명입니다.")
         );
         //docs

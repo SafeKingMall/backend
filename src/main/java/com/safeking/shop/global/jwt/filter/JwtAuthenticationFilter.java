@@ -32,6 +32,11 @@ import static com.safeking.shop.global.jwt.TokenUtils.*;
 
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+    /**
+     * 1. 로그인이 진행되는 filter
+     * 2. 계정이 잠긴 경우, 로그인 정보가 안 맞는 경우 각 모두 상이한 custom error response 객체를 응답
+     * 3. 로그인 성공 시에 jwtToken 과 refreshToken 이 나감
+     **/
     private final AuthenticationManager authenticationManager;
     private final TokenUtils tokenUtils;
     private ObjectMapper om;
@@ -81,6 +86,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return authentication;
 
         } catch (LockedException e){
+            // 계정이 잠긴 경우 custom error response
             generateResponseData(response,403, new Error(LOGIN_LOCK_EX_CODE, e.getMessage()));
         } catch (Exception e) {
             generateResponseData(response,401, new Error(LOGIN_EX_CODE, e.getMessage()));

@@ -12,9 +12,17 @@ public class CartItemResponse {
     private int itemQuantity;
     private String categoryName;
 //    private String categoryName;
-
+    /**
+     * @QueryProjection: 한방 쿼리
+     **/
     @QueryProjection
-    public CartItemResponse(Long id, String itemName, int itemPrice, int itemQuantity, String categoryName) {
+    public CartItemResponse(
+            Long id
+            , String itemName
+            , int itemPrice
+            , int itemQuantity
+            , String categoryName
+    ) {
         this.id = id;
         this.itemName = itemName;
         this.itemPrice = itemPrice;

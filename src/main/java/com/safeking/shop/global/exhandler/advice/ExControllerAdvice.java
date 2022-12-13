@@ -24,6 +24,9 @@ import static com.safeking.shop.global.exhandler.erroconst.ErrorConst.*;
 @Slf4j
 @RestControllerAdvice
 public class ExControllerAdvice {
+    /**
+     * @RestControllerAdvice 와 @ExceptionHandler 로 errorHandler 와 logic 을 분리
+     **/
 
     @ExceptionHandler
     public ResponseEntity<Error> illegalExHandler(IllegalArgumentException e){
@@ -61,7 +64,9 @@ public class ExControllerAdvice {
 
         return new ResponseEntity<>(new Error(ENTITY_EXITS_EX_CODE,e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+    /**
+     * Bean Validation 에서 MethodArgumentNotValidException 을 터뜨림
+     **/
     @ExceptionHandler
     public ResponseEntity<Error> processValidationError(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
