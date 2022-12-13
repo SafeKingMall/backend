@@ -8,9 +8,11 @@ import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.dto.*;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
+import com.safeking.shop.global.exception.AgreementException;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import com.safeking.shop.global.oauth.provider.GoogleUserInfo;
 import com.safeking.shop.global.oauth.provider.KakaoUserInfo;
@@ -34,6 +36,7 @@ public class MemberService {
     private final CustomBCryPasswordEncoder encoder;
     private final CartService cartService;
     private final MemberRedisRepository cacheMemberRepository;
+    private final MemoryDormantRepository dormantRepository;
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
@@ -51,7 +54,9 @@ public class MemberService {
 
         return generalMember.getId();
     }
-
+    /**
+     * Client Credentails Grant Type 방식
+     **/
     public CheckSignUp socialLogin(String registrationId, Map<String, Object> data) {
 
         Oauth2UserInfo oauth2UserInfo = null;
@@ -92,6 +97,10 @@ public class MemberService {
             memoryMemberRepository.save(oauthMember);
 
             return CheckSignUp.createSignUpUser(oauthMember.getId(),false);
+        } else if (!oauthMember.getAccountNonLocked()) {
+
+            oauthMember.addCriticalItemsForDormant(encoder.encode(password),email);
+            return CheckSignUp.createDormant(dormantRepository.save(oauthMember),false,true);
         } else {
             log.info("Oauth 를 톤해 회원가입을 한 적이 있다.");
             return CheckSignUp.createLoginUser(oauthMember.getUsername(),true);
@@ -130,7 +139,7 @@ public class MemberService {
     public Long changeMemoryToDB(Long id, Boolean agreement){
 
         try{
-            if(!agreement)throw new IllegalArgumentException("약관 동의를 하지 않았습니다.");
+            if(!agreement)throw new AgreementException("약관 동의를 하지 않았습니다.");
 
             Member member = memoryMemberRepository.findById(id)
                     .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));

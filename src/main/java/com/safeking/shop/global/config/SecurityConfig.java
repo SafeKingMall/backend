@@ -1,14 +1,17 @@
 package com.safeking.shop.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.jwt.TokenUtils;
+import com.safeking.shop.global.jwt.filter.JwtAuthenticationExceptionFilter;
 import com.safeking.shop.global.jwt.filter.JwtAuthenticationFilter;
 import com.safeking.shop.global.jwt.filter.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,21 +27,19 @@ public class SecurityConfig{
 
     private final CorsConfig corsConfig;
     private final MemberRedisRepository memberRepository;
-
     private final TokenUtils tokenUtils;
+    private final ObjectMapper om;
 
-//    private final PrincipalOauth2Service oauth2Service;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.addFilterBefore(new MyFilter3(), SecurityContextHolderFilter.class);
-        httpSecurity.csrf().disable();
+        httpSecurity.csrf().disable().cors();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
 
-                .apply(new MyCustomDsl(tokenUtils))
+                .apply(new MyCustomDsl(tokenUtils,om))
 
                 .and()
                 .authorizeRequests()
@@ -53,6 +54,7 @@ public class SecurityConfig{
                 .access("hasRole('ROLE_ADMIN')")
 
                 .anyRequest().permitAll()
+
         ;
         return httpSecurity.build();
 
@@ -60,15 +62,17 @@ public class SecurityConfig{
     @RequiredArgsConstructor
     public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
         private final TokenUtils tokenUtils;
-
+        private final ObjectMapper om;
         @Override
         public void configure(HttpSecurity http) throws Exception {
-
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+            JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager, memberRepository);
+
             http
                     .addFilter(corsConfig.corsFilter())
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager,tokenUtils))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository))
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager, tokenUtils, memberRepository))
+                    .addFilter(jwtAuthorizationFilter)
+                    .addFilterBefore(new JwtAuthenticationExceptionFilter(om),jwtAuthorizationFilter.getClass());
             ;
 
         }

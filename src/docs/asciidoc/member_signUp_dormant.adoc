@@ -1,0 +1,51 @@
+= Member-DORMANT-API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Member-API]]
+== Member API (휴면 계정 복구)
+
+[[Member-dormant-1]]
+=== 1. 필수 정보 입력
+operation::dormantCriticalItems[snippets='http-request,request-fields,request-body,http-response,response-body']
+
+[[Member-signup-1-2]]
+=== 1_1. 필수 정보 입력시 error (형식에 맞지 않을 시)
+|===
+| 설명 | 형식 관련 error는 모두 동일
+|===
+operation::signUpCriticalItems_error[snippets='http-request,request-fields,request-body,http-response,response-fields,response-body']
+
+[[Member-dormant-2]]
+=== 2. 인증 정보 입력
+operation::dormantAuthenticationInfo[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
+
+[[Member-signup-2_1]]
+=== 2_1. 임시 회원 아이디가 일치 하지 않을 때
+|===
+| 설명 | 임시 회원 아이디가 없을 시에 error는 모두 동일
+|===
+operation::signUpAuthenticationInfo_error[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body,response-fields']
+
+
+[[Member-dormant-3]]
+=== 3. 회원 정보 입력
+operation::dormantMemberInfo[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
+
+[[Member-dormant-4]]
+=== 4. 회원 동의 여부
+operation::dormantAgreementInfo[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body']
+
+[[Member-signup-4_1]]
+=== 4_1. 약관에 모두 동의를 하지 않았을 때
+operation::signUpAgreementInfo_error_1[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body,response-fields']
+
+[[Member-signup-4_2]]
+=== 4_2. 모든 필수 정보가 존재하지 않을 때
+operation::signUpAgreementInfo_error_2[snippets='http-request,path-parameters,request-fields,request-body,http-response,response-body,response-fields']
+
+

@@ -10,6 +10,7 @@ import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.service.RedisService;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -32,6 +33,7 @@ public class InitDB {
         initService.initMemberTestV1();
         initService.initItemTestV1();
         initService.initCategory();
+        initService.clearRedis();
     }
 
     @Component
@@ -42,6 +44,7 @@ public class InitDB {
         private final CustomBCryPasswordEncoder encoder;
         private final MemberRepository memberRepository;
         private final MemberRedisRepository redisRepository;
+        private final RedisService redisService;
         private final CartService cartService;
 
         public void initAdminTestV1(){
@@ -66,7 +69,7 @@ public class InitDB {
             //일반 회원 30명 넣기
             for (int i = 1; i <=30 ; i++) {
                 Member user = GeneralMember.builder()
-                        .name("user")
+                        .name("user"+i)
                         .birth("971202")
                         .username("testUser"+i)
                         .password(encoder.encode("testUser"+i+"*"))
@@ -118,6 +121,9 @@ public class InitDB {
             em.persist(category3);
             em.persist(category4);
             em.persist(category5);
+        }
+        public void clearRedis(){
+            redisService.deleteAll();
         }
     }
 

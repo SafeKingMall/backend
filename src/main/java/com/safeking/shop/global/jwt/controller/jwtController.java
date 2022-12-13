@@ -1,5 +1,7 @@
 package com.safeking.shop.global.jwt.controller;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.auth.PrincipalDetails;
@@ -26,26 +28,35 @@ public class jwtController {
     private final MemberRepository memberRepository;
     private final TokenUtils tokenUtils;
 
+    /**
+     * 토큰이 만료시 client 쪽에 refresh API 로 jwt 와 refreshToken 을 요청
+     **/
     @GetMapping("/api/v1/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response){
 
-        String refreshToken=request.getHeader(REFRESH_HEADER);
-
-        if(refreshToken==null) throw new TokenNotFoundException("Refresh Token 이 유효하지 않습니다.");
-
-        String username = verify(refreshToken);
+        String username = getUsername(request);
 
         if(username!=null){
-            //authentication 을 생성
+            //1. authentication 을 생성
             Authentication authentication = createAuthentication(username);
-
+            //2. 토큰을 만들어서
             Tokens tokens = tokenUtils.createTokens(authentication);
-
+            //3.header 에 담음
             response.addHeader(AUTH_HEADER,BEARER+tokens.getJwtToken());
-            response.addHeader(REFRESH_HEADER,tokens.getRefreshToken());
-
+            response.addHeader(REFRESH_HEADER,BEARER+tokens.getRefreshToken());
         }
+    }
 
+    private static String getUsername(HttpServletRequest request) {
+
+        if(request.getHeader(REFRESH_HEADER) ==null||!request.getHeader(REFRESH_HEADER).startsWith("Bearer"))
+            throw new TokenNotFoundException("토큰이 없습니다.");
+
+        String jwToken= request.getHeader(REFRESH_HEADER).replace(BEARER,"");
+
+        String username = JWT.require(Algorithm.HMAC512("safeKing")).build()
+                .verify(jwToken).getClaim("username").asString();
+        return username;
     }
 
     private Authentication createAuthentication(String username) {
