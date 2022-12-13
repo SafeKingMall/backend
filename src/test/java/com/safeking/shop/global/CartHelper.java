@@ -6,10 +6,10 @@ import com.safeking.shop.domain.cart.domain.service.CartItemService;
 import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.cart.web.query.repository.CartQueryRepository;
 import com.safeking.shop.domain.item.domain.entity.Category;
-import com.safeking.shop.domain.item.domain.entity.CategoryItem;
 import com.safeking.shop.domain.item.domain.entity.Item;
-import com.safeking.shop.domain.item.domain.repository.CategoryItemRepository;
+import com.safeking.shop.domain.item.domain.entity.ItemPhoto;
 import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
+import com.safeking.shop.domain.item.domain.repository.ItemPhotoRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
@@ -41,16 +41,16 @@ public class CartHelper {
     @Autowired
     CartItemService cartItemService;
     @Autowired
-    CategoryItemRepository categoryItemRepository;
-    @Autowired
     CategoryRepository categoryRepository;
     @Autowired
     TestUserHelper userHelper;
+    @Autowired
+    ItemPhotoRepository itemPhotoRepository;
 
     public List<Long> createTemporaryCartItem() {
         //1. 카테고리를 생성
-        Category category1 = new Category("중대사고예방");
-        Category category2 = new Category("해양사고 예방");
+        Category category1 = Category.create("중대사고 예방", 1);
+        Category category2=Category.create("중대사고 예방",2);
         categoryRepository.save(category1);
         categoryRepository.save(category2);
 
@@ -70,10 +70,13 @@ public class CartHelper {
             item.setQuantity(i);
             itemRepository.save(item);
 
-            CategoryItem categoryItem = new CategoryItem(i % 2 == 0 ? category1 : category2, item);
-            categoryItemRepository.save(categoryItem);
+            ItemPhoto fileName = ItemPhoto.create("fileName", item);
+            itemPhotoRepository.save(fileName   );
+
+            item.setCategory(i % 2 == 0 ? category1 : category2);
 
             cartItemService.putCart(i % 2 == 0 ? member.getUsername() : admin.getUsername(), item.getId(), 3);
+
             if(i % 2 == 0) putItemIdList.add(item.getId());
         }
 
