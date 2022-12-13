@@ -195,6 +195,7 @@ class CartControllerTest extends MvcTest {
                                     ,fieldWithPath("content.[].itemPrice").description("아이템 가격")
                                     ,fieldWithPath("content.[].itemQuantity").description("아이템 수량")
                                     ,fieldWithPath("content.[].categoryName").description("아이템 카테고리 이름")
+                                    ,fieldWithPath("content.[].thumbNail").description("상품 썸네일")
 
                                 ,fieldWithPath("pageable").type(JsonFieldType.OBJECT).description("pageable 정보")
 

@@ -7,14 +7,6 @@ import com.safeking.shop.domain.cart.domain.service.CartItemService;
 import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.cart.web.response.CartItemResponse;
 import com.safeking.shop.domain.item.domain.entity.Category;
-import com.safeking.shop.domain.item.domain.entity.CategoryItem;
-import com.safeking.shop.domain.item.domain.entity.Item;
-import com.safeking.shop.domain.item.domain.repository.CategoryItemRepository;
-import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
-import com.safeking.shop.domain.item.domain.repository.ItemRepository;
-import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
-import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.CartHelper;
 import com.safeking.shop.global.TestUserHelper;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
@@ -49,6 +41,7 @@ class CartQueryRepositoryTest {
         //when
         Page<CartItemResponse> cartItemResponses = cartQueryRepository
                 .searchAll(TestUserHelper.USER_USERNAME, PageRequest.of(0, 5));
+
         //then
         assertAll(
                 ()->assertThat(cartItemResponses.getPageable().getOffset()).isEqualTo(0)
