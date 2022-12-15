@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 @Component
@@ -46,11 +47,10 @@ public class BasicScheduler {
     {
         log.info("휴면계정 BATCH");
         JobParameters jobParameters = new JobParameters(
-                Collections.singletonMap("requestTime", new JobParameter(String.valueOf(LocalDateTime.now().getDayOfMonth())))
-//                Collections.singletonMap("requestTime", new JobParameter(String.valueOf(LocalDateTime.now().getMinute())))
+                Collections.singletonMap("requestTime", new JobParameter(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
         );
-
         jobLauncher.run(humanAccountsJob,jobParameters);
+        log.info("success humanAccountJobRun");
     }
     @Scheduled(cron = "0 20 4 ? * *")
     public void memoryClearJobRun()
@@ -61,10 +61,10 @@ public class BasicScheduler {
     {
         log.info("memory BATCH");
         JobParameters jobParameters = new JobParameters(
-                Collections.singletonMap("requestTime", new JobParameter(String.valueOf(LocalDateTime.now().getDayOfMonth())))
+                Collections.singletonMap("requestTime", new JobParameter(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
         );
-
         jobLauncher.run(memoryClearJobJob,jobParameters);
+        log.info("success memoryClearJobRun");
     }
     @Scheduled(cron = "0 25 4 ? * *")
     public void redisClearJobRun()
@@ -74,9 +74,10 @@ public class BasicScheduler {
             , JobRestartException {
         log.info("redis BATCH");
         JobParameters jobParameters = new JobParameters(
-                Collections.singletonMap("requestTime", new JobParameter(String.valueOf(LocalDateTime.now().getDayOfMonth())))
+                Collections.singletonMap("requestTime", new JobParameter(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
         );
         jobLauncher.run(redisClearJobJob,jobParameters);
+        log.info("success redisClearJobRun");
     }
 
 

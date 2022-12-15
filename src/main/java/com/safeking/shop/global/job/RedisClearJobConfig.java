@@ -77,10 +77,10 @@ public class RedisClearJobConfig {
     }
     @JobScope//job 밑에서 실행이 되므로
     @Bean
-    public Step redisClearJobStep(Tasklet memoryClearJobTasklet){
+    public Step redisClearJobStep(Tasklet redisClearJobTasklet){
         return stepBuilderFactory
                 .get("redisClearJobStep")
-                .tasklet(memoryClearJobTasklet)
+                .tasklet(redisClearJobTasklet)
                 .build();
     }
     @StepScope//Step 밑에서 실행이 되므로
