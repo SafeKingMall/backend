@@ -2,6 +2,7 @@ package com.safeking.shop.domain.file.web.controller;
 
 import com.safeking.shop.domain.file.domain.service.FileService;
 import com.safeking.shop.domain.file.domain.service.servicedto.FileSaveDto;
+import com.safeking.shop.domain.file.web.response.FileListResponse;
 import com.safeking.shop.domain.item.domain.service.ItemService;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
@@ -27,6 +29,7 @@ import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/")
 public class FileController {
 
     private final FileService fileService;
@@ -37,5 +40,10 @@ public class FileController {
                      @RequestParam(name = "file") MultipartFile file) throws IOException {
 
         return fileService.save(file, type, targetId);
+    }
+
+    @GetMapping("/file/list/{type}/{targetId}")
+    public List<FileListResponse> list(@PathVariable String type,@PathVariable Long targetId){
+        return fileService.list(type, targetId);
     }
 }
