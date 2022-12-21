@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.List;
 
 import static com.safeking.shop.domain.order.domain.entity.status.PaymentStatus.*;
-import static com.safeking.shop.domain.order.web.OrderConst.deliveryCost;
+import static com.safeking.shop.domain.order.constant.OrderConst.deliveryCost;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

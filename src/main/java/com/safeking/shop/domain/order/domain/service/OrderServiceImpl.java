@@ -29,7 +29,7 @@ import java.util.UUID;
 
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.COMPLETE;
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.IN_DELIVERY;
-import static com.safeking.shop.domain.order.web.OrderConst.*;
+import static com.safeking.shop.domain.order.constant.OrderConst.*;
 
 @Service
 @RequiredArgsConstructor

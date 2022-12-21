@@ -2,19 +2,14 @@ package com.safeking.shop.domain.order.web.controller;
 
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.service.OrderService;
-import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.order.web.dto.response.OrderBasicResponse;
 import com.safeking.shop.domain.order.web.dto.response.admin.orderdetail.*;
 import com.safeking.shop.domain.order.web.dto.response.admin.search.*;
-import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
-import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
-import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.auth.AUTH;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.safeking.shop.domain.order.web.OrderConst.*;
+import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
-import static org.apache.naming.ResourceRef.AUTH;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j

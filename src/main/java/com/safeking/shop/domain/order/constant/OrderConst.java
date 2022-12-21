@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web;
+package com.safeking.shop.domain.order.constant;
 
 public class OrderConst {
     public static final Integer deliveryCost = 2500;

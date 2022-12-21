@@ -1,7 +1,7 @@
 package com.safeking.shop.domain.order.web.query.service;
 
 import com.safeking.shop.domain.exception.OrderException;
-import com.safeking.shop.domain.order.web.OrderConst;
+import com.safeking.shop.domain.order.constant.OrderConst;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.jwt.TokenUtils;

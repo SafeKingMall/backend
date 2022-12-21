@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static com.safeking.shop.domain.order.web.OrderConst.deliveryCost;
+import static com.safeking.shop.domain.order.constant.OrderConst.deliveryCost;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

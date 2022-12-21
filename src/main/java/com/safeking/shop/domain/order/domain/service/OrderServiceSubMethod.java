@@ -10,7 +10,7 @@ import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
-import com.safeking.shop.domain.order.web.OrderConst;
+import com.safeking.shop.domain.order.constant.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderItemRequest;
 import lombok.RequiredArgsConstructor;

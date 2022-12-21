@@ -4,7 +4,7 @@ import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
-import com.safeking.shop.domain.order.web.OrderConst;
+import com.safeking.shop.domain.order.constant.OrderConst;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.AccessLevel;
 import lombok.Getter;

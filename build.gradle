@@ -72,6 +72,14 @@ dependencies {
     asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
+    // jitpack
+    implementation 'com.github.jitpack:gradle-simple:v1.1'
+    // iamport
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.22'
+    // https://mvnrepository.com/artifact/com.squareup.retrofit2/adapter-rxjava2
+    implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: '2.9.0'
+
+
 
 
 }
