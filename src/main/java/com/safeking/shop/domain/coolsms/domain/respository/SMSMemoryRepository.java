@@ -4,6 +4,8 @@ import com.safeking.shop.domain.coolsms.domain.entity.CoolSMS;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +33,10 @@ public class SMSMemoryRepository {
     public void clearStore() {
         store.clear();
     }
+    public List<CoolSMS> findAll(){
+        return new ArrayList<>(store.values());
+    }
+
 
     public Optional<CoolSMS> findByClientPhoneNumber(String clientPhoneNumber) {
         return store.values()

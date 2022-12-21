@@ -9,13 +9,10 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +26,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-@Commit
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CartItemRepositoryTest {
-
+    /**
+     * 1. @SpringBootTest: 모든 bean 을 생성 --> 밑에 @Autowired 가 가능해짐
+     * 2. @ActiveProfiles("test"): @Profile("test") 인것은 실행, ex) @Profile("local") 은 실행이 안됨
+     * 3. @Transactional: 테스트 시 마다 rollback 을 시켜줌, * 중요: identity 전략시에 id의 값은 rollback 이 안됨
+     * 4. @TestInstance(TestInstance.Lifecycle.PER_CLASS): 변수를 사용할 수가 있게 된다.
+     **/
     @Autowired
     CartItemRepository cartItemRepository;
     @Autowired
@@ -45,49 +46,44 @@ class CartItemRepositoryTest {
     CartItemService cartItemService;
     @Autowired
     ItemRepository itemRepository;
-    @BeforeAll
+    Long itemId1=null;
+    Long itemId2=null;
+    Long cartId=null;
+    Long cartId2=null;
+    @BeforeEach
     void init(){
-        System.out.println("------------------------init------------------------");
-        GeneralMember user = GeneralMember.builder()
-                .username("testUser1")
-                .build();
-        GeneralMember user2 = GeneralMember.builder()
-                .username("testUser2")
-                .build();
-        memberRepository.save(user);
-        memberRepository.save(user2);
+        GeneralMember user = generateGeneralMember("USER1");
+        GeneralMember user2 = generateGeneralMember("USER2");
 
-        cartService.createCart(user);
-        cartService.createCart(user2);
+        cartId = cartService.createCart(user);
+        cartId2 = cartService.createCart(user2);
 
-        for (int i = 1; i <= 10; i++) {
-            Item item = new Item();
-            itemRepository.save(item);
+        itemId1= itemRepository.save(new Item()).getId();
+        itemId2 = itemRepository.save(new Item()).getId();
 
-            String username = i % 2 == 0 ? user.getUsername() : user2.getUsername();
-            cartItemService.putCart(username,item.getId(),3);
-        }
+        cartItemService.putCart(user.getUsername(),itemId1,3);
+        cartItemService.putCart(user2.getUsername(),itemId2,4);
     }
+
     @Test
     void findByItemAndUsername() {
         //given
         //when
-        CartItem cartItem = cartItemRepository.findByItemIdAndUsername(2L, "testUser1").orElseThrow();
+        CartItem cartItem = cartItemRepository.findByItemIdAndUsername(itemId1, "USER1").orElseThrow();
         //then
         assertAll(
-                ()->assertThat(cartItem.getItem().getId()).isEqualTo(2L),
-                ()->assertThat(cartItem.getCart().getMember().getUsername()).isEqualTo("testUser1")
+                ()->assertThat(cartItem.getItem().getId()).isEqualTo(itemId1),
+                ()->assertThat(cartItem.getCart().getMember().getUsername()).isEqualTo("USER1")
         );
     }
     @Test
     void deleteCartItemBatch(){
         //given
-        Long cartId=1L;
         //when
         cartItemRepository.deleteCartItemBatch(cartId);
         //then
         List<CartItemResponse> cartList
-                = cartQueryRepository.searchAll("testUser1", PageRequest.of(0, 5))
+                = cartQueryRepository.searchAll("USER1", PageRequest.of(0, 5))
                 .stream().collect(Collectors.toList());
 
         assertThat(cartList).isEmpty();
@@ -95,20 +91,23 @@ class CartItemRepositoryTest {
     @Test
     void deleteCartItem(){
         //given
-        Long cartId=2L;
         //when
-        cartItemRepository.deleteCartItem(cartId,1L);
+        cartItemRepository.deleteCartItem(cartId,itemId1);
         //then
         assertThrows(NoSuchElementException.class,
-                ()->cartItemRepository.findByCartIdAndItemId(cartId,1L).orElseThrow());
-        //when
-        cartItemRepository.deleteCartItem(cartId,3L,5L);
-        //then
-        assertThrows(NoSuchElementException.class,
-                ()->cartItemRepository.findByCartIdAndItemId(cartId,3L).orElseThrow());
-        assertThrows(NoSuchElementException.class,
-                ()->cartItemRepository.findByCartIdAndItemId(cartId,5L).orElseThrow());
+                ()->cartItemRepository.findByCartIdAndItemId(cartId,itemId1).orElseThrow());
+    }
 
+    private GeneralMember generateGeneralMember(String USER1) {
+        GeneralMember user = getGeneralMember(USER1);
+        memberRepository.save(user);
+        return user;
+    }
 
+    private static GeneralMember getGeneralMember(String USER1) {
+        GeneralMember user = GeneralMember.builder()
+                .username(USER1)
+                .build();
+        return user;
     }
 }

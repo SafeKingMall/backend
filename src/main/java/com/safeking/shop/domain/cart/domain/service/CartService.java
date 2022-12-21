@@ -26,9 +26,9 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final ItemRepository itemRepository;
-
-
+    /**
+     * 장바구니는 회원 생성시 생성
+     **/
     public Long createCart(Member member){
         if(cartRepository.findCartByUsername(member.getUsername()).orElse(null) !=null)
             throw new EntityExistsException("이미 장바구니가 존재합니다.");
@@ -38,9 +38,13 @@ public class CartService {
 
         return cart.getId();
     }
-
+    /**
+     * 외래키 제약 조건: 자식 테이블을 삭제하고 부모 테이블을 삭제
+     **/
     public void deleteCart(String username){
-        Cart cart = cartRepository.findCartByUsername(username).orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않습니다."));
+        Cart cart = cartRepository
+                .findCartByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않습니다."));
 
         cartItemRepository.deleteCartItemBatch(cart.getId());
         cartRepository.delete(cart);

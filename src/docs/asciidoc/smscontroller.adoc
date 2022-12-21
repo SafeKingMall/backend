@@ -1,0 +1,28 @@
+= SMS-API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[SMS-API]]
+== SMS API
+
+[[SMS-1]]
+=== 1. 코드 전송
+operation::sendCodeToClient[snippets='http-request,request-fields,http-response,response-body']
+
+[[SMS-2]]
+=== 2. 코드 확인
+|===
+| 설명 | 코드 일치시 status 200
+|===
+operation::checkCode[snippets='http-request,request-fields,http-response,response-body']
+
+[[SMS-3]]
+=== 3. 코드 확인 error
+|===
+| 설명 | 코드 일치시 status 400, error 응답
+|===
+operation::checkCode_error[snippets='http-request,request-fields,http-response,response-fields,response-body']

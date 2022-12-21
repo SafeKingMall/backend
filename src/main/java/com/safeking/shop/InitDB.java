@@ -10,6 +10,7 @@ import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.domain.user.domain.service.RedisService;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -31,8 +32,8 @@ public class InitDB {
         initService.initAdminTestV1();
         initService.initMemberTestV1();
         initService.initItemTestV1();
-        initService.initCacheDB();
         initService.initCategory();
+        initService.clearRedis();
     }
 
     @Component
@@ -43,6 +44,7 @@ public class InitDB {
         private final CustomBCryPasswordEncoder encoder;
         private final MemberRepository memberRepository;
         private final MemberRedisRepository redisRepository;
+        private final RedisService redisService;
         private final CartService cartService;
 
         public void initAdminTestV1(){
@@ -67,7 +69,7 @@ public class InitDB {
             //일반 회원 30명 넣기
             for (int i = 1; i <=30 ; i++) {
                 Member user = GeneralMember.builder()
-                        .name("user")
+                        .name("user"+i)
                         .birth("971202")
                         .username("testUser"+i)
                         .password(encoder.encode("testUser"+i+"*"))
@@ -109,21 +111,19 @@ public class InitDB {
             }
         }
         public void initCategory(){
-            Category category1 = new Category("중대사고예방");
-            Category category2 = new Category("화재사고예방");
-            Category category3 = new Category("누출사고예방");
-            Category category4 = new Category("해양사고예방");
-            Category category5 = new Category("안전사고예방");
+            Category category1 = Category.create("중대사고예방", 1);
+            Category category2 = Category.create("화재사고예방", 2);
+            Category category3 = Category.create("누출사고예방", 3);
+            Category category4 = Category.create("해양사고예방", 4);
+            Category category5 = Category.create("안전사고예방", 5);
             em.persist(category1);
             em.persist(category2);
             em.persist(category3);
             em.persist(category4);
             em.persist(category5);
         }
-
-        public void initCacheDB(){
-            memberRepository.findAll().stream()
-                    .forEach(member -> redisRepository.save(new RedisMember(member.getRoles(),member.getUsername())));
+        public void clearRedis(){
+            redisService.deleteAll();
         }
     }
 

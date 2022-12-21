@@ -6,6 +6,8 @@ import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import com.safeking.shop.domain.item.web.request.ItemRequest;
+import com.safeking.shop.domain.item.web.request.ItemSaveRequest;
+import com.safeking.shop.domain.item.web.request.ItemUpdateRequest;
 import com.safeking.shop.domain.item.web.response.ItemListResponse;
 import com.safeking.shop.domain.item.web.response.ItemResponse;
 import com.safeking.shop.domain.item.web.response.ItemViewResponse;
@@ -17,8 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
@@ -33,18 +37,18 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping("admin/item")
-    public Long save(@RequestBody ItemSaveDto itemSaveDto, HttpServletRequest request){
+    public Long save(@RequestBody ItemSaveRequest itemSaveRequest, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
-        itemSaveDto.setAdminId(username);
-        return itemService.save(itemSaveDto);
+        itemSaveRequest.setAdminId(username);
+        return itemService.save(itemSaveRequest);
     }
 
     @PutMapping("admin/item/{itemId}")
-    public void update(@PathVariable Long itemId, @RequestBody ItemUpdateDto itemUpdateDto, HttpServletRequest request){
+    public void update(@PathVariable Long itemId, @RequestBody ItemUpdateRequest itemUpdateRequest, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
-        itemUpdateDto.setAdminId(username);
-        itemUpdateDto.setId(itemId);
-        itemService.update(itemUpdateDto);
+        itemUpdateRequest.setAdminId(username);
+        itemUpdateRequest.setId(itemId);
+        itemService.update(itemUpdateRequest);
     }
 
     @DeleteMapping("admin/item/{itemId}")
@@ -55,30 +59,25 @@ public class ItemController {
 
     @GetMapping("admin/item/{itemId}")
     public ItemViewResponse itemAdminView(@PathVariable Long itemId){
+        ItemViewDto itemViewDto = itemService.view(itemId);
         ItemViewResponse itemViewResponse;
-        itemViewResponse = new ItemViewResponse(itemService.view(itemId).getId()
-                , itemService.view(itemId).getName()
-                , itemService.view(itemId).getQuantity()
-                , itemService.view(itemId).getDescription()
-                , itemService.view(itemId).getPrice()
-                , itemService.view(itemId).getAdminId()
-                , itemService.view(itemId).getCategories()
-                , itemService.view(itemId).getCategoryName()
-                , itemService.view(itemId).getCreateDate()
-                , itemService.view(itemId).getLastModifiedDate()
+        itemViewResponse = new ItemViewResponse(itemViewDto.getId()
+                , itemViewDto.getName()
+                , itemViewDto.getQuantity()
+                , itemViewDto.getDescription()
+                , itemViewDto.getPrice()
+                , itemViewDto.getAdminId()
+                , itemViewDto.getCategoryName()
+                , itemViewDto.getCreateDate()
+                , itemViewDto.getLastModifiedDate()
+                , itemViewDto.getFileName()
         );
         return itemViewResponse;
     }
 
     @GetMapping("admin/item/list")
     public Page<ItemListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemListResponse> itemLst = itemService.List(pageable).map(m -> ItemListResponse.builder()
-                .id(m.getId())
-                .name(m.getName())
-                .createDate(m.getCreateDate().toString())
-                .lastModifiedDate(m.getLastModifiedDate().toString())
-                .build()
-        );
+        Page<ItemListResponse> itemLst = itemService.List(pageable);
         return itemLst;
     }
 
@@ -92,25 +91,22 @@ public class ItemController {
                 , itemViewDto.getDescription()
                 , ("Y".equals(itemViewDto.getViewYn())?itemViewDto.getPrice():null)
                 , itemViewDto.getAdminId()
-                , itemViewDto.getCategories()
                 , itemViewDto.getCategoryName()
                 , itemViewDto.getCreateDate()
                 , itemViewDto.getLastModifiedDate()
+                , itemViewDto.getFileName()
         );
         return itemViewResponse;
     }
 
     @GetMapping("/item/list")
     public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemListResponse> itemLst = itemService.List(pageable).map(m -> ItemListResponse.builder()
-                .id(m.getId())
-                .name(m.getName())
-                .createDate(m.getCreateDate().toString())
-                .lastModifiedDate(m.getLastModifiedDate().toString())
-                .price(("Y".equals(m.getViewYn())?m.getPrice():null))
-                .build()
-        );
+        Page<ItemListResponse> itemLst = itemService.List(pageable);
         return itemLst;
     }
 
+    @PostMapping("admin/itemPhoto/{itemId}")
+    public void savePhoto(@RequestParam(name = "file") MultipartFile file, @PathVariable Long itemId) throws IOException {
+        itemService.photoUpload(file, itemId);
+    }
 }

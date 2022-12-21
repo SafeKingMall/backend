@@ -7,6 +7,7 @@ public class CategorySaveDto {
 
     private String name;
 
+
     public CategorySaveDto(String name) {
         this.name = name;
     }

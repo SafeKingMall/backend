@@ -25,28 +25,22 @@ public class MemberQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Optional<Member> findMemberById(Long id){
-        return Optional.ofNullable(
-          queryFactory.selectFrom(member)
-                  .where(member.id.eq(id))
-                  .fetchOne()
-        );
-    }
-
     public Page <MemberListDto> searchAllCondition(String name, Pageable pageable){
         List<MemberListDto> result = queryFactory
                 .select(new QMemberListDto(member.id, member.name, member.status.stringValue()))
                 .from(member)
                 .where(usernameEq(name))
-                .orderBy(member.id.asc())
+                .orderBy(member.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetch();
+                .fetch()
+                ;
 
         JPAQuery<Long> CountQuery = queryFactory
                 .select(member.count())
                 .from(member)
-                .where(usernameEq(name));
+                .where(usernameEq(name))
+                ;
 
         return PageableExecutionUtils.getPage(result,pageable,CountQuery::fetchOne);
     }

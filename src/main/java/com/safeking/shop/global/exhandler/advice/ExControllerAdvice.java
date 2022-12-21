@@ -1,6 +1,7 @@
 package com.safeking.shop.global.exhandler.advice;
 
 import com.safeking.shop.global.Error;
+import com.safeking.shop.global.exception.AgreementException;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import com.safeking.shop.global.exception.CacheException;
 import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
@@ -18,37 +19,42 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import static com.safeking.shop.global.exhandler.erroconst.ErrorConst.*;
+
 @Slf4j
 @RestControllerAdvice
 public class ExControllerAdvice {
+    /**
+     * @RestControllerAdvice 와 @ExceptionHandler 로 errorHandler 와 logic 을 분리
+     **/
 
     @ExceptionHandler
     public ResponseEntity<Error> illegalExHandler(IllegalArgumentException e){
         log.error("[illegalExHandler] ex",e);
 
         return ResponseEntity
-                .badRequest().body(new Error(100,e.getMessage()));
+                .badRequest().body(new Error(ILLEGAL_ARGUMENT_EX_CODE,e.getMessage()));
     }
 
     @ExceptionHandler
     public ResponseEntity<Error> refreshTokenNotFoundExHandler(TokenNotFoundException e){
         log.error("[refreshTokenNotFoundExHandler] ex",e);
 
-        return new ResponseEntity<>(new Error(200,e.getMessage()), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new Error(REFRESH_TOKEN_NOT_FOUND_EX_CODE,e.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler
     public ResponseEntity<Error> CacheExceptionExHandler(CacheException e){
         log.error("[EntityNotFoundException] ex",e);
 
-        return new ResponseEntity<>(new Error(201,e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new Error(CACHE_EX_CODE,e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     public ResponseEntity<Error> EntityNotFoundExceptionExHandler(EntityNotFoundException e){
         log.error("[EntityNotFoundException] ex",e);
 
-        return new ResponseEntity<>(new Error(300,e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new Error(ENTITY_NOT_FOUND_EX_CODE,e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -56,9 +62,11 @@ public class ExControllerAdvice {
     public ResponseEntity<Error> EntityExistsExceptionExHandler(EntityExistsException e){
         log.error("[EntityExistsException] ex",e);
 
-        return new ResponseEntity<>(new Error(301,e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Error(ENTITY_EXITS_EX_CODE,e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+    /**
+     * Bean Validation 에서 MethodArgumentNotValidException 을 터뜨림
+     **/
     @ExceptionHandler
     public ResponseEntity<Error> processValidationError(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
@@ -75,7 +83,7 @@ public class ExControllerAdvice {
         }
 
         return new ResponseEntity<>(
-                new Error(400,builder.toString()),HttpStatus.BAD_REQUEST);
+                new Error(PROCESS_VALIDATION_EX_CODE,builder.toString()),HttpStatus.BAD_REQUEST);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -83,7 +91,7 @@ public class ExControllerAdvice {
     public Error exHandler(Exception e){
         log.error("[exceptionHandler] ex",e);
 
-        return new Error(999,e.getMessage());
+        return new Error(EX_CODE,e.getMessage());
     }
 
     @ExceptionHandler
@@ -91,14 +99,20 @@ public class ExControllerAdvice {
         log.error("[usernameNotFoundExHandler] ex",e);
 
         return new ResponseEntity<>(
-                new Error(1100,e.getMessage()),HttpStatus.NOT_FOUND);
+                new Error(USERNAME_NOT_FOUND_EX_CODE,e.getMessage()),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<Error> MemberNotFoundExceptionExHandler(MemberNotFoundException e){
         log.error("[MemberNotFoundExceptionExHandler] ex",e);
 
-        return new ResponseEntity<>(new Error(1200,e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new Error(MEMBER_NOT_FOUND_EX_CODE,e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler
+    public ResponseEntity<Error> AgreementExceptionExHandler(AgreementException e){
+        log.error("[AgreementExceptionExHandler] ex",e);
+
+        return new ResponseEntity<>(new Error(AGREEMENT_EX_CODE,e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 }

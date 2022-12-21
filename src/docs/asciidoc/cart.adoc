@@ -1,0 +1,26 @@
+= Cart-API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Cart-API]]
+== Cart API
+
+[[CART-1]]
+=== 1. 장바구니 담기
+operation::putCart[snippets='http-request,request-headers,request-fields,http-response']
+
+[[CART-2]]
+=== 2. 장바구니 아이템 수정
+operation::updateCartItem[snippets='http-request,request-headers,request-fields,http-response']
+
+[[CART-3]]
+=== 3. 장바구니 아이템 삭제
+operation::deleteCartItem[snippets='http-request,request-headers,request-parameters,http-response']
+
+[[CART-4]]
+=== 4. 장바구니 조회
+operation::showCartList[snippets='http-request,request-headers,request-parameters,http-response,response-fields,response-body']

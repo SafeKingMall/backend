@@ -29,8 +29,6 @@ public class ItemSaveDto {
 
     private int price;
 
-//    private List <CategoryDto> categories;
-
-    private List<Long> categories;
+    private Category category;
 
 }

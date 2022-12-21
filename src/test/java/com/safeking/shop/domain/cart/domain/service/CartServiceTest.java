@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Commit
 class CartServiceTest {
 
     @Autowired
@@ -37,12 +36,10 @@ class CartServiceTest {
     @Autowired
     CartItemService cartItemService;
     @Test
-    @Order(1)
+    @DisplayName("장바구니 생성")
     void createCart() {
         //given
-        GeneralMember user = GeneralMember.builder()
-                .username("testUser1")
-                .build();
+        GeneralMember user = getGeneralMember();
         GeneralMember generalMember = memberRepository.save(user);
         //when
         Long cartId = cartService.createCart(user);
@@ -51,20 +48,32 @@ class CartServiceTest {
         assertThat(cart.getMember().getId()).isEqualTo(generalMember.getId());
     }
 
+
+
     @Test
-    @Order(2)
+    @DisplayName("장바구니 삭제")
     void deleteCart() {
         //given
+        GeneralMember user = getGeneralMember();
+        GeneralMember generalMember = memberRepository.save(user);
+
+        cartService.createCart(generalMember);
+
         Item item = new Item();
         itemRepository.save(item);
 
-        String username="testUser1";
-
-        cartItemService.putCart(username,1L,3);
+        cartItemService.putCart(generalMember.getUsername(),item.getId(),3);
         //when
-        cartService.deleteCart(username);
+        cartService.deleteCart(generalMember.getUsername());
         //then
         assertThrows(NoSuchElementException.class,
-                ()->cartRepository.findCartByUsername(username).orElseThrow());
+                ()->cartRepository.findCartByUsername(generalMember.getUsername()).orElseThrow());
+    }
+
+    private static GeneralMember getGeneralMember() {
+        GeneralMember user = GeneralMember.builder()
+                .username("TestUser1")
+                .build();
+        return user;
     }
 }

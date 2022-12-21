@@ -57,52 +57,47 @@ class MemberTest {
         //then
         assertThat(checkedItem).isEqualTo(true);
     }
-    @Test
-    void convertHumanAccount() throws InterruptedException {
-        //given
-        Member user = GeneralMember.builder()
-                .name("user")
-                .birth("971202")
-                .username("testUser")
-                .password(encoder.encode("testUser*"))
-                .email("kms199719@naver.com")
-                .roles("ROLE_USER")
-                .phoneNumber("01082460887")
-                .companyName("safeking")
-                .companyRegistrationNumber("111")
-                .corporateRegistrationNumber("222")
-                .representativeName("MS")
-                .address(new Address("서울시","마포대로","111"))
-                .agreement(true)
-                .accountNonLocked(true)
-                .status(MemberStatus.COMMON)
-                .build();
-        user.addLastLoginTime();
-
-        //when
-        Thread.sleep(1000*Member.MEMBER_HUMAN_TIME);
-        user.convertHumanAccount();
-        //then
-        assertAll(
-                ()->assertThat(user.getStatus()).isEqualTo(MemberStatus.HUMAN),
-                ()->assertThat(user.getAccountNonLocked()).isEqualTo(false),
-
-                ()->assertThat(user.getName()).isEqualTo(null),
-                ()->assertThat(user.getBirth()).isEqualTo(null),
-                ()->assertThat(user.getEmail()).isEqualTo(null),
-                ()->assertThat(user.getPhoneNumber()).isEqualTo(null),
-                ()->assertThat(user.getCompanyName()).isEqualTo(null),
-                ()->assertThat(user.getRepresentativeName()).isEqualTo(null),
-                ()->assertThat(user.getCompanyRegistrationNumber()).isEqualTo(null),
-                ()->assertThat(user.getCorporateRegistrationNumber()).isEqualTo(null),
-                ()->assertThat(user.getAddress()).isEqualTo(null),
-                ()->assertThat(user.getContact()).isEqualTo(null),
-                ()->assertThat(user.getAgreement()).isEqualTo(null)
-        );
-
-
-
-
-
-    }
+//    @Test
+//    void convertHumanAccount() throws InterruptedException {
+//        //given
+//        Member user = GeneralMember.builder()
+//                .name("user")
+//                .birth("971202")
+//                .username("testUser")
+//                .password(encoder.encode("testUser*"))
+//                .email("kms199719@naver.com")
+//                .roles("ROLE_USER")
+//                .phoneNumber("01082460887")
+//                .companyName("safeking")
+//                .companyRegistrationNumber("111")
+//                .corporateRegistrationNumber("222")
+//                .representativeName("MS")
+//                .address(new Address("서울시","마포대로","111"))
+//                .agreement(true)
+//                .accountNonLocked(true)
+//                .status(MemberStatus.COMMON)
+//                .build();
+//        user.addLastLoginTime();
+//
+//        //when
+//        Thread.sleep(1000*Member.MEMBER_HUMAN_TIME);
+//        user.convertHumanAccount();
+//        //then
+//        assertAll(
+//                ()->assertThat(user.getStatus()).isEqualTo(MemberStatus.HUMAN),
+//                ()->assertThat(user.getAccountNonLocked()).isEqualTo(false),
+//
+//                ()->assertThat(user.getName()).isEqualTo(null),
+//                ()->assertThat(user.getBirth()).isEqualTo(null),
+//                ()->assertThat(user.getEmail()).isEqualTo(null),
+//                ()->assertThat(user.getPhoneNumber()).isEqualTo(null),
+//                ()->assertThat(user.getCompanyName()).isEqualTo(null),
+//                ()->assertThat(user.getRepresentativeName()).isEqualTo(null),
+//                ()->assertThat(user.getCompanyRegistrationNumber()).isEqualTo(null),
+//                ()->assertThat(user.getCorporateRegistrationNumber()).isEqualTo(null),
+//                ()->assertThat(user.getAddress()).isEqualTo(null),
+//                ()->assertThat(user.getContact()).isEqualTo(null),
+//                ()->assertThat(user.getAgreement()).isEqualTo(null)
+//        );
+//    }
 }

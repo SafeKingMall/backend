@@ -1,10 +1,3 @@
 spring:
   profiles:
-    active: local
-    group:
-      local:
-        - oauth
-      dev:
-        - oauth
-      prod:
-        - oauth
+    active: dev

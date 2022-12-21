@@ -14,6 +14,9 @@ import java.util.Date;
 @Slf4j
 @Component
 public class TokenUtils {
+    /**
+     * 토큰과 관련된 로직을 모아 Utils 생성
+     **/
     public static final String AUTH_HEADER = "Authorization";
     public static final String REFRESH_HEADER = "refresh-token";
     public static final String BEARER = "Bearer ";
@@ -69,7 +72,7 @@ public class TokenUtils {
             case refresh:
                 return new Date(System.currentTimeMillis() + (60000 * 10));
             case access:
-                return new Date(System.currentTimeMillis() + (60000 * 100));
+                return new Date(System.currentTimeMillis() + (60000 * 60));
         }
         return null;
     }

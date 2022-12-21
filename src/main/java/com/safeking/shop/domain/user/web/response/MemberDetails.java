@@ -2,9 +2,13 @@ package com.safeking.shop.domain.user.web.response;
 
 
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class MemberDetails {
 
     private String name;
@@ -18,9 +22,9 @@ public class MemberDetails {
     private String companyRegistrationNumber;
     private String corporateRegistrationNumber;
 
-    private String zipcode;
     private String basicAddress;
     private String detailedAddress;
+    private String zipcode;
 
     public MemberDetails(Member member) {
         this.name = member.getName();

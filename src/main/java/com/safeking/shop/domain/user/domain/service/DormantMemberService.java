@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -58,7 +60,10 @@ public class DormantMemberService {
         );
         return dormant.getId();
     }
-
+    /**
+     * 휴면계정 복구 정보가 다 들어올 시에만 휴면계정 복구
+     * member field 의 accountNonLocked 가 false -> true
+     **/
     public Long revertCommonAccounts(Long id, Boolean agreement){
 
         try{
@@ -70,7 +75,6 @@ public class DormantMemberService {
             //휴먼의 개인 정보수집, 휴먼 계정에서 일반 계정으로 변환
             dormant.addAgreement(true);
             dormant.revertCommonAccounts();
-
             //필요한 게 다 있는지 check하는 로직
             if(!dormant.isCheckedItem())throw new IllegalArgumentException("필수 항목들을 모두 기입해주세요");
 

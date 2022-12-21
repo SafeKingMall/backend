@@ -15,8 +15,9 @@ public class ItemViewResponse {
     private String description;
     private Integer price;
     private String adminId;
-    private List<Long> categories;
     private String categoryName;
     private String createDate;
     private String lastModifiedDate;
+
+    private String fileName;
 }
