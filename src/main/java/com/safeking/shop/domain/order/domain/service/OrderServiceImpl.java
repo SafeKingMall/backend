@@ -92,9 +92,13 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Page<Order> searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
-        return orderRepository.findOrders(pageable, condition, memberId);
-    }
+        Page<Order> findOrdersPage = orderRepository.findOrders(pageable, condition, memberId);
+        if(findOrdersPage.isEmpty()) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL);
+        }
 
+        return findOrdersPage;
+    }
     /**
      * 주문 취소
      */
