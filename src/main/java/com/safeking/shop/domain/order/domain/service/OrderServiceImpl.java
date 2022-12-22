@@ -5,7 +5,7 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
-import com.safeking.shop.domain.order.domain.entity.Payment;
+import com.safeking.shop.domain.payment.domain.entity.SafeKingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoDeliveryRequest;
@@ -17,12 +17,17 @@ import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,11 +46,12 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 주문
+     * 주문은 결제가 완료되어야 진행함
      */
     @Override
     public Long order(Member member, OrderRequest orderRequest) {
 
-        //상품 조회
+        // 상품 조회
         List<Item> items = orderServiceSubMethod.findItems(orderRequest.getOrderItemRequests());
 
         // 배송 정보 생성 및 저장
@@ -54,12 +60,12 @@ public class OrderServiceImpl implements OrderService {
         // 주문상품 생성 및 저장
         List<OrderItem> orderItems = orderServiceSubMethod.createOrderItems(orderRequest, items);
 
-        // 결제 -> 임시
-        Payment payment = orderServiceSubMethod.createPayment(orderItems, UUID.randomUUID().toString(), "카드");
+        // 결제 내역 저장
+        SafeKingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems, UUID.randomUUID().toString(), "카드");
 
         // 주문 생성
         Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), orderItems);
-        order.changePayment(payment);
+        order.changePayment(safeKingPayment);
         orderRepository.save(order);
 
         return order.getId();
@@ -161,7 +167,7 @@ public class OrderServiceImpl implements OrderService {
 
         //결제정보 수정
         AdminModifyInfoPaymentRequest paymentRequest = modifyInfoRequest.getOrder().getPayment();
-        findOrder.getPayment().changePaymentStatusByAdmin(paymentRequest.getStatus());
+        findOrder.getSafeKingPayment().changePaymentStatusByAdmin(paymentRequest.getStatus());
 
         //주문정보 수정
         findOrder.changeAdminMemoByAdmin(modifyInfoRequest.getOrder().getAdminMemo());

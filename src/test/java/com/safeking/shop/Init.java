@@ -19,27 +19,27 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
-@Component
-@Profile("test")
-@RequiredArgsConstructor
-public class Init {
-
-    private final InitService initService;
-
-    @PostConstruct
-    public void init(){
-        initService.clearRedis();
-    }
-
-    @Component
-    @Transactional
-    @RequiredArgsConstructor
-    static class InitService{
-        private final RedisService redisService;
-
-        public void clearRedis(){
-            redisService.deleteAll();
-        }
-    }
-
-}
+//@Component
+//@Profile("test")
+//@RequiredArgsConstructor
+//public class Init {
+//
+//    private final InitService initService;
+//
+//    @PostConstruct
+//    public void init(){
+//        initService.clearRedis();
+//    }
+//
+//    @Component
+//    @Transactional
+//    @RequiredArgsConstructor
+//    static class InitService{
+//        private final RedisService redisService;
+//
+//        public void clearRedis(){
+//            redisService.deleteAll();
+//        }
+//    }
+//
+//}

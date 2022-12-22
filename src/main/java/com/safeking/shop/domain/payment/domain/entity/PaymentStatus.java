@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.domain.entity.status;
+package com.safeking.shop.domain.payment.domain.entity;
 
 
 public enum PaymentStatus {
@@ -6,6 +6,7 @@ public enum PaymentStatus {
     COMPLETE("COMPLETE"),
     CANCELING("CANCELING"),
     CANCEL("CANCEL"),
+    READY("READY")
 
     ;
 

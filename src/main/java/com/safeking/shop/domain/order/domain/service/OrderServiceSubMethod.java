@@ -5,11 +5,11 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
-import com.safeking.shop.domain.order.domain.entity.Payment;
+import com.safeking.shop.domain.payment.domain.entity.SafeKingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
-import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
+import com.safeking.shop.domain.payment.domain.repository.PaymentRepository;
 import com.safeking.shop.domain.order.constant.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderItemRequest;
@@ -95,10 +95,10 @@ public class OrderServiceSubMethod {
     /**
      * 결제
      */
-    public Payment createPayment(List<OrderItem> orderItems, String number, String means) {
-        Payment payment = Payment.createPayment(orderItems, number, means);
-        paymentRepository.save(payment);
+    public SafeKingPayment createPayment(List<OrderItem> orderItems, String number, String means) {
+        SafeKingPayment safeKingPayment = SafeKingPayment.createPayment(orderItems, number, means);
+        paymentRepository.save(safeKingPayment);
 
-        return payment;
+        return safeKingPayment;
     }
 }

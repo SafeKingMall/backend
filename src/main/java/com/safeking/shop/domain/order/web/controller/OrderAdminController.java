@@ -79,17 +79,17 @@ public class OrderAdminController {
          * 추후, 결제 API에서 데이터 수집해야함.
          */
         AdminOrderDetailPaymentResponse payment = AdminOrderDetailPaymentResponse.builder()
-                .status(findOrderDetail.getPayment().getStatus().getDescription())
-                .company(findOrderDetail.getPayment().getCompany())
-                .means(findOrderDetail.getPayment().getMeans())
-                .businessNumber(findOrderDetail.getPayment().getBusinessNumber())
-                .price(findOrderDetail.getPayment().getPrice())
+                .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
+                .company(findOrderDetail.getSafeKingPayment().getCompany())
+                .means(findOrderDetail.getSafeKingPayment().getPayMethod())
+                .businessNumber(findOrderDetail.getSafeKingPayment().getBusinessNumber())
+                .price(findOrderDetail.getSafeKingPayment().getAmount())
                 .build();
 
         AdminOrderDetailOrderResponse order = AdminOrderDetailOrderResponse.builder()
                 .id(findOrderDetail.getId())
                 .status(findOrderDetail.getStatus().getDescription())
-                .price(findOrderDetail.getPayment().getPrice())
+                .price(findOrderDetail.getSafeKingPayment().getAmount())
                 .memo(findOrderDetail.getMemo())
                 .date(findOrderDetail.getCreateDate())
                 .adminMemo(findOrderDetail.getAdminMemo())
@@ -152,7 +152,7 @@ public class OrderAdminController {
                     .build();
 
             AdminOrderListPaymentResponse payment = AdminOrderListPaymentResponse.builder()
-                    .status(o.getPayment().getStatus().getDescription())
+                    .status(o.getSafeKingPayment().getStatus().getDescription())
                     .build();
 
             AdminOrderListMemberResponse member = AdminOrderListMemberResponse.builder()
@@ -167,7 +167,7 @@ public class OrderAdminController {
             AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
                     .id(o.getId())
                     .status(o.getStatus().getDescription())
-                    .price(o.getPayment().getPrice())
+                    .price(o.getSafeKingPayment().getAmount())
                     .date(o.getCreateDate())
                     .orderItemCount(o.getOrderItems().size())
                     .orderItem(orderItem)

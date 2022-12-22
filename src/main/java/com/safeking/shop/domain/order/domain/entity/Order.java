@@ -5,6 +5,7 @@ import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.constant.OrderConst;
+import com.safeking.shop.domain.payment.domain.entity.SafeKingPayment;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,7 +50,7 @@ public class Order extends BaseTimeEntity {
 
     @OneToOne
     @JoinColumn(name = "payment_id")
-    private Payment payment;
+    private SafeKingPayment safeKingPayment;
 
     public static Order createOrder(Member member, Delivery delivery, String memo, List<OrderItem> orderItems) {
         Order order = new Order();
@@ -92,8 +93,8 @@ public class Order extends BaseTimeEntity {
         this.memo = memo;
     }
 
-    public void changePayment(Payment payment) {
-        this.payment = payment;
+    public void changePayment(SafeKingPayment safeKingPayment) {
+        this.safeKingPayment = safeKingPayment;
     }
 
     public void changeAdminMemoByAdmin(String adminMemo) {
