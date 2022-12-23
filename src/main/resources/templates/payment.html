@@ -4,10 +4,10 @@
   <!-- jQuery -->
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
   <!-- iamport.safeKingPayment.js -->
-  <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.safeKingPayment-1.2.0.js"></script>
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
   <script>
     var IMP = window.IMP;
-    IMP.init("imp67011510");
+    IMP.init("imp28306430");
 
     var today = new Date();
     var hours = today.getHours(); // 시
@@ -21,7 +21,7 @@
       IMP.request_pay({
         pg : 'html5_inicis.INIpayTest',
         pay_method : 'card',
-        merchant_uid: "IMP"+makeMerchantUid,
+        merchant_uid: "IMP"+7777,
         name : '안전모 결제 테스트',
         amount : 100,
         buyer_email : 'Iamport@chai.finance',

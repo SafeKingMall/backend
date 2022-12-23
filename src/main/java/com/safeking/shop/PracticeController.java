@@ -27,4 +27,9 @@ public class PracticeController {
         return "jwt";
     }
 
+    @GetMapping("/payment")
+    public String pay() {
+        return "payment";
+    }
+
 }
