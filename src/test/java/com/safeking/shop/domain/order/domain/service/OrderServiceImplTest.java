@@ -8,7 +8,7 @@
 //import com.safeking.shop.domain.order.domain.entity.Delivery;
 //import com.safeking.shop.domain.order.domain.entity.Order;
 //import com.safeking.shop.domain.order.domain.entity.OrderItem;
-//import com.safeking.shop.domain.payment.domain.entity.SafeKingPayment;
+//import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 //import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 //import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 //import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
@@ -437,7 +437,7 @@
 //                orderRequest.getDeliveryMemo());
 //        deliveryRepository.save(delivery);
 //
-//        SafeKingPayment payment = SafeKingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+//        SafekingPayment payment = SafekingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
 //        paymentRepository.save(payment);
 //
 //        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
@@ -518,7 +518,7 @@
 //                orderRequest.getDeliveryMemo());
 //        deliveryRepository.save(delivery);
 //
-//        SafeKingPayment payment = SafeKingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+//        SafekingPayment payment = SafekingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
 //        paymentRepository.save(payment);
 //
 //        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
@@ -593,8 +593,8 @@
 //                orderRequest.getDeliveryMemo());
 //        Delivery saveDelivery = deliveryRepository.save(delivery);
 //
-//        SafeKingPayment payment = SafeKingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
-//        SafeKingPayment savePayment = paymentRepository.save(payment);
+//        SafekingPayment payment = SafekingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+//        SafekingPayment savePayment = paymentRepository.save(payment);
 //
 //        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
 //        Order orderSave = orderRepository.save(order);
@@ -622,7 +622,7 @@
 //        //when
 //        Long updateOrderId = orderService.modifyOrderByAdmin(request, orderSave.getId());
 //        Optional<Delivery> findDeliveryOptional = deliveryRepository.findById(saveDelivery.getId());
-//        Optional<SafeKingPayment> findPaymentOptional = paymentRepository.findById(savePayment.getId());
+//        Optional<SafekingPayment> findPaymentOptional = paymentRepository.findById(savePayment.getId());
 //
 //        //then
 //        assertThat(orderSave.getId()).isEqualTo(updateOrderId);

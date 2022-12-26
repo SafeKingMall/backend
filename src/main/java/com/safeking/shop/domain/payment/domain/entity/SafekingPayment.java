@@ -14,9 +14,9 @@ import static com.safeking.shop.domain.order.constant.OrderConst.deliveryCost;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SafeKingPayment extends BaseTimeEntity {
+public class SafekingPayment extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id")
+    @Column(name = "safeking_payment_id")
     private Long id;
     private String pg; // pg사
     private String merchantUid; //주문 번호
@@ -33,9 +33,9 @@ public class SafeKingPayment extends BaseTimeEntity {
     private String company;
     private String businessNumber;
 
-    public static SafeKingPayment createPayment(List<OrderItem> orderItems, String number, String means) {
+    public static SafekingPayment createPayment(List<OrderItem> orderItems, String number, String means) {
 
-        SafeKingPayment safeKingPayment = new SafeKingPayment();
+        SafekingPayment safeKingPayment = new SafekingPayment();
         int totalItemsPrice = safeKingPayment.sumTotalItemsPrice(orderItems); //총 상품 가격
         int totalPaymentPrice = safeKingPayment.sumTotalPaymentPrice(totalItemsPrice); //총 결제 가격
 

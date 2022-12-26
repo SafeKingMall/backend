@@ -5,7 +5,7 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
-import com.safeking.shop.domain.payment.domain.entity.SafeKingPayment;
+import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
@@ -95,8 +95,8 @@ public class OrderServiceSubMethod {
     /**
      * 결제
      */
-    public SafeKingPayment createPayment(List<OrderItem> orderItems, String number, String means) {
-        SafeKingPayment safeKingPayment = SafeKingPayment.createPayment(orderItems, number, means);
+    public SafekingPayment createPayment(List<OrderItem> orderItems, String number, String means) {
+        SafekingPayment safeKingPayment = SafekingPayment.createPayment(orderItems, number, means);
         paymentRepository.save(safeKingPayment);
 
         return safeKingPayment;

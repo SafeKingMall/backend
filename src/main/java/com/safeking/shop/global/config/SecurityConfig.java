@@ -33,6 +33,13 @@ public class SecurityConfig{
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+
+        //테스트
+        httpSecurity
+                .authorizeRequests()
+                .antMatchers("/api/v1/test/**", "/payment")
+                .permitAll();
+
         httpSecurity.csrf().disable().cors();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
