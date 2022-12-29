@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static com.safeking.shop.domain.order.constant.OrderConst.deliveryCost;
+import static com.safeking.shop.domain.order.constant.OrderConst.DeliveryCost;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -50,7 +50,7 @@ public class Delivery extends BaseTimeEntity {
         this.status = status;
         this.memo = memo;
         this.shippingStartDate = shippingStartDate;
-        this.cost = deliveryCost;
+        this.cost = DeliveryCost;
     }
 
     public void changeDeliveryStatus(DeliveryStatus status) {

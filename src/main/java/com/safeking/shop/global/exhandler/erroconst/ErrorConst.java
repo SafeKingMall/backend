@@ -21,4 +21,6 @@ public class ErrorConst {
     public static int JWT_EX_CODE=815;
     public static int LOGIN_LOCK_EX_CODE=1401;
     public static int LOGIN_EX_CODE=1400;
+
+    public static final int PAYMENT_EX_CODE = 4000;
 }

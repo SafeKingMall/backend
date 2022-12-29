@@ -55,12 +55,11 @@ public class OrderServiceImpl implements OrderService {
         // 주문상품 생성 및 저장
         List<OrderItem> orderItems = orderServiceSubMethod.createOrderItems(orderRequest, items);
 
-        // 결제 내역 저장
+        // 결제 내역 임시 저장(실제 결제가 발생했을때 결제 완료로 변경)
         SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems, UUID.randomUUID().toString(), "카드");
 
         // 주문 생성
-        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), orderItems);
-        order.changePayment(safeKingPayment);
+        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), safeKingPayment, orderItems);
         orderRepository.save(order);
 
         return order.getId();
@@ -105,14 +104,11 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void cancel(CancelRequest cancelRequest) {
-
         cancelRequest.getOrders()
-                .stream()
-                .map(CancelOrderRequest::getId)
-                .forEach((id) -> {
-                    Optional<Order> findOrder = orderRepository.findById(id);
+                .forEach(cancelOrderRequest -> {
+                    Optional<Order> findOrder = orderRepository.findById(cancelOrderRequest.getId());
                     Order order = findOrder.orElseThrow(() -> new OrderException(ORDER_NONE));
-                    order.cancel();
+                    order.cancel(cancelOrderRequest.getCancelReason());
                 });
     }
 

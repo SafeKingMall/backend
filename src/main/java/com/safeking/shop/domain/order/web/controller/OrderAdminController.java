@@ -80,9 +80,8 @@ public class OrderAdminController {
          */
         AdminOrderDetailPaymentResponse payment = AdminOrderDetailPaymentResponse.builder()
                 .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
-                .company(findOrderDetail.getSafeKingPayment().getCompany())
+                .company(findOrderDetail.getSafeKingPayment().getCardCode())
                 .means(findOrderDetail.getSafeKingPayment().getPayMethod())
-                .businessNumber(findOrderDetail.getSafeKingPayment().getBusinessNumber())
                 .price(findOrderDetail.getSafeKingPayment().getAmount())
                 .build();
 

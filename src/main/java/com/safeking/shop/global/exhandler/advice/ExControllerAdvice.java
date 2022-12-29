@@ -8,6 +8,7 @@ import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -113,6 +114,18 @@ public class ExControllerAdvice {
         log.error("[AgreementExceptionExHandler] ex",e);
 
         return new ResponseEntity<>(new Error(AGREEMENT_EX_CODE,e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * 클라이언트 요청 값 검증시(@Valid)
+     * 500 -> 400 에러로 변경
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Error> httpMessageNoReadableExHandler(HttpMessageNotReadableException e) {
+
+        log.error("[HttpMessageNotReadableException] ", e);
+
+        return new ResponseEntity<>(new Error(ILLEGAL_ARGUMENT_EX_CODE, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 }

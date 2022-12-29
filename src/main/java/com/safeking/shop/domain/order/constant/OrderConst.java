@@ -1,7 +1,7 @@
 package com.safeking.shop.domain.order.constant;
 
 public class OrderConst {
-    public static final Integer deliveryCost = 2500;
+    public static final Integer DeliveryCost = 2500;
     public static final String BLANK = "";
     public static final String ORDER_ITEM_NONE = "해당 상품에 대한 정보가 없습니다.";
     public static final String ORDER_MEMBER_NONE = "회원이 없습니다.";

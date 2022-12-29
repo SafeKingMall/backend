@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class PaymentSuccessResponse {
+public class PaymentCallbackResponse {
     private String payMethod; //결제 수단
     private String merchantUid; //주문 번호
     private String name; // 상품명
@@ -16,7 +16,7 @@ public class PaymentSuccessResponse {
     private String buyerPostcode; // 구매자 우편번호
 
     @Builder
-    public PaymentSuccessResponse(String payMethod, String merchantUid, String name, Integer amount, String buyerEmail, String buyerName, String buyerTel, String buyerAddr, String buyerPostcode) {
+    public PaymentCallbackResponse(String payMethod, String merchantUid, String name, Integer amount, String buyerEmail, String buyerName, String buyerTel, String buyerAddr, String buyerPostcode) {
         this.payMethod = payMethod;
         this.merchantUid = merchantUid;
         this.name = name;

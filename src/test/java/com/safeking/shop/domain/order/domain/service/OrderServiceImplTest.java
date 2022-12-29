@@ -13,7 +13,7 @@
 //import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 //import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 //import com.safeking.shop.domain.order.domain.repository.OrderRepository;
-//import com.safeking.shop.domain.payment.domain.repository.PaymentRepository;
+//import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
 //import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoDeliveryRequest;
 //import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoOrderRequest;
 //import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoPaymentRequest;
@@ -69,7 +69,7 @@
 //    @Autowired
 //    AdminRepository adminRepository;
 //    @Autowired
-//    PaymentRepository paymentRepository;
+//    SafekingPaymentRepository paymentRepository;
 //
 //    @Test
 //    @Transactional

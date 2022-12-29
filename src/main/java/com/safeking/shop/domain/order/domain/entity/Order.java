@@ -52,18 +52,24 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "payment_id")
     private SafekingPayment safeKingPayment;
 
-    public static Order createOrder(Member member, Delivery delivery, String memo, List<OrderItem> orderItems) {
+    private String merchantUid; // 가맹점에서 전달한 고유 번호
+    @Lob
+    private String cancelReason; // 주문 취소 사유
+
+    public static Order createOrder(Member member, Delivery delivery, String memo, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
         Order order = new Order();
-        order.changeOrder(member, delivery, memo, orderItems);
+        order.changeOrder(member, delivery, memo, safeKingPayment, orderItems);
 
         return order;
     }
 
-    public void changeOrder(Member member, Delivery delivery, String memo, List<OrderItem> orderItems) {
+    public void changeOrder(Member member, Delivery delivery, String memo, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
         this.member = member;
         this.delivery = delivery;
         this.status = OrderStatus.COMPLETE;
         this.memo = memo;
+        this.safeKingPayment = safeKingPayment;
+
         for(OrderItem orderItem : orderItems) {
             changeOrderItem(orderItem);
         }
@@ -77,13 +83,14 @@ public class Order extends BaseTimeEntity {
     /**
      * 주문 취소
      */
-    public void cancel() {
+    public void cancel(String cancelReason) {
         if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)
                 || delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
             throw new OrderException(OrderConst.ORDER_CANCEL_DELIVERY_DONE);
         }
 
         this.status = OrderStatus.CANCEL;
+        this.cancelReason = cancelReason;
 
         //주문상품을 취소
         orderItems.forEach(OrderItem::cancel);
@@ -93,7 +100,7 @@ public class Order extends BaseTimeEntity {
         this.memo = memo;
     }
 
-    public void changePayment(SafekingPayment safeKingPayment) {
+    public void changeSafekingPayment(SafekingPayment safeKingPayment) {
         this.safeKingPayment = safeKingPayment;
     }
 

@@ -6,12 +6,6 @@ import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PaymentResponse<T> {
-    private String message;
-    private T response;
-
-    public PaymentResponse(String message, T response) {
-        this.message = message;
-        this.response = response;
-    }
+public class PaymentWebhookResponse {
+    int code;
 }

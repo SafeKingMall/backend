@@ -2,6 +2,7 @@ package com.safeking.shop.domain.order.web.exception;
 
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.global.Error;
+import com.siot.IamportRestClient.exception.IamportResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -21,7 +22,7 @@ public class OrderExceptionController {
     @ExceptionHandler(OrderException.class)
     public ResponseEntity<Error> orderExHandler(OrderException e) {
 
-        log.error("[OrderException] ex", e);
+        log.error("[OrderException] ", e);
 
         Error error = new Error(extractedErrorCode(e), e.getMessage());
 
@@ -49,7 +50,7 @@ public class OrderExceptionController {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<Error> methodNotAllowedExHandler(HttpRequestMethodNotSupportedException e) {
 
-        log.error("[HttpRequestMethodNotSupportedException] ex", e);
+        log.error("[HttpRequestMethodNotSupportedException] ", e);
 
         Error error = new Error(1, e.getMessage());
 
