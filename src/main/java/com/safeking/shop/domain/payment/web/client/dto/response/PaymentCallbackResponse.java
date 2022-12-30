@@ -1,9 +1,12 @@
 package com.safeking.shop.domain.payment.web.client.dto.response;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PaymentCallbackResponse {
     private String payMethod; //결제 수단
     private String merchantUid; //주문 번호

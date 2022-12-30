@@ -95,8 +95,8 @@ public class OrderServiceSubMethod {
     /**
      * 결제
      */
-    public SafekingPayment createPayment(List<OrderItem> orderItems, String number, String means) {
-        SafekingPayment safeKingPayment = SafekingPayment.createPayment(orderItems, number, means);
+    public SafekingPayment createPayment(List<OrderItem> orderItems) {
+        SafekingPayment safeKingPayment = SafekingPayment.createPayment(orderItems);
         safekingPaymentRepository.save(safeKingPayment);
 
         return safeKingPayment;

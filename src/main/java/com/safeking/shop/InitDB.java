@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 @Component
-@Profile("local")
+@Profile("test")
 @RequiredArgsConstructor
 public class InitDB {
 

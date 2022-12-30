@@ -107,4 +107,8 @@ public class Order extends BaseTimeEntity {
     public void changeAdminMemoByAdmin(String adminMemo) {
         this.adminMemo = adminMemo;
     }
+
+    public void changeMerchantUid(String merchantUid) {
+        this.merchantUid = merchantUid;
+    }
 }

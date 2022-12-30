@@ -4,6 +4,9 @@ import com.siot.IamportRestClient.IamportClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 아임포트 라이브러리 빈 등록
+ */
 @Configuration
 public class IamportConfig {
     private final String apiKey = "8177680216511350";

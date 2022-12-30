@@ -37,7 +37,7 @@ public class SecurityConfig{
         //테스트
         httpSecurity
                 .authorizeRequests()
-                .antMatchers("/api/v1/test/**")
+                .antMatchers("/**")
                 .permitAll();
 
         httpSecurity.csrf().disable().cors();

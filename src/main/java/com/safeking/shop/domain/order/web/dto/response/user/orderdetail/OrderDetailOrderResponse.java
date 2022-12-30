@@ -1,5 +1,7 @@
 package com.safeking.shop.domain.order.web.dto.response.user.orderdetail;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderDetailOrderResponse {
     private Long id;
     private String status;

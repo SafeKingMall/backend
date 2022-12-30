@@ -56,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItems = orderServiceSubMethod.createOrderItems(orderRequest, items);
 
         // 결제 내역 임시 저장(실제 결제가 발생했을때 결제 완료로 변경)
-        SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems, UUID.randomUUID().toString(), "카드");
+        SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems);
 
         // 주문 생성
         Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), safeKingPayment, orderItems);

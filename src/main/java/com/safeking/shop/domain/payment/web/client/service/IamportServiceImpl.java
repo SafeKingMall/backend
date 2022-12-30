@@ -4,10 +4,9 @@ import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.exception.PaymentException;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
-import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
-import com.safeking.shop.domain.payment.web.client.dto.request.PaymentRequest;
+import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCallbackRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentWebhookRequest;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCallbackResponse;
@@ -26,7 +25,6 @@ import java.util.Optional;
 import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.*;
 import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.*;
-import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.PAID;
 
 @Slf4j
 @Service
@@ -40,7 +38,7 @@ public class IamportServiceImpl implements IamportService {
      * 결제(콜백 방식)
      */
     @Override
-    public PaymentResponse<PaymentCallbackResponse> paymentByCallback(PaymentRequest request) {
+    public PaymentResponse<PaymentCallbackResponse> paymentByCallback(PaymentCallbackRequest request) {
 
         // 결제 성공 여부
         if(!request.getSuccess()) {
@@ -55,8 +53,7 @@ public class IamportServiceImpl implements IamportService {
             Payment response = iamportResponse.getResponse();
 
             // DB에서 결제 내역 조회
-            Optional<SafekingPayment> safekingPaymentOptional = safekingPaymentRepository.findByMerchantUid(request.getMerchantUid());
-            SafekingPayment findSafekingPayment = safekingPaymentOptional.orElseThrow(() -> new PaymentException(SAFEKING_PAYMENT_NONE));
+            SafekingPayment findSafekingPayment = getSafekingPayment(request.getMerchantUid());
 
             // 결제 금액 비교(결제 금액이 다르다면)
             if(findSafekingPayment.getAmount() != response.getAmount().intValue()) {
@@ -94,6 +91,7 @@ public class IamportServiceImpl implements IamportService {
 
     /**
      * 결제(웹훅 방식)
+     * 웹훅의 목적은 가맹점(DB)과 동기화
      */
     @Override
     public void paymentByWebhook(PaymentWebhookRequest request) {
@@ -104,17 +102,19 @@ public class IamportServiceImpl implements IamportService {
             Payment response = iamportResponse.getResponse();
 
             // DB에서 결제 내역 조회
-            Optional<SafekingPayment> safekingPaymentOptional = safekingPaymentRepository.findByMerchantUid(request.getMerchantUid());
-            SafekingPayment findSafekingPayment = safekingPaymentOptional.orElseThrow(() -> new PaymentException(SAFEKING_PAYMENT_NONE));
+            SafekingPayment findSafekingPayment = getSafekingPayment(request.getMerchantUid());
 
             // 결제 금액 비교(결제 금액이 다르다면)
             if(findSafekingPayment.getAmount() != response.getAmount().intValue()) {
                 // 결제, 주문 취소 로직
                 cancel(request.getImpUid(), response.getMerchantUid(), response.getCancelReason(), findSafekingPayment);
+
+                log.error("[PaymentException] ", PAYMENT_AMOUNT_ERROR);
+                throw new PaymentException(PAYMENT_AMOUNT_ERROR);
             }
 
             // 결제 완료
-            else if(response.getStatus().equals("paid")) {
+            if(response.getStatus().equals("paid")) {
                 findSafekingPayment.changeSafekingPayment(PAID, response);
             }
 
@@ -128,24 +128,43 @@ public class IamportServiceImpl implements IamportService {
     }
 
     /**
-     * 결제, 주문 취소
+     * DB에서 결제 내역 조회
      */
-    private void cancel(String impUid, String merchantUid, String cancelReason, SafekingPayment findSafekingPayment) throws IamportResponseException, IOException {
-        // 결제 취소
-        CancelData cancelData = new CancelData(impUid, true);
-        IamportResponse<Payment> cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData); //imp_uid를 통한 전액취소
-        findSafekingPayment.changeSafekingPayment(CANCELLED, cancelPaymentResponse.getResponse());
+    @Override
+    public SafekingPayment getSafekingPayment(String merchantUid) {
+        Optional<SafekingPayment> safekingPaymentOptional = safekingPaymentRepository.findByMerchantUid(merchantUid);
+        SafekingPayment findSafekingPayment = safekingPaymentOptional.orElseThrow(() -> new PaymentException(SAFEKING_PAYMENT_NONE));
 
-        // 주문 취소
-        Optional<Order> orderOptional = orderRepository.findOrderByMerchantUid(merchantUid);
-        Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_CANCEL_FAIL));
-        findOrder.cancel(cancelReason);
-        findOrder.changeSafekingPayment(findSafekingPayment);
-
-        log.error("[PaymentException] ", PAYMENT_AMOUNT_ERROR);
-
-        throw new PaymentException(PAYMENT_AMOUNT_ERROR);
+        return findSafekingPayment;
     }
 
+    /**
+     * 결제, 주문 취소
+     */
+    @Override
+    public IamportResponse<Payment> cancel(String impUid, String merchantUid, String cancelReason, SafekingPayment findSafekingPayment) {
+        IamportResponse<Payment> cancelPaymentResponse = null; //imp_uid를 통한 전액취소
+        try {
+            // 주문 취소
+            Optional<Order> orderOptional = orderRepository.findOrderByMerchantUid(merchantUid);
+            Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_CANCEL_FAIL));
+            findOrder.cancel(cancelReason);
+            findOrder.changeSafekingPayment(findSafekingPayment);
+            findOrder.changeMerchantUid(merchantUid);
 
+            // 결제 취소
+            CancelData cancelData = new CancelData(impUid, true);
+            cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData);
+            findSafekingPayment.changeSafekingPayment(CANCELLED, cancelPaymentResponse.getResponse());
+
+        } catch (IamportResponseException e) {
+            log.error("[IamportResponseException] ", e.getMessage());
+            throw new PaymentException(e.getMessage());
+        } catch (IOException e) {
+            log.error("[IOException] ", e.getMessage());
+            throw new PaymentException(e.getMessage());
+        }
+
+        return cancelPaymentResponse;
+    }
 }
