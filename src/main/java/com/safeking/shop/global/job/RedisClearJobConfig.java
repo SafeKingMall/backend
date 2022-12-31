@@ -46,7 +46,6 @@ public class RedisClearJobConfig {
                 .get("redisClearJobJob")
                 .incrementer(new RunIdIncrementer())
                 .start(redisClearJobStep)
-                .start(redisClearJobStep)
                 .on("FAILED").to(conditionalFailStepRedis)//실패시
                 .from(redisClearJobStep)
                 .on("COMPLETED").to(conditionalCompletedStepRedis)//성공시
