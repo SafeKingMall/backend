@@ -99,6 +99,10 @@ public class MemoryClearJobConfig {
                 smsMemoryRepository.clearStore();
                 dormantRepository.clearStore();
 
+                log.info("memoryMemberRepository.findAll().size()= "+memoryMemberRepository.findAll().size());
+                log.info("smsMemoryRepository.findAll().size()= "+smsMemoryRepository.findAll().size());
+                log.info("dormantRepository.findAll().size()= "+dormantRepository.findAll().size());
+
                 return RepeatStatus.FINISHED;
             }
         };
