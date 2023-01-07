@@ -91,8 +91,8 @@ public class InitDB {
 
             }
             Member user = GeneralMember.builder()
-                    .username("humen1234")
-                    .password(encoder.encode("humen1234*"))
+                    .username("dormant1234")
+                    .password(encoder.encode("dormant1234*"))
                     .roles("ROLE_USER")
                     .accountNonLocked(false)
                     .status(MemberStatus.HUMAN)
