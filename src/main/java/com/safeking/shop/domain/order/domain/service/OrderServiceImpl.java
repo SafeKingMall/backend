@@ -5,7 +5,7 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
-import com.safeking.shop.domain.order.domain.entity.Payment;
+import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoDeliveryRequest;
@@ -29,7 +29,7 @@ import java.util.UUID;
 
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.COMPLETE;
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.IN_DELIVERY;
-import static com.safeking.shop.domain.order.web.OrderConst.*;
+import static com.safeking.shop.domain.order.constant.OrderConst.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,11 +41,12 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 주문
+     * 주문은 결제가 완료되어야 진행함
      */
     @Override
     public Long order(Member member, OrderRequest orderRequest) {
 
-        //상품 조회
+        // 상품 조회
         List<Item> items = orderServiceSubMethod.findItems(orderRequest.getOrderItemRequests());
 
         // 배송 정보 생성 및 저장
@@ -54,12 +55,11 @@ public class OrderServiceImpl implements OrderService {
         // 주문상품 생성 및 저장
         List<OrderItem> orderItems = orderServiceSubMethod.createOrderItems(orderRequest, items);
 
-        // 결제 -> 임시
-        Payment payment = orderServiceSubMethod.createPayment(orderItems, UUID.randomUUID().toString(), "카드");
+        // 결제 내역 임시 저장(실제 결제가 발생했을때 결제 완료로 변경)
+        SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems);
 
         // 주문 생성
-        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), orderItems);
-        order.changePayment(payment);
+        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), safeKingPayment, orderItems);
         orderRepository.save(order);
 
         return order.getId();
@@ -92,22 +92,23 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Page<Order> searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
-        return orderRepository.findOrders(pageable, condition, memberId);
-    }
+        Page<Order> findOrdersPage = orderRepository.findOrders(pageable, condition, memberId);
+        if(findOrdersPage.isEmpty()) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL);
+        }
 
+        return findOrdersPage;
+    }
     /**
      * 주문 취소
      */
     @Override
     public void cancel(CancelRequest cancelRequest) {
-
         cancelRequest.getOrders()
-                .stream()
-                .map(CancelOrderRequest::getId)
-                .forEach((id) -> {
-                    Optional<Order> findOrder = orderRepository.findById(id);
+                .forEach(cancelOrderRequest -> {
+                    Optional<Order> findOrder = orderRepository.findById(cancelOrderRequest.getId());
                     Order order = findOrder.orElseThrow(() -> new OrderException(ORDER_NONE));
-                    order.cancel();
+                    order.cancel(cancelOrderRequest.getCancelReason());
                 });
     }
 
@@ -157,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
 
         //결제정보 수정
         AdminModifyInfoPaymentRequest paymentRequest = modifyInfoRequest.getOrder().getPayment();
-        findOrder.getPayment().changePaymentStatusByAdmin(paymentRequest.getStatus());
+        findOrder.getSafeKingPayment().changePaymentStatusByAdmin(paymentRequest.getStatus());
 
         //주문정보 수정
         findOrder.changeAdminMemoByAdmin(modifyInfoRequest.getOrder().getAdminMemo());

@@ -4,7 +4,8 @@ import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
-import com.safeking.shop.domain.order.web.OrderConst;
+import com.safeking.shop.domain.order.constant.OrderConst;
+import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,20 +50,26 @@ public class Order extends BaseTimeEntity {
 
     @OneToOne
     @JoinColumn(name = "payment_id")
-    private Payment payment;
+    private SafekingPayment safeKingPayment;
 
-    public static Order createOrder(Member member, Delivery delivery, String memo, List<OrderItem> orderItems) {
+    private String merchantUid; // 가맹점에서 전달한 고유 번호
+    @Lob
+    private String cancelReason; // 주문 취소 사유
+
+    public static Order createOrder(Member member, Delivery delivery, String memo, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
         Order order = new Order();
-        order.changeOrder(member, delivery, memo, orderItems);
+        order.changeOrder(member, delivery, memo, safeKingPayment, orderItems);
 
         return order;
     }
 
-    public void changeOrder(Member member, Delivery delivery, String memo, List<OrderItem> orderItems) {
+    public void changeOrder(Member member, Delivery delivery, String memo, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
         this.member = member;
         this.delivery = delivery;
         this.status = OrderStatus.COMPLETE;
         this.memo = memo;
+        this.safeKingPayment = safeKingPayment;
+
         for(OrderItem orderItem : orderItems) {
             changeOrderItem(orderItem);
         }
@@ -76,13 +83,14 @@ public class Order extends BaseTimeEntity {
     /**
      * 주문 취소
      */
-    public void cancel() {
+    public void cancel(String cancelReason) {
         if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)
                 || delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
             throw new OrderException(OrderConst.ORDER_CANCEL_DELIVERY_DONE);
         }
 
         this.status = OrderStatus.CANCEL;
+        this.cancelReason = cancelReason;
 
         //주문상품을 취소
         orderItems.forEach(OrderItem::cancel);
@@ -92,11 +100,15 @@ public class Order extends BaseTimeEntity {
         this.memo = memo;
     }
 
-    public void changePayment(Payment payment) {
-        this.payment = payment;
+    public void changeSafekingPayment(SafekingPayment safeKingPayment) {
+        this.safeKingPayment = safeKingPayment;
     }
 
     public void changeAdminMemoByAdmin(String adminMemo) {
         this.adminMemo = adminMemo;
+    }
+
+    public void changeMerchantUid(String merchantUid) {
+        this.merchantUid = merchantUid;
     }
 }

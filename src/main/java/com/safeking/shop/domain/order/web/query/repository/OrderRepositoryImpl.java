@@ -5,7 +5,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
-import com.safeking.shop.domain.order.domain.entity.status.PaymentStatus;
+import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +21,6 @@ import static com.safeking.shop.domain.item.domain.entity.QItem.item;
 import static com.safeking.shop.domain.order.domain.entity.QDelivery.delivery;
 import static com.safeking.shop.domain.order.domain.entity.QOrder.order;
 import static com.safeking.shop.domain.order.domain.entity.QOrderItem.orderItem;
-import static com.safeking.shop.domain.order.domain.entity.QPayment.payment;
 import static com.safeking.shop.domain.user.domain.entity.member.QMember.member;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.util.StringUtils.*;
@@ -42,7 +41,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         List<Order> content = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.orderItems, orderItem).fetchJoin()
-                .leftJoin(order.payment, payment).fetchJoin()
+                .leftJoin(order.safeKingPayment, order.safeKingPayment).fetchJoin()
                 .leftJoin(order.delivery, delivery).fetchJoin()
                 .leftJoin(orderItem.item, item).fetchJoin()
                 .where(
@@ -76,7 +75,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         List<Order> content = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.orderItems, orderItem).fetchJoin()
-                .leftJoin(order.payment, payment).fetchJoin()
+                .leftJoin(order.safeKingPayment, order.safeKingPayment).fetchJoin()
                 .leftJoin(order.delivery, delivery).fetchJoin()
                 .leftJoin(order.member, member).fetchJoin()
                 .leftJoin(orderItem.item, item).fetchJoin()
@@ -104,7 +103,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     private BooleanExpression paymentStatusEq(String paymentStats) {
-        return hasText(paymentStats) ? order.payment.status.eq(PaymentStatus.valueOf(paymentStats)) : null;
+        return hasText(paymentStats) ? order.safeKingPayment.status.eq(PaymentStatus.valueOf(paymentStats)) : null;
     }
 
     private BooleanExpression deliveryStatusEq(String deliveryStatus) {

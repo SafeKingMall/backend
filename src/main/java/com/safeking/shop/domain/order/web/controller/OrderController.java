@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.safeking.shop.domain.order.web.OrderConst.*;
+import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static org.springframework.http.HttpStatus.*;
 
@@ -163,13 +163,13 @@ public class OrderController {
                 .build();
 
         OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
-                .status(findOrderDetail.getPayment().getStatus().getDescription())
+                .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
                 .build();
 
         OrderDetailOrderResponse order = OrderDetailOrderResponse.builder()
                 .id(findOrderDetail.getId())
                 .status(findOrderDetail.getStatus().getDescription())
-                .price(findOrderDetail.getPayment().getPrice())
+                .price(findOrderDetail.getSafeKingPayment().getAmount())
                 .memo(findOrderDetail.getMemo())
                 .date(findOrderDetail.getCreateDate())
                 .orderItems(orderItems)
@@ -205,7 +205,7 @@ public class OrderController {
 
         for(Order o : findOrders) {
             OrderListPaymentResponse payment = OrderListPaymentResponse.builder()
-                    .status(o.getPayment().getStatus().getDescription())
+                    .status(o.getSafeKingPayment().getStatus().getDescription())
                     .build();
 
             OrderListOrderItemResponse orderItem = OrderListOrderItemResponse.builder()
@@ -216,7 +216,7 @@ public class OrderController {
             OrderListOrdersResponse order = OrderListOrdersResponse.builder()
                     .id(o.getId())
                     .status(o.getStatus().getDescription())
-                    .price(o.getPayment().getPrice())
+                    .price(o.getSafeKingPayment().getAmount())
                     .date(o.getCreateDate())
                     .count(o.getOrderItems().size())
                     .orderItem(orderItem)

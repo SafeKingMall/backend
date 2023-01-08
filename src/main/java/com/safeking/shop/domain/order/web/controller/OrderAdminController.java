@@ -2,19 +2,14 @@ package com.safeking.shop.domain.order.web.controller;
 
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.service.OrderService;
-import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.order.web.dto.response.OrderBasicResponse;
 import com.safeking.shop.domain.order.web.dto.response.admin.orderdetail.*;
 import com.safeking.shop.domain.order.web.dto.response.admin.search.*;
-import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
-import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
-import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.auth.AUTH;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.safeking.shop.domain.order.web.OrderConst.*;
+import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
-import static org.apache.naming.ResourceRef.AUTH;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
@@ -85,17 +79,16 @@ public class OrderAdminController {
          * 추후, 결제 API에서 데이터 수집해야함.
          */
         AdminOrderDetailPaymentResponse payment = AdminOrderDetailPaymentResponse.builder()
-                .status(findOrderDetail.getPayment().getStatus().getDescription())
-                .company(findOrderDetail.getPayment().getCompany())
-                .means(findOrderDetail.getPayment().getMeans())
-                .businessNumber(findOrderDetail.getPayment().getBusinessNumber())
-                .price(findOrderDetail.getPayment().getPrice())
+                .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
+                .company(findOrderDetail.getSafeKingPayment().getCardCode())
+                .means(findOrderDetail.getSafeKingPayment().getPayMethod())
+                .price(findOrderDetail.getSafeKingPayment().getAmount())
                 .build();
 
         AdminOrderDetailOrderResponse order = AdminOrderDetailOrderResponse.builder()
                 .id(findOrderDetail.getId())
                 .status(findOrderDetail.getStatus().getDescription())
-                .price(findOrderDetail.getPayment().getPrice())
+                .price(findOrderDetail.getSafeKingPayment().getAmount())
                 .memo(findOrderDetail.getMemo())
                 .date(findOrderDetail.getCreateDate())
                 .adminMemo(findOrderDetail.getAdminMemo())
@@ -158,7 +151,7 @@ public class OrderAdminController {
                     .build();
 
             AdminOrderListPaymentResponse payment = AdminOrderListPaymentResponse.builder()
-                    .status(o.getPayment().getStatus().getDescription())
+                    .status(o.getSafeKingPayment().getStatus().getDescription())
                     .build();
 
             AdminOrderListMemberResponse member = AdminOrderListMemberResponse.builder()
@@ -173,7 +166,7 @@ public class OrderAdminController {
             AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
                     .id(o.getId())
                     .status(o.getStatus().getDescription())
-                    .price(o.getPayment().getPrice())
+                    .price(o.getSafeKingPayment().getAmount())
                     .date(o.getCreateDate())
                     .orderItemCount(o.getOrderItems().size())
                     .orderItem(orderItem)

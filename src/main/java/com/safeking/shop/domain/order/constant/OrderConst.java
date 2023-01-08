@@ -1,7 +1,7 @@
-package com.safeking.shop.domain.order.web;
+package com.safeking.shop.domain.order.constant;
 
 public class OrderConst {
-    public static final Integer deliveryCost = 2500;
+    public static final Integer DeliveryCost = 2500;
     public static final String BLANK = "";
     public static final String ORDER_ITEM_NONE = "해당 상품에 대한 정보가 없습니다.";
     public static final String ORDER_MEMBER_NONE = "회원이 없습니다.";
@@ -21,10 +21,11 @@ public class OrderConst {
     public static final String ORDER_LIST_FIND_SUCCESS = "주문 다건 조회 성공";
     public static final String ORDER_LIST_FIND_FAIL = "주문 상세 조회 실패";
 
+    /* 관리자 */
     public static final String ADMIN_ORDER_DETAIL_FIND_SUCCESS = "관리자용 주문 상세 조회 완료";
     public static final String ADMIN_ORDER_DETAIL_FIND_FAIL = "관리자용 주문 상세 조회 실패";
     public static final String ADMIN_ORDER_DETAIL_MODIFY_SUCCESS = "관리자용 주문 상세 수정 성공";
     public static final String ADMIN_ORDER_DETAIL_MODIFY_FAIL = "관리자용 주문 상세 수정 실패";
-    public static final String ADMIN_ORDER_LIST_FIND_SUCCESS = "주문 다건 조회 성공";
-    public static final String ADMIN_ORDER_LIST_FIND_FAIL = "주문 상세 조회 실패";
+    public static final String ADMIN_ORDER_LIST_FIND_SUCCESS = "관리자용 주문 다건 조회 성공";
+    public static final String ADMIN_ORDER_LIST_FIND_FAIL = "관리자용 주문 상세 조회 실패";
 }

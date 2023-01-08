@@ -5,12 +5,12 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
-import com.safeking.shop.domain.order.domain.entity.Payment;
+import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
-import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
-import com.safeking.shop.domain.order.web.OrderConst;
+import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
+import com.safeking.shop.domain.order.constant.OrderConst;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderItemRequest;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class OrderServiceSubMethod {
     private final DeliveryRepository deliveryRepository;
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
-    private final PaymentRepository paymentRepository;
+    private final SafekingPaymentRepository safekingPaymentRepository;
 
     /**
      * 배송 정보 생성 및 저장
@@ -95,10 +95,10 @@ public class OrderServiceSubMethod {
     /**
      * 결제
      */
-    public Payment createPayment(List<OrderItem> orderItems, String number, String means) {
-        Payment payment = Payment.createPayment(orderItems, number, means);
-        paymentRepository.save(payment);
+    public SafekingPayment createPayment(List<OrderItem> orderItems) {
+        SafekingPayment safeKingPayment = SafekingPayment.createPayment(orderItems);
+        safekingPaymentRepository.save(safeKingPayment);
 
-        return payment;
+        return safeKingPayment;
     }
 }

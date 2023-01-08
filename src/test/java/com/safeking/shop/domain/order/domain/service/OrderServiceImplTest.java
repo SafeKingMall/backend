@@ -8,12 +8,12 @@
 //import com.safeking.shop.domain.order.domain.entity.Delivery;
 //import com.safeking.shop.domain.order.domain.entity.Order;
 //import com.safeking.shop.domain.order.domain.entity.OrderItem;
-//import com.safeking.shop.domain.order.domain.entity.Payment;
+//import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 //import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 //import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 //import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 //import com.safeking.shop.domain.order.domain.repository.OrderRepository;
-//import com.safeking.shop.domain.order.domain.repository.PaymentRepository;
+//import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
 //import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoDeliveryRequest;
 //import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoOrderRequest;
 //import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoPaymentRequest;
@@ -69,7 +69,7 @@
 //    @Autowired
 //    AdminRepository adminRepository;
 //    @Autowired
-//    PaymentRepository paymentRepository;
+//    SafekingPaymentRepository paymentRepository;
 //
 //    @Test
 //    @Transactional
@@ -437,7 +437,7 @@
 //                orderRequest.getDeliveryMemo());
 //        deliveryRepository.save(delivery);
 //
-//        Payment payment = Payment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+//        SafekingPayment payment = SafekingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
 //        paymentRepository.save(payment);
 //
 //        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
@@ -450,11 +450,11 @@
 //        //then
 //        assertThat(orderDetail.getId()).isEqualTo(order.getId());
 //        assertThat(orderDetail.getStatus()).isEqualTo(order.getStatus());
-//        assertThat(orderDetail.getPayment().getPrice()).isEqualTo(payment.getPrice());
+//        assertThat(orderDetail.getSafeKingPayment().getPrice()).isEqualTo(payment.getPrice());
 //        assertThat(orderDetail.getMemo()).isEqualTo(order.getMemo());
 //        assertThat(orderDetail.getCreateDate()).isEqualTo(order.getCreateDate());
 //        assertThat(orderDetail.getOrderItems()).isSameAs(order.getOrderItems());
-//        assertThat(orderDetail.getPayment().getStatus()).isEqualTo(order.getPayment().getStatus());
+//        assertThat(orderDetail.getSafeKingPayment().getStatus()).isEqualTo(order.getSafeKingPayment().getStatus());
 //        assertThat(orderDetail.getDelivery().getId()).isEqualTo(order.getDelivery().getId());
 //        assertThat(orderDetail.getDelivery().getStatus()).isEqualTo(order.getDelivery().getStatus());
 //        assertThat(orderDetail.getDelivery().getReceiver()).isEqualTo(order.getDelivery().getReceiver());
@@ -518,7 +518,7 @@
 //                orderRequest.getDeliveryMemo());
 //        deliveryRepository.save(delivery);
 //
-//        Payment payment = Payment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+//        SafekingPayment payment = SafekingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
 //        paymentRepository.save(payment);
 //
 //        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
@@ -539,7 +539,7 @@
 //        assertThat(orders.getContent().get(0).getOrderItems().get(0).getItem().getName()).isEqualTo("안전모");
 //        assertThat(orders.getContent().get(0).getOrderItems().get(1).getItem().getName()).isEqualTo("안전화");
 //        assertThat(orders.getContent().get(0)).isSameAs(order);
-//        assertThat(orders.getContent().get(0).getPayment()).isSameAs(payment);
+//        assertThat(orders.getContent().get(0).getSafeKingPayment()).isSameAs(payment);
 //    }
 //
 //    @Test
@@ -593,8 +593,8 @@
 //                orderRequest.getDeliveryMemo());
 //        Delivery saveDelivery = deliveryRepository.save(delivery);
 //
-//        Payment payment = Payment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
-//        Payment savePayment = paymentRepository.save(payment);
+//        SafekingPayment payment = SafekingPayment.createPayment(List.of(orderItem1, orderItem2), "123412341234", "카드");
+//        SafekingPayment savePayment = paymentRepository.save(payment);
 //
 //        Order order = Order.createOrder(generalMember, delivery, orderRequest.getMemo(), List.of(orderItem1, orderItem2));
 //        Order orderSave = orderRepository.save(order);
@@ -622,7 +622,7 @@
 //        //when
 //        Long updateOrderId = orderService.modifyOrderByAdmin(request, orderSave.getId());
 //        Optional<Delivery> findDeliveryOptional = deliveryRepository.findById(saveDelivery.getId());
-//        Optional<Payment> findPaymentOptional = paymentRepository.findById(savePayment.getId());
+//        Optional<SafekingPayment> findPaymentOptional = paymentRepository.findById(savePayment.getId());
 //
 //        //then
 //        assertThat(orderSave.getId()).isEqualTo(updateOrderId);

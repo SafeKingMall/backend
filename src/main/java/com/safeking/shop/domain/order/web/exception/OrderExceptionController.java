@@ -1,23 +1,15 @@
 package com.safeking.shop.domain.order.web.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.safeking.shop.domain.exception.OrderException;
-import com.safeking.shop.domain.order.web.OrderConst;
-import com.safeking.shop.domain.order.web.controller.OrderController;
 import com.safeking.shop.global.Error;
-import com.safeking.shop.global.response.ResponseDto;
-import com.safeking.shop.global.response.ResponseError;
+import com.siot.IamportRestClient.exception.IamportResponseException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-
-import static com.safeking.shop.domain.order.web.OrderConst.*;
+import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
@@ -30,7 +22,7 @@ public class OrderExceptionController {
     @ExceptionHandler(OrderException.class)
     public ResponseEntity<Error> orderExHandler(OrderException e) {
 
-        log.error("[OrderException] ex", e);
+        log.error("[OrderException] ", e);
 
         Error error = new Error(extractedErrorCode(e), e.getMessage());
 
@@ -58,7 +50,7 @@ public class OrderExceptionController {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<Error> methodNotAllowedExHandler(HttpRequestMethodNotSupportedException e) {
 
-        log.error("[HttpRequestMethodNotSupportedException] ex", e);
+        log.error("[HttpRequestMethodNotSupportedException] ", e);
 
         Error error = new Error(1, e.getMessage());
 

@@ -1,12 +1,12 @@
-package com.safeking.shop.domain.order.domain.entity.status;
+package com.safeking.shop.domain.payment.domain.entity;
 
 
 public enum PaymentStatus {
 
-    COMPLETE("COMPLETE"),
-    CANCELING("CANCELING"),
-    CANCEL("CANCEL"),
-
+    READY("ready"), //결제 대기
+    PAID("paid"),
+    CANCELLED("canc"),
+    FAILED("CANCEL"),
     ;
 
     private final String description;

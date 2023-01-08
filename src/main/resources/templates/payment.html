@@ -3,11 +3,11 @@
 <head>
   <!-- jQuery -->
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
-  <!-- iamport.payment.js -->
-  <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+  <!-- iamport.safeKingPayment.js -->
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
   <script>
     var IMP = window.IMP;
-    IMP.init("imp67011510");
+    IMP.init("imp28306430");
 
     var today = new Date();
     var hours = today.getHours(); // 시
@@ -16,32 +16,83 @@
     var milliseconds = today.getMilliseconds();
     var makeMerchantUid = hours +  minutes + seconds + milliseconds;
 
-
     function requestPay() {
       IMP.request_pay({
-        pg : 'html5_inicis.INIpayTest',
-        pay_method : 'card',
-        merchant_uid: "IMP"+makeMerchantUid,
-        name : '안전모 결제 테스트',
-        amount : 100,
-        buyer_email : 'Iamport@chai.finance',
-        buyer_name : '안전왕 기술지원팀',
-        buyer_tel : '010-1234-5678',
-        buyer_addr : '서울특별시 강남구 삼성동',
-        buyer_postcode : '123-456'
-      }, function (rsp) { // callback
-        if (rsp.success) {
-          console.log(rsp);
-        } else {
-          console.log(rsp);
-        }
-      });
+                pg : 'html5_inicis.INIpayTest',
+                pay_method : 'card',
+                merchant_uid: "IMP"+makeMerchantUid,
+                name : '안전모 결제 테스트',
+                amount : 100,
+                buyer_email : 'safeKing@chai.finance',
+                buyer_name : '안전왕 기술지원팀',
+                buyer_tel : '010-1234-5678',
+                buyer_addr : '서울특별시 강남구 삼성동',
+                buyer_postcode : '123-456',
+                // notice_url : 'https://c31f-1-237-127-24.jp.ngrok.io/api/v1/test/payment/webhook'
+              },
+              function(rsp) {
+                if (rsp.success) {
+                  alert('call back!!: ' + JSON.stringify(rsp));
+                  // 결제 성공 시: 결제 승인 또는 가상계좌 발급에 성공한 경우
+                  // jQuery로 HTTP 요청
+                  jQuery.ajax({
+                    url: "api/v1/test/payment",
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    data: JSON.stringify({
+                      imp_uid: rsp.imp_uid,            // 결제 고유번호
+                      merchant_uid: rsp.merchant_uid,   // 주문번호
+                      paid_amount: rsp.paid_amount, // 결제 금액
+                      success: rsp.success // 결제 성공 여부
+                    })
+                  }).done(function () {
+                    // 가맹점 서버 결제 API 성공시 로직
+                    alert('Please, Check your payment result page!!' + rsp);
+                  })
+                } else {
+                  alert("결제에 실패하였습니다. 에러 내용: " + rsp.error_msg);
+                }
+              });
+    }
+
+    function requestOrder() {
+      const orderData = {
+        receiver : "아이유",
+        email :"dlwlrma@kakao.com",
+        phone_number : "01012341234",
+        address : "제주 서귀포시 성산읍 성산리 1",
+        memo : "납기일 준수해주세요.",
+        delivery_memo : "문앞에 부탁 드립니다.",
+        items :[
+          {
+            id: 1,
+            price : 1000,
+            count: 1
+          },
+          {
+            id: 2,
+            price : 2000,
+            count: 2
+          }
+        ]
+      };
+      jQuery.ajax({
+        url: "api/v1/user/order",
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        data: JSON.stringify(orderData)
+      }).done(function () {
+        alert("주문 완료!")
+      })
     }
   </script>
   <meta charset="UTF-8">
   <title>Sample Payment</title>
 </head>
 <body>
+<h1>반드시 주문 후에 결제를 진행해야 합니다.</h1>
+<button onclick="requestOrder()">주문하기</button> <!-- 주문하기 버튼 생성 -->
+<button onclick="requestPay()">주문취소</button> <!-- 주문취소 버튼 생성 -->
 <button onclick="requestPay()">결제하기</button> <!-- 결제하기 버튼 생성 -->
 </body>
 </html>

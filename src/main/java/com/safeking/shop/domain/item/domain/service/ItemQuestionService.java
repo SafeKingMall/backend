@@ -12,7 +12,7 @@ import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.Item
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionUpdateDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemQuestion.ItemQuestionViewDto;
 import com.safeking.shop.domain.item.web.query.repository.ItemAnswerQueryRepository;
-import com.safeking.shop.domain.order.web.OrderConst;
+import com.safeking.shop.domain.order.constant.OrderConst;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
