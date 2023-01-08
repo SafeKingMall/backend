@@ -25,7 +25,7 @@ spring:
   logging.level:
     org.hibernate.SQL: debug
   redis:
-    host: localhost
+    host: 127.0.0.1
     port: 6379
   upload:
     path: /home/ec2-user/www
