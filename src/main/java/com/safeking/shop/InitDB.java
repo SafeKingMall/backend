@@ -13,6 +13,7 @@ import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.service.RedisService;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import javax.persistence.EntityManager;
 @Component
 @Profile("test")
 @RequiredArgsConstructor
+@Slf4j
 public class InitDB {
 
     private final InitService initService;
@@ -91,8 +93,8 @@ public class InitDB {
 
             }
             Member user = GeneralMember.builder()
-                    .username("humen1234")
-                    .password(encoder.encode("humen1234*"))
+                    .username("dormant1234")
+                    .password(encoder.encode("dormant1234*"))
                     .roles("ROLE_USER")
                     .accountNonLocked(false)
                     .status(MemberStatus.HUMAN)
@@ -123,6 +125,8 @@ public class InitDB {
             em.persist(category5);
         }
         public void clearRedis(){
+            log.info("clearRedis");
+
             redisService.deleteAll();
         }
     }

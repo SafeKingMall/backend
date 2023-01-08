@@ -12,6 +12,7 @@ public class RedisService {
     // application load 시점에 redis를 한번 비운다.
     public void deleteAll(){
         Iterable<RedisMember> all = redisRepository.findAll();
+
         for (RedisMember redisMember : all) {
             if(redisMember != null) {
                 redisRepository.delete(redisMember);
