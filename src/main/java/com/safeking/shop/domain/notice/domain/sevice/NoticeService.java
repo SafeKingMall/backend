@@ -48,8 +48,8 @@ public class NoticeService {
                 , notice.getLastModifiedDate().toString());
     }
 
-    public Page<Notice> list(Pageable pageable){
-        Page<Notice> posts = noticeRepository.findAll(pageable);
+    public Page<Notice> list(Pageable pageable, String title){
+        Page<Notice> posts = noticeRepository.findByTitleContaining(pageable, title);
         return posts;
     }
 

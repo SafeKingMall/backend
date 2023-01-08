@@ -102,8 +102,8 @@ public class ItemService {
         return itemViewDto;
     }
 
-    public Page<ItemListResponse> List(Pageable pageable){
-        Page<ItemListResponse> posts = itemRepository.findAll(pageable).map(m-> ItemListResponse.builder()
+    public Page<ItemListResponse> List(Pageable pageable, String itemName, String categoryName){
+        Page<ItemListResponse> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemListResponse.builder()
                 .id(m.getId())
                 .price(m.getPrice())
                 .name(m.getName())
