@@ -76,8 +76,10 @@ public class ItemController {
     }
 
     @GetMapping("admin/item/list")
-    public Page<ItemListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemListResponse> itemLst = itemService.List(pageable);
+    public Page<ItemListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable, @RequestParam(required = false, defaultValue = "") String itemName
+        , @RequestParam(required = false, defaultValue = "") String categoryName
+        ){
+        Page<ItemListResponse> itemLst = itemService.List(pageable, itemName, categoryName);
         return itemLst;
     }
 
@@ -100,8 +102,10 @@ public class ItemController {
     }
 
     @GetMapping("/item/list")
-    public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemListResponse> itemLst = itemService.List(pageable);
+    public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable, @RequestParam(required = false, defaultValue = "") String itemName
+            , @RequestParam(required = false, defaultValue = "") String categoryName
+    ){
+        Page<ItemListResponse> itemLst = itemService.List(pageable, itemName, categoryName);
         return itemLst;
     }
 

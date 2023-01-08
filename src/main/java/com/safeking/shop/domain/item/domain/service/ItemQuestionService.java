@@ -87,8 +87,8 @@ public class ItemQuestionService {
         return itemQuestionViewDto;
     }
 
-    public Page<ItemQuestionListDto> list(Pageable pageable){
-        Page<ItemQuestionListDto> posts = itemQuestionRepository.findAll(pageable).map(m->ItemQuestionListDto.builder()
+    public Page<ItemQuestionListDto> list(Pageable pageable, String title){
+        Page<ItemQuestionListDto> posts = itemQuestionRepository.findByTitleContaining(pageable, title).map(m->ItemQuestionListDto.builder()
                 .id(m.getId())
                 .title(m.getTitle())
                 .itemId(m.getItem().getId())
