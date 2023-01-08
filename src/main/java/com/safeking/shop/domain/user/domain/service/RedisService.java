@@ -13,7 +13,9 @@ public class RedisService {
     public void deleteAll(){
         Iterable<RedisMember> all = redisRepository.findAll();
         for (RedisMember redisMember : all) {
-            redisRepository.delete(redisMember);
+            if(redisMember != null) {
+                redisRepository.delete(redisMember);
+            }
         }
     }
 }

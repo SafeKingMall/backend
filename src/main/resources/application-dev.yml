@@ -4,7 +4,7 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://board-project-mariadb.cfhzauu7smdq.ap-northeast-2.rds.amazonaws.com:3306/safeking_dev
+    url: jdbc:mariadb://localhost:3306/safeking_dev
     username: safeking_dev
     password: 1234
 
@@ -16,7 +16,7 @@ spring:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         default_batch_fetch_size: 1000
