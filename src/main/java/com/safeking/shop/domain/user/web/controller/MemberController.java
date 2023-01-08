@@ -1,5 +1,6 @@
 package com.safeking.shop.domain.user.web.controller;
 
+import com.safeking.shop.domain.coolsms.domain.respository.SMSMemoryRepository;
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
@@ -11,6 +12,7 @@ import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
 import com.safeking.shop.domain.user.domain.service.CacheService;
 import com.safeking.shop.domain.user.domain.service.DormantMemberService;
 import com.safeking.shop.domain.user.domain.service.MemberService;
+import com.safeking.shop.domain.user.domain.service.RedisService;
 import com.safeking.shop.domain.user.domain.service.dto.CheckSignUp;
 import com.safeking.shop.domain.user.web.query.repository.MemberQueryRepository;
 import com.safeking.shop.domain.user.web.query.service.MemberQueryService;
@@ -66,7 +68,23 @@ public class MemberController {
     private final MemoryMemberRepository memoryMemberRepository;
     private final MemoryDormantRepository dormantRepository;
     private final MemberRedisRepository redisRepository;
+    private final RedisService redisService;
+    private final SMSMemoryRepository smsMemoryRepository;
 
+    @GetMapping("/test/kill")
+    public void kill(){
+        redisService.deleteAll();
+    }
+    @GetMapping("/test/check")
+    public void check(){
+        int size = smsMemoryRepository.findAll().size();
+        int size1 = dormantRepository.findAll().size();
+        int size2 = memoryMemberRepository.findAll().size();
+
+        log.info("smsMemoryRepository size= "+size);
+        log.info("dormantRepository size= "+size1);
+        log.info("memoryMemberRepository size= "+size2);
+    }
 
     @GetMapping("/logout")
     public void logout(HttpServletRequest request){
