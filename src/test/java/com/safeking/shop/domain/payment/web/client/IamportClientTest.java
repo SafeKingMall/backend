@@ -52,12 +52,4 @@ class IamportClientTest {
             e.printStackTrace();
         }
     }
-
-    @Test
-    void testPaymentByImpUid() {
-        IamportResponse<Payment> paymentByImpUid = iamportService.findPaymentByImpUid(impUid);
-        System.out.println(paymentByImpUid.getCode());
-        System.out.println(paymentByImpUid.getMessage());
-        System.out.println(paymentByImpUid.getResponse());
-    }
 }
