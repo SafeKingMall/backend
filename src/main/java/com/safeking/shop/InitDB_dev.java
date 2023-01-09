@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 @Component
-@Profile("dev")
+@Profile("dev2")
 @RequiredArgsConstructor
 @Slf4j
 public class InitDB_dev {
