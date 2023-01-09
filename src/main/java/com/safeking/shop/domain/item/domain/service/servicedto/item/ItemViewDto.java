@@ -17,7 +17,7 @@ public class ItemViewDto {
     private String name;
     private int quantity;
     private String description;
-    private int price;
+    private Integer price;
     private String adminId;
     private String categoryName;
     private String createDate;
