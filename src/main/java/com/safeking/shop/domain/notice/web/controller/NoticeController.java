@@ -68,8 +68,9 @@ public class NoticeController {
     }
 
     @GetMapping("admin/notice/list")
-    public Page<NoticeListResponse> adminList(Pageable pageable){
-        Page<NoticeListResponse> page = noticeService.list(pageable).map(m->NoticeListResponse.builder()
+    public Page<NoticeListResponse> adminList(Pageable pageable, @RequestParam(required = false, defaultValue = "") String title
+            ){
+        Page<NoticeListResponse> page = noticeService.list(pageable, title).map(m->NoticeListResponse.builder()
                 .id(m.getId())
                 .title(m.getTitle())
                 .memberId(m.getMemberId())
@@ -93,8 +94,9 @@ public class NoticeController {
     }
 
     @GetMapping("notice/list")
-    public Page<NoticeListResponse> list(Pageable pageable){
-        Page<NoticeListResponse> page = noticeService.list(pageable).map(m->NoticeListResponse.builder()
+    public Page<NoticeListResponse> list(Pageable pageable, @RequestParam(required = false, defaultValue = "") String title
+            ){
+        Page<NoticeListResponse> page = noticeService.list(pageable, title).map(m->NoticeListResponse.builder()
                 .id(m.getId())
                 .title(m.getTitle())
                 .memberId(m.getMemberId())
