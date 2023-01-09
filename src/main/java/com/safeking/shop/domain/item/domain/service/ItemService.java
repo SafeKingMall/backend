@@ -105,6 +105,19 @@ public class ItemService {
     public Page<ItemListResponse> List(Pageable pageable, String itemName, String categoryName){
         Page<ItemListResponse> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemListResponse.builder()
                 .id(m.getId())
+                .price(("N".equals(m.getViewYn())?null:m.getPrice()))
+                .name(m.getName())
+                .categoryName((m.getCategory()==null?null:m.getCategory().getName()))
+                .createDate(m.getCreateDate().toString())
+                .lastModifiedDate(m.getLastModifiedDate().toString())
+                .fileName((itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId())==null?null:itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId()).getFileName()))
+                .build());
+        return posts;
+    }
+
+    public Page<ItemListResponse> adminList(Pageable pageable, String itemName, String categoryName){
+        Page<ItemListResponse> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemListResponse.builder()
+                .id(m.getId())
                 .price(m.getPrice())
                 .name(m.getName())
                 .categoryName((m.getCategory()==null?null:m.getCategory().getName()))

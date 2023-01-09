@@ -79,7 +79,7 @@ public class ItemController {
     public Page<ItemListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable, @RequestParam(required = false, defaultValue = "") String itemName
         , @RequestParam(required = false, defaultValue = "") String categoryName
         ){
-        Page<ItemListResponse> itemLst = itemService.List(pageable, itemName, categoryName);
+        Page<ItemListResponse> itemLst = itemService.adminList(pageable, itemName, categoryName);
         return itemLst;
     }
 
