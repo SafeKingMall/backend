@@ -27,5 +27,7 @@ public class ItemUpdateRequest {
 
     private Long categoryId;
 
+    private String viewYn="N";
+
 
 }
