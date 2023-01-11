@@ -6,11 +6,13 @@ import com.safeking.shop.domain.item.domain.entity.ItemPhoto;
 import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemPhotoRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
+import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemListDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import com.safeking.shop.domain.item.web.request.ItemSaveRequest;
 import com.safeking.shop.domain.item.web.request.ItemUpdateRequest;
+import com.safeking.shop.domain.item.web.response.ItemAdminListResponse;
 import com.safeking.shop.domain.item.web.response.ItemListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +55,10 @@ public class ItemService {
                 , itemSaveRequest.getDescription()
                 , itemSaveRequest.getPrice()
                 , itemSaveRequest.getAdminId()
-                , category);
+                , category
+                , ("N".equals(itemSaveRequest.getViewYn())?1000000000:itemSaveRequest.getPrice())
+                , itemSaveRequest.getViewYn()
+        );
 
         itemRepository.save(item);
 
@@ -70,6 +75,8 @@ public class ItemService {
                 , itemUpdateRequest.getDescription()
                 , itemUpdateRequest.getAdminId()
                 , category
+                , itemUpdateRequest.getViewYn()
+                , ("N".equals(itemUpdateRequest.getViewYn())?1000000000:itemUpdateRequest.getPrice())
         );
 
     }
@@ -90,6 +97,7 @@ public class ItemService {
                 item.getName(),
                 item.getQuantity(),
                 item.getDescription(),
+                item.getViewPrice(),
                 item.getPrice(),
                 item.getAdminId(),
                 (item.getCategory()==null?null:item.getCategory().getName()),
@@ -102,10 +110,11 @@ public class ItemService {
         return itemViewDto;
     }
 
-    public Page<ItemListResponse> List(Pageable pageable, String itemName, String categoryName){
-        Page<ItemListResponse> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemListResponse.builder()
+    public Page<ItemListDto> List(Pageable pageable, String itemName, String categoryName){
+        Page<ItemListDto> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemListDto.builder()
                 .id(m.getId())
-                .price(("N".equals(m.getViewYn())?null:m.getPrice()))
+                .viewPrice(m.getViewPrice())
+                .price(m.getPrice())
                 .name(m.getName())
                 .categoryName((m.getCategory()==null?null:m.getCategory().getName()))
                 .createDate(m.getCreateDate().toString())
@@ -115,8 +124,8 @@ public class ItemService {
         return posts;
     }
 
-    public Page<ItemListResponse> adminList(Pageable pageable, String itemName, String categoryName){
-        Page<ItemListResponse> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemListResponse.builder()
+    public Page<ItemAdminListResponse> adminList(Pageable pageable, String itemName, String categoryName){
+        Page<ItemAdminListResponse> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemAdminListResponse.builder()
                 .id(m.getId())
                 .price(m.getPrice())
                 .name(m.getName())
