@@ -5,6 +5,7 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
+import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
@@ -172,5 +173,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<Order> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
         return orderRepository.findOrdersByAdmin(pageable, condition);
+    }
+
+    @Override
+    public void delete(Member member) {
+        orderRepository
+                .findByMember(member)
+                .stream()
+                .forEach(order -> orderRepository.delete(order));
     }
 }

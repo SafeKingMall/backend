@@ -79,6 +79,9 @@ class CartItemRepositoryTest {
     @Test
     void deleteCartItemBatch(){
         //given
+        Item item = itemRepository.save(new Item());
+        cartItemService.putCart("USER1",item.getId(),3);
+
         //when
         cartItemRepository.deleteCartItemBatch(cartId);
         //then

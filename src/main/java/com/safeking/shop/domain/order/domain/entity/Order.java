@@ -36,7 +36,9 @@ public class Order extends BaseTimeEntity {
      * 주문과 주문상품은 일대다 양방향관계로 설정
      * cascade 를 설정하여 order 를 persist 할 때, orderItems 도 persist 된다.
      */
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order"
+            , cascade = CascadeType.ALL
+            , orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

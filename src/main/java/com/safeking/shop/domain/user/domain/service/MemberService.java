@@ -1,6 +1,12 @@
 package com.safeking.shop.domain.user.domain.service;
 
+import com.safeking.shop.domain.cart.domain.entity.Cart;
+import com.safeking.shop.domain.cart.domain.repository.CartItemRepository;
+import com.safeking.shop.domain.cart.domain.repository.CartRepository;
 import com.safeking.shop.domain.cart.domain.service.CartService;
+import com.safeking.shop.domain.item.domain.entity.ItemQuestion;
+import com.safeking.shop.domain.item.domain.repository.ItemAnswerRepository;
+import com.safeking.shop.domain.item.domain.repository.ItemQuestionRepository;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
@@ -22,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Map;
 import java.util.Random;
 
@@ -37,6 +44,10 @@ public class MemberService {
     private final CartService cartService;
     private final MemberRedisRepository cacheMemberRepository;
     private final MemoryDormantRepository dormantRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final ItemQuestionRepository questionRepository;
+    private final ItemAnswerRepository answerRepository;
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
@@ -221,10 +232,35 @@ public class MemberService {
 
 
 
-    public void delete(Long id){
-        log.info("delete");
+    public void delete(String username){
+        // member
+        Member member = memberRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
-        // 추후 만들 예정
+        // 1. 장바구니 관련 삭제
+        Cart cart = cartRepository
+                .findCartByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않습니다."));
+        // 1_1. cartItem 삭제
+        cartItemRepository.deleteCartItemBatch(cart.getId());
+        // 1_2. cart 삭제
+        cartRepository.delete(cart);
+
+        // 2. qna 관련 삭제
+        ItemQuestion itemQuestion = questionRepository
+                .findByWriter(member)
+                .orElse(null);
+        // 2-1. answer 삭제 question 삭제
+        if (itemQuestion != null){
+            answerRepository.deleteByTarget(itemQuestion);
+
+            questionRepository.delete(itemQuestion);
+        }
+
+        // 3. 주문관련 삭제
+
+
     }
 
     public String sendTemporaryPassword(String username){
