@@ -19,9 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +45,9 @@ class OrderRepositoryTest {
     SafekingPaymentRepository paymentRepository;
     @Autowired
     OrderItemService orderItemService;
+    @Autowired
+    EntityManager em;
+
     @Test
     void delete(){
         //given
@@ -135,6 +140,7 @@ class OrderRepositoryTest {
 
     }
     @Test
+    @Commit
     public void deleteAllByMemberBatch(){
         //given
         GeneralMember member = GeneralMember.builder().build();
@@ -166,13 +172,13 @@ class OrderRepositoryTest {
                         , "Y"));
 
         OrderItem orderItem = OrderItem
-                .createOrderItem(savedItem1, 1000, 10);
+                .createOrderItem(savedItem1, 1001, 1);
 
         OrderItem orderItem2 = OrderItem
-                .createOrderItem(savedItem2, 1000, 10);
+                .createOrderItem(savedItem2, 1002, 2);
 
         OrderItem orderItem3 = OrderItem
-                .createOrderItem(savedItem3, 1000, 10);
+                .createOrderItem(savedItem3, 1003, 3);
 
 //        OrderItem savedOrderItem1 = orderItemRepository.save(orderItem);
 //        OrderItem savedOrderItem2 = orderItemRepository.save(orderItem2);
@@ -229,12 +235,15 @@ class OrderRepositoryTest {
         int size1 = orderItemRepository.findAll().size();
         System.out.println("size1 = " + size1);
 
+        em.flush(); // 영속성 컨텍스트 내용을 DB에 반영
+        em.clear(); // 영속성 컨텍스트 비움
+
         //then
         assertAll(
                 ()->assertThrows(NoSuchElementException.class
                         , () -> orderItemRepository
                                 .findById(orderItem.getId())
-                                .orElseThrow())
+                                .orElseThrow(NoSuchElementException::new))
 
                 , ()->assertThrows(NoSuchElementException.class
                         , () -> orderItemRepository
