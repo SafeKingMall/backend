@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Commit
+@Transactional
 class OrderRepositoryTest {
     @Autowired
     ItemRepository itemRepository;
@@ -186,10 +186,12 @@ class OrderRepositoryTest {
                 , "memo");
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
-        ArrayList<OrderItem> orderItems = new ArrayList<>();
-        orderItems.add(orderItem);
-        orderItems.add(orderItem2);
-        orderItems.add(orderItem3);
+        ArrayList<OrderItem> orderItems1 = new ArrayList<>();
+        orderItems1.add(orderItem);
+        orderItems1.add(orderItem2);
+
+        ArrayList<OrderItem> orderItems2 = new ArrayList<>();
+        orderItems2.add(orderItem3);
 
 //        SafekingPayment payment = SafekingPayment.createPayment(orderItems);
 //        SafekingPayment savedPayment = paymentRepository.save(payment);
@@ -199,22 +201,16 @@ class OrderRepositoryTest {
                 , savedDelivery
                 , "memo"
                 , null
-                , orderItems);
+                , orderItems1);
         Order order2 = Order.createOrder(
                 savedMember
                 , savedDelivery
                 , "memo"
                 , null
-                , orderItems);
-        Order order3 = Order.createOrder(
-                savedMember
-                , savedDelivery
-                , "memo"
-                , null
-                , orderItems);
+                , orderItems2);
+
         Order savedOrder1 = orderRepository.save(order1);
         Order savedOrder2 = orderRepository.save(order2);
-        Order savedOrder3 = orderRepository.save(order3);
 
         // when
         List<Long> orderIds = orderRepository
@@ -222,45 +218,43 @@ class OrderRepositoryTest {
                 .stream()
                 .map(Order::getId)
                 .collect(Collectors.toList());
-//
-//        orderRepository.findByMember(member).stream().forEach(order -> orderItemService.delete(order));
-//
-//        orderRepository.deleteAllByMemberBatch(orderIds);
+
+        orderRepository.findByMember(member).stream().forEach(order -> orderItemService.delete(order));
+
+        orderRepository.deleteAllByMemberBatch(orderIds);
+
+        int size = orderRepository.findAll().size();
+        System.out.println("size = " + size);
+
+        int size1 = orderItemRepository.findAll().size();
+        System.out.println("size1 = " + size1);
 
         //then
-//        assertAll(
-//                ()->assertThrows(NoSuchElementException.class
-//                        , () -> orderItemRepository
-//                                .findById(savedOrderItem1.getId())
-//                                .orElseThrow())
-//
-//                , ()->assertThrows(NoSuchElementException.class
-//                        , () -> orderItemRepository
-//                                .findById(savedOrderItem2.getId())
-//                                .orElseThrow())
-//
-//                , ()->assertThrows(NoSuchElementException.class
-//                        , () -> orderItemRepository
-//                                .findById(savedOrderItem3.getId())
-//                                .orElseThrow())
-//
-//                , ()->assertThrows(NoSuchElementException.class
-//                        , () -> orderRepository
-//                                .findById(savedOrder1.getId())
-//                                .orElseThrow())
-//
-//                , ()->assertThrows(NoSuchElementException.class
-//                        , () -> orderRepository
-//                                .findById(savedOrder2.getId())
-//                                .orElseThrow())
-//
-//                , ()->assertThrows(NoSuchElementException.class
-//                        , () -> orderRepository
-//                                .findById(savedOrder3.getId())
-//                                .orElseThrow())
-//        );
-//
+        assertAll(
+                ()->assertThrows(NoSuchElementException.class
+                        , () -> orderItemRepository
+                                .findById(orderItem.getId())
+                                .orElseThrow())
+
+                , ()->assertThrows(NoSuchElementException.class
+                        , () -> orderItemRepository
+                                .findById(orderItem2.getId())
+                                .orElseThrow())
+
+                , ()->assertThrows(NoSuchElementException.class
+                        , () -> orderItemRepository
+                                .findById(orderItem3.getId())
+                                .orElseThrow())
+
+                , ()->assertThrows(NoSuchElementException.class
+                        , () -> orderRepository
+                                .findById(savedOrder1.getId())
+                                .orElseThrow())
+
+                , ()->assertThrows(NoSuchElementException.class
+                        , () -> orderRepository
+                                .findById(savedOrder2.getId())
+                                .orElseThrow())
+        );
     }
-
-
 }
