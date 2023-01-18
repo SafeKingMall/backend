@@ -8,9 +8,7 @@ import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import com.safeking.shop.domain.item.web.request.ItemRequest;
 import com.safeking.shop.domain.item.web.request.ItemSaveRequest;
 import com.safeking.shop.domain.item.web.request.ItemUpdateRequest;
-import com.safeking.shop.domain.item.web.response.ItemListResponse;
-import com.safeking.shop.domain.item.web.response.ItemResponse;
-import com.safeking.shop.domain.item.web.response.ItemViewResponse;
+import com.safeking.shop.domain.item.web.response.*;
 import com.safeking.shop.global.jwt.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,10 +56,10 @@ public class ItemController {
     }
 
     @GetMapping("admin/item/{itemId}")
-    public ItemViewResponse itemAdminView(@PathVariable Long itemId){
+    public ItemAdminViewResponse itemAdminView(@PathVariable Long itemId){
         ItemViewDto itemViewDto = itemService.view(itemId);
-        ItemViewResponse itemViewResponse;
-        itemViewResponse = new ItemViewResponse(itemViewDto.getId()
+        ItemAdminViewResponse itemAdminViewResponse;
+        itemAdminViewResponse = new ItemAdminViewResponse(itemViewDto.getId()
                 , itemViewDto.getName()
                 , itemViewDto.getQuantity()
                 , itemViewDto.getDescription()
@@ -72,12 +70,14 @@ public class ItemController {
                 , itemViewDto.getLastModifiedDate()
                 , itemViewDto.getFileName()
         );
-        return itemViewResponse;
+        return itemAdminViewResponse;
     }
 
     @GetMapping("admin/item/list")
-    public Page<ItemListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemListResponse> itemLst = itemService.List(pageable);
+    public Page<ItemAdminListResponse> itemAdminList(@PageableDefault(size=10)Pageable pageable, @RequestParam(required = false, defaultValue = "") String itemName
+        , @RequestParam(required = false, defaultValue = "") String categoryName
+        ){
+        Page<ItemAdminListResponse> itemLst = itemService.adminList(pageable, itemName, categoryName);
         return itemLst;
     }
 
@@ -89,7 +89,7 @@ public class ItemController {
                 , itemViewDto.getName()
                 , itemViewDto.getQuantity()
                 , itemViewDto.getDescription()
-                , ("Y".equals(itemViewDto.getViewYn())?itemViewDto.getPrice():null)
+                , itemViewDto.getViewPrice()
                 , itemViewDto.getAdminId()
                 , itemViewDto.getCategoryName()
                 , itemViewDto.getCreateDate()
@@ -100,8 +100,18 @@ public class ItemController {
     }
 
     @GetMapping("/item/list")
-    public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable){
-        Page<ItemListResponse> itemLst = itemService.List(pageable);
+    public Page<ItemListResponse> itemList(@PageableDefault(size=10)Pageable pageable, @RequestParam(required = false, defaultValue = "") String itemName
+            , @RequestParam(required = false, defaultValue = "") String categoryName
+    ){
+        Page<ItemListResponse> itemLst = itemService.List(pageable, itemName, categoryName).map(m -> ItemListResponse.builder()
+                .id(m.getId())
+                .createDate(m.getCreateDate())
+                .viewPrice(m.getViewPrice())
+                .fileName(m.getFileName())
+                .lastModifiedDate(m.getLastModifiedDate())
+                .categoryName(m.getCategoryName())
+                .name(m.getName())
+                .build());
         return itemLst;
     }
 

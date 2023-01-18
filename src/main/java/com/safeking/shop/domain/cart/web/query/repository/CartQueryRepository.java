@@ -32,7 +32,7 @@ public class CartQueryRepository {
      **/
     public Page<CartItemResponse> searchAll(String username, Pageable pageable){
         List<CartItemResponse> result = queryFactory
-                .select(new QCartItemResponse(item.id, item.name, item.price, item.quantity,category.name,itemPhoto.fileName))
+                .select(new QCartItemResponse(item.id, item.name, item.price, cartItem.count,category.name,itemPhoto.fileName))
                 .from(cartItem)
                 .join(cartItem.item, item)
                 .join(cartItem.cart, cart)

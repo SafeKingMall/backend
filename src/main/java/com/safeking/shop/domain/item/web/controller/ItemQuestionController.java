@@ -66,8 +66,8 @@ public class ItemQuestionController {
     }
 
     @GetMapping("/itemQna/list")
-    public Page<ItemQuestionListResponse> list(@PageableDefault(size=10) Pageable pageable){
-        return itemQuestionService.list(pageable).map(m -> ItemQuestionListResponse.builder()
+    public Page<ItemQuestionListResponse> list(@PageableDefault(size=10) Pageable pageable, @RequestParam(required = false, defaultValue = "") String title){
+        return itemQuestionService.list(pageable, title).map(m -> ItemQuestionListResponse.builder()
                 .id(m.getId())
                 .itemId(m.getItemId())
                 .title(m.getTitle())

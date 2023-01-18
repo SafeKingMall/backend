@@ -80,8 +80,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
             Member loginMember = principalDetails.getMember();
-            //4. redis 의 집어넣기
-            memberRepository.save(new RedisMember(loginMember.getRoles(),loginMember.getUsername()));
+
+            RedisMember findRedisMember = memberRepository
+                    .findByUsername(member.getUsername())
+                    .orElse(null);
+
+            if(findRedisMember==null) {
+                //4. redis 의 집어넣기
+                memberRepository.save(new RedisMember(loginMember.getRoles(),loginMember.getUsername()));
+            }
 
             return authentication;
 

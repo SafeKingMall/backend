@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ItemListResponse {
     private Long id;
-    private Integer price;
+    private Integer viewPrice;
     private String name;
     private String categoryName;
     private String createDate;

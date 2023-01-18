@@ -32,40 +32,21 @@ public class Item extends BaseTimeEntity {
 
     @Column(name="view_yn")
     @ColumnDefault("'Y'")
+    @Nullable
     private String viewYn = "Y";
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-    //BaseEntity가 있는데 이게 꼭 필요한가?
-    /*
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id")
-    private Admin admin;
-    */
+
     @Column(name = "admin_id")
     private String adminId;
-//    @OneToMany(mappedBy = "item", orphanRemoval = true, cascade = CascadeType.ALL)
-//    private List<CategoryItem> categoryItems = new ArrayList<>();
-//    public void addCategoryItem(CategoryItem categoryItem){
-//        categoryItems.add(categoryItem);
-//        categoryItem.addItem(this);
-//    }
 
-//    public static Item createItem(String name, int quantity, String description, Admin admin, List<CategoryItem>categoryItems){
-//        Item item = new Item();
-//        item.name=name;
-//        item.quantity=quantity;
-//        item.description=description;
-//        item.admin=admin;
-//
-//        for (CategoryItem categoryItem : categoryItems) {
-//            item.addCategoryItem(categoryItem);
-//        }
-//        return item;
-//    }
-    public static Item createItem(String name, int quantity, String description,int price, String adminId, Category category){
+    @Nullable
+    private int viewPrice;
+
+    public static Item createItem(String name, int quantity, String description,int price, String adminId, Category category, int viewPrice, String viewYn){
 
         Item item = new Item();
 
@@ -81,9 +62,13 @@ public class Item extends BaseTimeEntity {
 
         item.category=category;
 
+        item.viewPrice=viewPrice;
+
+        item.viewYn=viewYn;
+
         return item;
     }
-    public void update(String name,int quantity,int price, String description, String adminId, Category category){
+    public void update(String name,int quantity,int price, String description, String adminId, Category category, String viewYn, int viewPrice){
 
 
         this.name=name;
@@ -97,6 +82,10 @@ public class Item extends BaseTimeEntity {
         this.adminId=adminId;
 
         this.category=category;
+
+        this.viewYn=viewYn;
+
+        this.viewPrice=viewPrice;
     }
 
     /**

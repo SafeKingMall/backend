@@ -285,106 +285,106 @@ class MemberControllerTest_Info extends MvcTest {
         );
     }
 
-//    @Test
-//    void idFind() throws Exception {
-//        //given
-//        PhoneNumber phoneNumber = new PhoneNumber("01082460887");
-//        String code = smsService.sendCodeToClient(phoneNumber.getClientPhoneNumber());
-//
-//        IdFindRequest idFindRequest = new IdFindRequest(phoneNumber.getClientPhoneNumber(), code);
-//        String content = om.writeValueAsString(idFindRequest);
-//        //when
-//        ResultActions resultActions = mockMvc.perform(post("/api/v1/id/find")
-//                        .content(content)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//        //then
-//        String result = resultActions.andReturn().getResponse().getContentAsString();
-//
-//        assertThat(result).isEqualTo(TestUserHelper.USER_USERNAME);
-//        //docs
-//        resultActions.andDo(
-//                document("idFind"
-//                        ,requestFields(
-//                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호")
-//                                ,fieldWithPath("code").description("발송된 코드 값")
-//                        )
-//                )
-//        );
-//    }
-//    @Test
-//    @DisplayName("코드가 옳바르지 않는 경우")
-//    void idFind_error1() throws Exception {
-//        //given
-//        PhoneNumber phoneNumber = new PhoneNumber("01082460887");
-//        String code = smsService.sendCodeToClient(phoneNumber.getClientPhoneNumber());
-//
-//        IdFindRequest idFindRequest = new IdFindRequest(phoneNumber.getClientPhoneNumber(), "wrong");
-//        String content = om.writeValueAsString(idFindRequest);
-//        //when
-//        ResultActions resultActions = mockMvc.perform(post("/api/v1/id/find")
-//                        .content(content)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//        //then
-//        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
-//        Error error = om.readValue(contentAsString, Error.class);
-//
-//        assertAll(
-//                ()->assertThat(error.getCode()).isEqualTo(1300)
-//        );
-//        //docs
-//        resultActions.andDo(
-//                document("idFind_error1"
-//                        ,requestFields(
-//                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호")
-//                                ,fieldWithPath("code").description("잘못입력한 code")
-//                        )
-//                        ,responseFields(
-//                                fieldWithPath("code").description("error_code 는 1300")
-//                                ,fieldWithPath("message").description("error_message 는 코드가 일치하지 않습니다.")
-//                        )
-//                )
-//        );
-//    }
-//    @Test
-//    @DisplayName("회원가입시 입력한 phoneNumber 와 다른 경우")
-//    void idFind_error2() throws Exception {
-//        //given
-//        PhoneNumber phoneNumber = new PhoneNumber("01092460771");
-//        String code = smsService.sendCodeToClient(phoneNumber.getClientPhoneNumber());
-//
-//        IdFindRequest idFindRequest = new IdFindRequest(phoneNumber.getClientPhoneNumber(), code);
-//        String content = om.writeValueAsString(idFindRequest);
-//        //when
-//        ResultActions resultActions = mockMvc.perform(post("/api/v1/id/find")
-//                        .content(content)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//        //then
-//        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
-//        Error error = om.readValue(contentAsString, Error.class);
-//
-//        assertAll(
-//                ()->assertThat(error.getCode()).isEqualTo(1200)
-//        );
-//        //docs
-//        resultActions.andDo(
-//                document("idFind_error2"
-//                        ,requestFields(
-//                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호와 다른 번호")
-//                                ,fieldWithPath("code").description("code")
-//                        )
-//                        ,responseFields(
-//                                fieldWithPath("code").description("error_code 는 1200")
-//                                ,fieldWithPath("message").description("등록된 휴대번호와 일치하는 회원이 없습니다.")
-//                        )
-//                )
-//        );
-//    }
+    @Test
+    void idFind() throws Exception {
+        //given
+        PhoneNumber phoneNumber = new PhoneNumber("01082460887");
+        String code = smsService.sendCodeToClient(phoneNumber.getClientPhoneNumber());
+
+        IdFindRequest idFindRequest = new IdFindRequest(phoneNumber.getClientPhoneNumber(), code);
+        String content = om.writeValueAsString(idFindRequest);
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/id/find")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        //then
+        String result = resultActions.andReturn().getResponse().getContentAsString();
+
+        assertThat(result).isEqualTo(TestUserHelper.USER_USERNAME);
+        //docs
+        resultActions.andDo(
+                document("idFind"
+                        ,requestFields(
+                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호")
+                                ,fieldWithPath("code").description("발송된 코드 값")
+                        )
+                )
+        );
+    }
+    @Test
+    @DisplayName("코드가 옳바르지 않는 경우")
+    void idFind_error1() throws Exception {
+        //given
+        PhoneNumber phoneNumber = new PhoneNumber("01082460887");
+        String code = smsService.sendCodeToClient(phoneNumber.getClientPhoneNumber());
+
+        IdFindRequest idFindRequest = new IdFindRequest(phoneNumber.getClientPhoneNumber(), "wrong");
+        String content = om.writeValueAsString(idFindRequest);
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/id/find")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        //then
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        Error error = om.readValue(contentAsString, Error.class);
+
+        assertAll(
+                ()->assertThat(error.getCode()).isEqualTo(1300)
+        );
+        //docs
+        resultActions.andDo(
+                document("idFind_error1"
+                        ,requestFields(
+                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호")
+                                ,fieldWithPath("code").description("잘못입력한 code")
+                        )
+                        ,responseFields(
+                                fieldWithPath("code").description("error_code 는 1300")
+                                ,fieldWithPath("message").description("error_message 는 코드가 일치하지 않습니다.")
+                        )
+                )
+        );
+    }
+    @Test
+    @DisplayName("회원가입시 입력한 phoneNumber 와 다른 경우")
+    void idFind_error2() throws Exception {
+        //given
+        PhoneNumber phoneNumber = new PhoneNumber("01092460771");
+        String code = smsService.sendCodeToClient(phoneNumber.getClientPhoneNumber());
+
+        IdFindRequest idFindRequest = new IdFindRequest(phoneNumber.getClientPhoneNumber(), code);
+        String content = om.writeValueAsString(idFindRequest);
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/id/find")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        //then
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        Error error = om.readValue(contentAsString, Error.class);
+
+        assertAll(
+                ()->assertThat(error.getCode()).isEqualTo(1200)
+        );
+        //docs
+        resultActions.andDo(
+                document("idFind_error2"
+                        ,requestFields(
+                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호와 다른 번호")
+                                ,fieldWithPath("code").description("code")
+                        )
+                        ,responseFields(
+                                fieldWithPath("code").description("error_code 는 1200")
+                                ,fieldWithPath("message").description("등록된 휴대번호와 일치하는 회원이 없습니다.")
+                        )
+                )
+        );
+    }
 
     @Test
     @DisplayName("임시 비밀번호 발급")

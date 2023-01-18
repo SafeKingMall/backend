@@ -1,20 +1,16 @@
 package com.safeking.shop.domain.item.web.response;
 
-import com.safeking.shop.domain.admin.domain.entity.Admin;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
+@Builder
 @AllArgsConstructor
-public class ItemViewResponse {
+public class ItemAdminListResponse {
     private Long id;
+    private Integer price;
     private String name;
-    private int quantity;
-    private String description;
-    private Integer viewPrice;
-    private String adminId;
     private String categoryName;
     private String createDate;
     private String lastModifiedDate;

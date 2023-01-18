@@ -5,7 +5,6 @@ import com.safeking.shop.domain.item.domain.entity.Category;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.user.domain.entity.Address;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
-import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
@@ -22,10 +21,10 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 @Component
-@Profile("local")
+@Profile("dev2")
 @RequiredArgsConstructor
 @Slf4j
-public class InitDB {
+public class InitDB_dev {
 
     private final InitService initService;
 

@@ -1,30 +1,20 @@
-package com.safeking.shop.domain.item.domain.service.servicedto.item;
+package com.safeking.shop.domain.item.web.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-import java.util.List;
-
-@Data
-@Builder
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class ItemViewDto {
-
+public class ItemAdminViewResponse {
     private Long id;
     private String name;
     private int quantity;
     private String description;
-    private int viewPrice;
-    private int price;
+    private Integer price;
     private String adminId;
     private String categoryName;
     private String createDate;
     private String lastModifiedDate;
-    private String viewYn;
 
     private String fileName;
-
 }
