@@ -96,6 +96,30 @@ public class InitDB {
 
             }
 
+            for (int i = 40; i <=70 ; i++) {
+                Member user = GeneralMember.builder()
+                        .name("Withdrawal")
+                        .birth("971202")
+                        .username("Withdrawal"+i)
+                        .password(encoder.encode("Withdrawal"+i+"*"))
+                        .email("kms199719@naver.com")
+                        .roles("ROLE_USER")
+                        .phoneNumber("01082460887")
+                        .companyName("safeking")
+                        .companyRegistrationNumber("111")
+                        .corporateRegistrationNumber("222")
+                        .representativeName("MS")
+                        .address(new Address("서울시","마포대로","111"))
+                        .agreement(true)
+                        .accountNonLocked(false)
+                        .status(MemberStatus.WITHDRAWAL)
+                        .build();
+
+                user.addLastLoginTime();
+                em.persist(user);
+                cartService.createCart(user);
+            }
+
             Member user = GeneralMember.builder()
                     .username("dormant1234")
                     .password(encoder.encode("dormant1234*"))

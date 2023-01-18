@@ -5,6 +5,7 @@ import com.safeking.shop.domain.item.domain.entity.Category;
 import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.user.domain.entity.Address;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
+import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
@@ -43,6 +44,8 @@ public class InitDB_dev {
     static class InitService{
         private final EntityManager em;
         private final CustomBCryPasswordEncoder encoder;
+        private final MemberRepository memberRepository;
+        private final MemberRedisRepository redisRepository;
         private final RedisService redisService;
         private final CartService cartService;
 
@@ -58,6 +61,7 @@ public class InitDB_dev {
                     .companyName("safeking")
                     .accountNonLocked(true)
                     .status(MemberStatus.COMMON)
+                    .address(new Address("제주도 제주시", "제주아파트 100동 5050호", "12990"))
                     .build();
             admin.addLastLoginTime();
 
@@ -92,7 +96,7 @@ public class InitDB_dev {
 
             }
 
-            for (int i = 1; i <=30 ; i++) {
+            for (int i = 40; i <=70 ; i++) {
                 Member user = GeneralMember.builder()
                         .name("Withdrawal")
                         .birth("971202")
@@ -110,12 +114,11 @@ public class InitDB_dev {
                         .accountNonLocked(false)
                         .status(MemberStatus.WITHDRAWAL)
                         .build();
+
                 user.addLastLoginTime();
                 em.persist(user);
                 cartService.createCart(user);
-
             }
-
 
             Member user = GeneralMember.builder()
                     .username("dormant1234")
