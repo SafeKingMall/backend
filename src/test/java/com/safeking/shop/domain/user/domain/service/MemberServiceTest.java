@@ -129,6 +129,7 @@ class MemberServiceTest {
         MemberUpdateDto memberUpdateDto = MemberUpdateDto.builder()
                 .name("nameChange")
                 .birth("birthChange")
+                .email("email")
                 .representativeName("representativeNameChange")
                 .phoneNumber("phoneNumberChange")
                 .companyRegistrationNumber("companyRegistrationNumberChange")

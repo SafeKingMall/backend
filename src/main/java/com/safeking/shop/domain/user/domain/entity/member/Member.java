@@ -65,6 +65,7 @@ public abstract class Member extends BaseMemberEntity {
 
     public void updateInfo(String name
                             ,String birth
+                            ,String email
                             ,String representativeName
                             ,String phoneNumber
                             ,String companyRegistrationNumber
@@ -73,6 +74,7 @@ public abstract class Member extends BaseMemberEntity {
     ){
         this.name = name;
         this.birth = birth;
+        this.email = email;
         this.representativeName = representativeName;
         this.phoneNumber = phoneNumber;
         this.companyRegistrationNumber = companyRegistrationNumber;

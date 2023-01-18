@@ -197,6 +197,7 @@ public class MemberService {
                 .updateInfo(
                         memberUpdateDto.getName()
                         ,memberUpdateDto.getBirth()
+                        ,memberUpdateDto.getEmail()
                         ,memberUpdateDto.getRepresentativeName()
                         ,memberUpdateDto.getPhoneNumber()
                         ,memberUpdateDto.getCompanyRegistrationNumber()

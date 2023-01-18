@@ -8,7 +8,7 @@ import lombok.Data;
 public class MemberUpdateDto {
     private String name;
     private String birth;
-
+    private String email;
     private String representativeName;
 
     private String phoneNumber;
@@ -21,6 +21,7 @@ public class MemberUpdateDto {
     public MemberUpdateDto(
             String name
             , String birth
+            , String email
             , String representativeName
             , String phoneNumber
             , String companyRegistrationNumber
@@ -30,6 +31,7 @@ public class MemberUpdateDto {
     {
         this.name = name;
         this.birth = birth;
+        this.email = email;
         this.representativeName = representativeName;
         this.phoneNumber = phoneNumber;
         this.companyRegistrationNumber = companyRegistrationNumber;
