@@ -3,6 +3,8 @@ package com.safeking.shop;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -40,6 +42,20 @@ public class BackendApplication {
 
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         return ()->Optional.of(principal.getMember().getUsername());
+    }
+
+    /**
+     * 모델 매퍼
+     * 쉽게 entity -> dto 로 변환하기 위함.
+     */
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration()
+                .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE)
+                .setFieldMatchingEnabled(true);
+
+        return modelMapper;
     }
 
 }
