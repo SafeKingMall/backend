@@ -22,7 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 @Component
-@Profile("local")
+@Profile("test")
 @RequiredArgsConstructor
 @Slf4j
 public class InitDB {
@@ -61,6 +61,7 @@ public class InitDB {
                     .companyName("safeking")
                     .accountNonLocked(true)
                     .status(MemberStatus.COMMON)
+                    .address(new Address("제주도 제주시", "제주아파트 100동 5050호", "12990"))
                     .build();
             admin.addLastLoginTime();
 
