@@ -7,10 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 
 @Getter
 @AllArgsConstructor
@@ -22,6 +19,8 @@ public class UpdateRequest {
     @NotBlank
     @Pattern(regexp = "^(19[0-9][0-9]|20\\d{2})(0[0-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$",message = "ex) 19971202")
     private String birth;
+    @Email
+    private String email;
     @Length(max = 50)
     @NotBlank(message = "빈 문자는 안됩니다.")
     private String representativeName;
@@ -48,6 +47,7 @@ public class UpdateRequest {
         return MemberUpdateDto.builder()
                 .name(name)
                 .birth(birth)
+                .email(email)
                 .representativeName(representativeName)
                 .phoneNumber(phoneNumber)
                 .companyRegistrationNumber(companyRegistrationNumber)

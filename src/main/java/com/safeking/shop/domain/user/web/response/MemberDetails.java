@@ -14,6 +14,7 @@ public class MemberDetails {
     private String name;
     private String username;
     private String birth;
+    private String email;
 
     private String representativeName;
 
@@ -30,6 +31,7 @@ public class MemberDetails {
         this.name = member.getName();
         this.username = member.getUsername();
         this.birth = member.getBirth();
+        this.email = member.getEmail();
         this.representativeName = member.getRepresentativeName();
         this.phoneNumber = member.getPhoneNumber();
         this.companyRegistrationNumber = member.getCompanyRegistrationNumber();

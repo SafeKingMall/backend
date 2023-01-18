@@ -1,6 +1,7 @@
 package com.safeking.shop.domain.user.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.coolsms.web.request.PhoneNumber;
 import com.safeking.shop.domain.user.domain.entity.Address;
@@ -40,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sound.midi.Patch;
 
 import static com.safeking.shop.global.DocumentFormatGenerator.*;
+import static com.safeking.shop.global.TestUserHelper.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static com.safeking.shop.global.jwt.TokenUtils.REFRESH_HEADER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,6 +69,8 @@ class MemberControllerTest_Info extends MvcTest {
     TestUserHelper userHelper;
     @Autowired
     SMSService smsService;
+    @Autowired
+    CartService cartService;
 
     String jwtToken=null;
     String refreshToken=null;
@@ -93,7 +97,7 @@ class MemberControllerTest_Info extends MvcTest {
          **/
         Assertions.assertAll(
                 () -> assertThat(memberDetails.getName()).isEqualTo("user")
-                , () -> assertThat(memberDetails.getUsername()).isEqualTo(TestUserHelper.USER_USERNAME)
+                , () -> assertThat(memberDetails.getUsername()).isEqualTo(USER_USERNAME)
                 , () -> assertThat(memberDetails.getBirth()).isEqualTo("birth")
                 , () -> assertThat(memberDetails.getRepresentativeName()).isEqualTo("MS")
                 , () -> assertThat(memberDetails.getPhoneNumber()).isEqualTo("01082460887")
@@ -116,6 +120,7 @@ class MemberControllerTest_Info extends MvcTest {
                                 fieldWithPath("name").description("이름")
                                 ,fieldWithPath("username").description("회원 ID")
                                 ,fieldWithPath("birth").description("생일")
+                                ,fieldWithPath("email").description("이메일")
                                 ,fieldWithPath("representativeName").description("대표자명")
                                 ,fieldWithPath("phoneNumber").description("핸드폰 번호")
                                 ,fieldWithPath("companyRegistrationNumber").description("사업자 등록 번호")
@@ -129,6 +134,29 @@ class MemberControllerTest_Info extends MvcTest {
         );
     }
     @Test
+    @DisplayName("회원 탈퇴")
+    void withdrawal() throws Exception {
+        //given
+        String token = jwtToken;
+
+        cartService.createCart(
+                memberRepository
+                        .findByUsername(USER_USERNAME)
+                        .orElseThrow());
+        //when
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/user/withdrawal")
+                        .header(AUTH_HEADER, token))
+                .andExpect(status().isOk());
+        //docs
+        resultActions.andDo(
+                document("withdrawal"
+                        ,requestHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                )
+        );
+    }
+    @Test
     @DisplayName("회원 수정")
     void update() throws Exception {
         //given
@@ -136,6 +164,7 @@ class MemberControllerTest_Info extends MvcTest {
         UpdateRequest updateRequest = UpdateRequest.builder()
                 .name("nameChange")
                 .birth("19971202")
+                .email("kms199710@naver.com")
                 .representativeName("representativeNameChange")
                 .phoneNumber("01082460887")
                 .companyRegistrationNumber("111-12-12345")
@@ -153,12 +182,13 @@ class MemberControllerTest_Info extends MvcTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         //then
-        Member member = memberRepository.findByUsername(TestUserHelper.USER_USERNAME).orElseThrow();
+        Member member = memberRepository.findByUsername(USER_USERNAME).orElseThrow();
 
         assertAll(
                 () -> assertThat(member.getName()).isEqualTo("nameChange")
-                , () -> assertThat(member.getUsername()).isEqualTo(TestUserHelper.USER_USERNAME)
+                , () -> assertThat(member.getUsername()).isEqualTo(USER_USERNAME)
                 , () -> assertThat(member.getBirth()).isEqualTo("19971202")
+                , () -> assertThat(member.getEmail()).isEqualTo("kms199710@naver.com")
                 , () -> assertThat(member.getRepresentativeName()).isEqualTo("representativeNameChange")
                 , () -> assertThat(member.getPhoneNumber()).isEqualTo("01082460887")
                 , () -> assertThat(member.getCompanyRegistrationNumber()).isEqualTo("111-12-12345")
@@ -181,6 +211,7 @@ class MemberControllerTest_Info extends MvcTest {
                         ,requestFields(
                                 fieldWithPath("name").attributes(InputValidation()).description("name")
                                 ,fieldWithPath("birth").attributes(BirthValidation()).description("birth")
+                                ,fieldWithPath("email").attributes(EmailValidation()).description("email")
                                 ,fieldWithPath("representativeName").attributes(InputValidation()).description("대표자 명")
                                 ,fieldWithPath("phoneNumber").attributes(PhoneNumberValidation()).description("phoneNumber")
                                 ,fieldWithPath("companyRegistrationNumber").attributes(companyRegistrationNumberValidation()).description("사업자 등록 번호")
@@ -260,7 +291,7 @@ class MemberControllerTest_Info extends MvcTest {
         //given
         String token=jwtToken;
 
-        IdDuplicationRequest idDuplicationRequest = new IdDuplicationRequest(TestUserHelper.USER_USERNAME);
+        IdDuplicationRequest idDuplicationRequest = new IdDuplicationRequest(USER_USERNAME);
         String content = om.writeValueAsString(idDuplicationRequest);
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/id/duplication")
@@ -302,7 +333,7 @@ class MemberControllerTest_Info extends MvcTest {
         //then
         String result = resultActions.andReturn().getResponse().getContentAsString();
 
-        assertThat(result).isEqualTo(TestUserHelper.USER_USERNAME);
+        assertThat(result).isEqualTo(USER_USERNAME);
         //docs
         resultActions.andDo(
                 document("idFind"
@@ -390,7 +421,7 @@ class MemberControllerTest_Info extends MvcTest {
     @DisplayName("임시 비밀번호 발급")
     void sendTemporaryPassword() throws Exception {
         //given
-        PWFindRequest pwFindRequest = new PWFindRequest(TestUserHelper.USER_USERNAME);
+        PWFindRequest pwFindRequest = new PWFindRequest(USER_USERNAME);
         String content = om.writeValueAsString(pwFindRequest);
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/temporaryPassword")
@@ -495,6 +526,108 @@ class MemberControllerTest_Info extends MvcTest {
         );
 
     }
+
+    @Test
+    @DisplayName("탈퇴회원 리스트 조회")
+    void showWithDrawlList() throws Exception {
+        //given
+        //1) admin create
+        userHelper.createADMIN();
+        //2) member create
+        for (int i = 1; i <= 30; i++) {
+            Member user = GeneralMember.builder()
+                    .name("user"+i)
+                    .username("testUser" + i)
+                    .password(encoder.encode("testUser" + i + "*"))
+                    .accountNonLocked(true)
+                    .status(MemberStatus.COMMON)
+                    .build();
+            user.addLastLoginTime();
+            memberRepository.save(user);
+        }
+        //2-1) 탈퇴 회원을 생성
+        GeneralMember withDrawlMember = GeneralMember.builder()
+                .name("withDrawl")
+                .username("withDrawl1234")
+                .password(encoder.encode("withDrawl1234*"))
+                .accountNonLocked(false)
+                .status(MemberStatus.WITHDRAWAL)
+                .build();
+        withDrawlMember.addLastLoginTime();
+        memberRepository.save(withDrawlMember);
+
+        //3) admin login
+        generateTokenAdmin();
+        //when
+        ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/admin/member/withDrawlList")
+                        .header(AUTH_HEADER,jwtToken)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+                        .param("name","withDrawl")
+                        .param("page","0")
+                        .param("size","15"))
+                .andExpect(status().isOk());
+        //then
+        /**
+         * jsonPath 를 사용하면 json 객체에 바로 다가갈 수 있다.
+         **/
+
+        resultActions
+                .andExpect(jsonPath("content[0].name").value("withDrawl"))
+                .andExpect(jsonPath("totalPages").value("1"))
+                .andExpect(jsonPath("totalElements").value("1"))
+                .andExpect(jsonPath("size").value("15"))
+                .andExpect(jsonPath("numberOfElements").value("1"))
+        ;
+        //docs
+        resultActions.andDo(
+                document("showWithDrawlList"
+                        ,requestHeaders(
+                                headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,requestParameters(
+                                parameterWithName("name").optional().description("회원 이름")
+                                ,parameterWithName("page").optional().description("page 는 0부터 시작")
+                                ,parameterWithName("size").optional().description("size 는 기본 15")
+                        )
+                        ,responseFields(
+                                fieldWithPath("content").type(JsonFieldType.ARRAY).description("회원 리스트")
+                                ,fieldWithPath("content.[].memberId").type(JsonFieldType.NUMBER).description("회원 ID")
+                                ,fieldWithPath("content.[].name").description("회원 이름")
+                                ,fieldWithPath("content.[].withdrawalDate").description("회원 탈퇴 일자")
+
+                                ,fieldWithPath("pageable").type(JsonFieldType.OBJECT).description("pageable 정보")
+
+                                ,fieldWithPath("pageable.sort").type(JsonFieldType.OBJECT).description("정렬")
+                                ,fieldWithPath("pageable.sort.sorted").description("정렬")
+                                ,fieldWithPath("pageable.sort.unsorted").description("비 정렬")
+                                ,fieldWithPath("pageable.sort.empty").description("empty")
+
+                                ,fieldWithPath("pageable.offset").description("offset")
+                                ,fieldWithPath("pageable.pageSize").description("기본 15개로 설정")
+                                ,fieldWithPath("pageable.pageNumber").description("페이지 번호")
+                                ,fieldWithPath("pageable.paged").description("paged")
+                                ,fieldWithPath("pageable.unpaged").description("unpaged")
+
+                                ,fieldWithPath("last").description("마지막 페이지 여부")
+                                ,fieldWithPath("totalElements").description("전체의 데이터 수")
+                                ,fieldWithPath("totalPages").description("전체 페이지의 수")
+                                ,fieldWithPath("size").description("몇개의 데이터를 뿌릴지 여부 기본 15개")
+                                ,fieldWithPath("number").description("페이지 번호")
+
+                                ,fieldWithPath("sort").type(JsonFieldType.OBJECT).description("empty")
+                                ,fieldWithPath("sort.empty").description("empty")
+                                ,fieldWithPath("sort.sorted").description("정렬")
+                                ,fieldWithPath("sort.unsorted").description("비 정렬")
+
+                                ,fieldWithPath("first").description("처음 페이지 인가")
+                                ,fieldWithPath("numberOfElements").description("페이지의 데이터 갯수")
+                                ,fieldWithPath("empty").description("비어 있는 가")
+                        )
+                )
+        );
+
+    }
+
     @Test
     @DisplayName("refresh token 발급")
     void refreshToken() throws Exception {
@@ -520,7 +653,7 @@ class MemberControllerTest_Info extends MvcTest {
 
     private void generateToken() throws Exception {
         String content = om.writeValueAsString(
-                new LoginRequestDto(TestUserHelper.USER_USERNAME, TestUserHelper.USER_PASSWORD));
+                new LoginRequestDto(USER_USERNAME, USER_PASSWORD));
         //when
         MockHttpServletResponse response = mockMvc.perform(post("/api/v1/login")
                         .content(content)
@@ -534,7 +667,7 @@ class MemberControllerTest_Info extends MvcTest {
     }
     private void generateTokenAdmin() throws Exception {
         String content = om.writeValueAsString(
-                new LoginRequestDto(TestUserHelper.ADMIN_USERNAME, TestUserHelper.ADMIN_PASSWORD));
+                new LoginRequestDto(ADMIN_USERNAME, ADMIN_PASSWORD));
         //when
         MockHttpServletResponse response = mockMvc.perform(post("/api/v1/login")
                         .content(content)

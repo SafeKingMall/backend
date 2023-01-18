@@ -5,6 +5,7 @@ public class ErrorConst {
      * error code 의 상수화
      **/
     public static int ILLEGAL_ARGUMENT_EX_CODE=100;
+    public static int ILLEGAL_ACCESS_EX_CODE=101;
     public static int REFRESH_TOKEN_NOT_FOUND_EX_CODE=200;
     public static int CACHE_EX_CODE=201;
     public static int ENTITY_NOT_FOUND_EX_CODE=300;

@@ -69,9 +69,11 @@ public class InitDB {
 
         public void initMemberTestV1(){
             //일반 회원 30명 넣기
+            char[] chars = {'A', 'B', 'C', 'D', 'E'};
+
             for (int i = 1; i <=30 ; i++) {
                 Member user = GeneralMember.builder()
-                        .name("user"+i)
+                        .name("user"+chars[i%5])
                         .birth("971202")
                         .username("testUser"+i)
                         .password(encoder.encode("testUser"+i+"*"))
@@ -92,6 +94,7 @@ public class InitDB {
                 cartService.createCart(user);
 
             }
+
             Member user = GeneralMember.builder()
                     .username("dormant1234")
                     .password(encoder.encode("dormant1234*"))

@@ -34,11 +34,12 @@ public class BasicScheduler {
     private final Job memoryClearJobJob;
     @Qualifier("redisClearJobJob")
     private final Job redisClearJobJob;
+    @Qualifier("withdrawalJob")
+    private final Job withdrawalJob;
     private final JobLauncher jobLauncher;
 
 
     @Scheduled(cron = "0 15 4 ? * *")
-//    @Scheduled(cron = "*/10 * * * * *")
     public void humanAccountJobRun()
             throws JobInstanceAlreadyCompleteException
             , JobExecutionAlreadyRunningException
@@ -78,6 +79,20 @@ public class BasicScheduler {
         );
         jobLauncher.run(redisClearJobJob,jobParameters);
         log.info("success redisClearJobRun");
+    }
+
+    @Scheduled(cron = "0 30 4 ? * *")
+    public void withdrawalJobRun()
+            throws JobInstanceAlreadyCompleteException
+            , JobExecutionAlreadyRunningException
+            , JobParametersInvalidException
+            , JobRestartException {
+        log.info("withdrawalJob BATCH");
+        JobParameters jobParameters = new JobParameters(
+                Collections.singletonMap("requestTime", new JobParameter(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
+        );
+        jobLauncher.run(withdrawalJob,jobParameters);
+        log.info("success withdrawalJobRun");
     }
 
 
