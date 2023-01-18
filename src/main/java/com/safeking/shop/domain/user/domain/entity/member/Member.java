@@ -20,8 +20,8 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
 public abstract class Member extends BaseMemberEntity {
-    public static long MEMBER_HUMAN_TIME=33l;
-    public static long MEMBER_WITHDRAWAL_TIME=33l;
+    public static long MEMBER_HUMAN_TIME=1l;
+    public static long MEMBER_WITHDRAWAL_TIME=1l;
 //    public static long MEMBER_WITHDRAWAL_TIME=15l;
 //    public static long MEMBER_HUMAN_TIME=15l;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

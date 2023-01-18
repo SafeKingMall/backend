@@ -22,7 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 @Component
-@Profile("test")
+@Profile("local")
 @RequiredArgsConstructor
 @Slf4j
 public class InitDB {

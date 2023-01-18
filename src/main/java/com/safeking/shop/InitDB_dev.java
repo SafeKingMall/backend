@@ -66,9 +66,11 @@ public class InitDB_dev {
 
         public void initMemberTestV1(){
             //일반 회원 30명 넣기
+            char[] chars = {'A', 'B', 'C', 'D', 'E'};
+
             for (int i = 1; i <=30 ; i++) {
                 Member user = GeneralMember.builder()
-                        .name("user"+i)
+                        .name("user"+chars[i%5])
                         .birth("971202")
                         .username("testUser"+i)
                         .password(encoder.encode("testUser"+i+"*"))
@@ -89,6 +91,32 @@ public class InitDB_dev {
                 cartService.createCart(user);
 
             }
+
+            for (int i = 1; i <=30 ; i++) {
+                Member user = GeneralMember.builder()
+                        .name("Withdrawal")
+                        .birth("971202")
+                        .username("Withdrawal"+i)
+                        .password(encoder.encode("Withdrawal"+i+"*"))
+                        .email("kms199719@naver.com")
+                        .roles("ROLE_USER")
+                        .phoneNumber("01082460887")
+                        .companyName("safeking")
+                        .companyRegistrationNumber("111")
+                        .corporateRegistrationNumber("222")
+                        .representativeName("MS")
+                        .address(new Address("서울시","마포대로","111"))
+                        .agreement(true)
+                        .accountNonLocked(false)
+                        .status(MemberStatus.WITHDRAWAL)
+                        .build();
+                user.addLastLoginTime();
+                em.persist(user);
+                cartService.createCart(user);
+
+            }
+
+
             Member user = GeneralMember.builder()
                     .username("dormant1234")
                     .password(encoder.encode("dormant1234*"))

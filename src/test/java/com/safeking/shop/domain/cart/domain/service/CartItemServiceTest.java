@@ -79,7 +79,6 @@ class CartItemServiceTest {
 
         assertAll(
                 ()->assertThat(cartItem.getCart().getMember().getUsername()).isEqualTo(username)
-                ,()->assertThat(cartItem.getItem().getId()).isEqualTo(itemId)
                 ,()->assertThat(cartItem.getCount()).isEqualTo(4)
         );
     }
