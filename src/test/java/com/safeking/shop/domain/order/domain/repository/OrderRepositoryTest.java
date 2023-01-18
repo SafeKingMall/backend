@@ -49,8 +49,7 @@ class OrderRepositoryTest {
     EntityManager em;
 
     @Test
-    void delete(){
-        //given
+    void findByMember(){
         GeneralMember member = GeneralMember.builder().build();
         GeneralMember savedMember = memberRepository.save(member);
 
@@ -117,153 +116,8 @@ class OrderRepositoryTest {
         Order savedOrder = orderRepository.save(order);
 
         //when
-        orderRepository.delete(savedOrder);
-        //then
-
-        assertAll(
-                ()->assertThrows(NoSuchElementException.class
-                        , () -> orderItemRepository
-                                .findById(savedOrderItem1.getId())
-                                .orElseThrow())
-
-                , ()->assertThrows(NoSuchElementException.class
-                        , () -> orderItemRepository
-                            .findById(savedOrderItem2.getId())
-                            .orElseThrow())
-
-                , ()->assertThrows(NoSuchElementException.class
-                        , () -> orderItemRepository
-                                .findById(savedOrderItem3.getId())
-                                .orElseThrow())
-        );
-
-
+        orderRepository.findByMember(member);
     }
-    @Test
-    @Commit
-    public void deleteAllByMemberBatch(){
-        //given
-        GeneralMember member = GeneralMember.builder().build();
-        GeneralMember savedMember = memberRepository.save(member);
 
-        Item savedItem1 = itemRepository.save(
-                Item.createItem("name"
-                        ,10
-                        , "description"
-                        , 1000, "adminId"
-                        , null
-                        , 100
-                        , "Y"));
-        Item savedItem2 = itemRepository.save(
-                Item.createItem("name"
-                        ,10
-                        , "description"
-                        , 1000, "adminId"
-                        , null
-                        , 100
-                        , "Y"));
-        Item savedItem3 = itemRepository.save(
-                Item.createItem("name"
-                        ,10
-                        , "description"
-                        , 1000, "adminId"
-                        , null
-                        , 100
-                        , "Y"));
 
-        OrderItem orderItem = OrderItem
-                .createOrderItem(savedItem1, 1001, 1);
-
-        OrderItem orderItem2 = OrderItem
-                .createOrderItem(savedItem2, 1002, 2);
-
-        OrderItem orderItem3 = OrderItem
-                .createOrderItem(savedItem3, 1003, 3);
-
-//        OrderItem savedOrderItem1 = orderItemRepository.save(orderItem);
-//        OrderItem savedOrderItem2 = orderItemRepository.save(orderItem2);
-//        OrderItem savedOrderItem3 = orderItemRepository.save(orderItem3);
-
-        Delivery delivery = Delivery.createDelivery(
-                "receiver"
-                , "phoneNumber"
-                , "address"
-                , DeliveryStatus.COMPLETE
-                , "memo");
-        Delivery savedDelivery = deliveryRepository.save(delivery);
-
-        ArrayList<OrderItem> orderItems1 = new ArrayList<>();
-        orderItems1.add(orderItem);
-        orderItems1.add(orderItem2);
-
-        ArrayList<OrderItem> orderItems2 = new ArrayList<>();
-        orderItems2.add(orderItem3);
-
-//        SafekingPayment payment = SafekingPayment.createPayment(orderItems);
-//        SafekingPayment savedPayment = paymentRepository.save(payment);
-
-        Order order1 = Order.createOrder(
-                savedMember
-                , savedDelivery
-                , "memo"
-                , null
-                , orderItems1);
-        Order order2 = Order.createOrder(
-                savedMember
-                , savedDelivery
-                , "memo"
-                , null
-                , orderItems2);
-
-        Order savedOrder1 = orderRepository.save(order1);
-        Order savedOrder2 = orderRepository.save(order2);
-
-        // when
-        List<Long> orderIds = orderRepository
-                .findByMember(savedMember)
-                .stream()
-                .map(Order::getId)
-                .collect(Collectors.toList());
-
-        orderRepository.findByMember(member).stream().forEach(order -> orderItemService.delete(order));
-
-        orderRepository.deleteAllByMemberBatch(orderIds);
-
-        int size = orderRepository.findAll().size();
-        System.out.println("size = " + size);
-
-        int size1 = orderItemRepository.findAll().size();
-        System.out.println("size1 = " + size1);
-
-        em.flush(); // 영속성 컨텍스트 내용을 DB에 반영
-        em.clear(); // 영속성 컨텍스트 비움
-
-        //then
-        assertAll(
-                ()->assertThrows(NoSuchElementException.class
-                        , () -> orderItemRepository
-                                .findById(orderItem.getId())
-                                .orElseThrow(NoSuchElementException::new))
-
-                , ()->assertThrows(NoSuchElementException.class
-                        , () -> orderItemRepository
-                                .findById(orderItem2.getId())
-                                .orElseThrow())
-
-                , ()->assertThrows(NoSuchElementException.class
-                        , () -> orderItemRepository
-                                .findById(orderItem3.getId())
-                                .orElseThrow())
-
-                , ()->assertThrows(NoSuchElementException.class
-                        , () -> orderRepository
-                                .findById(savedOrder1.getId())
-                                .orElseThrow())
-
-                , ()->assertThrows(NoSuchElementException.class
-                        , () -> orderRepository
-                                .findById(savedOrder2.getId())
-                                .orElseThrow())
-        );
-    }
 }

@@ -21,6 +21,8 @@ import java.util.List;
 @DiscriminatorColumn
 public abstract class Member extends BaseMemberEntity {
     public static long MEMBER_HUMAN_TIME=33l;
+    public static long MEMBER_WITHDRAWAL_TIME=33l;
+//    public static long MEMBER_WITHDRAWAL_TIME=15l;
 //    public static long MEMBER_HUMAN_TIME=15l;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -180,9 +182,10 @@ public abstract class Member extends BaseMemberEntity {
 
     public void convertHumanAccount(){
         long between = ChronoUnit.DAYS.between(this.getLastLoginTime(), LocalDateTime.now());
-//        Duration between1 = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
+//        Duration between = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
 
-        if(between>=MEMBER_HUMAN_TIME){
+//        if(between.getSeconds() >= MEMBER_HUMAN_TIME){
+        if(between >= MEMBER_HUMAN_TIME){
             this.accountNonLocked=false;
             this.status=MemberStatus.HUMAN;
 
@@ -199,5 +202,17 @@ public abstract class Member extends BaseMemberEntity {
             this.contact=null;
             this.agreement=null;
         }
+    }
+    public boolean checkWithdrawalTime(){
+        long between = ChronoUnit.DAYS.between(this.getLastLoginTime(), LocalDateTime.now());
+//        Duration between = Duration.between(this.getLastLoginTime(), LocalDateTime.now());
+
+        return between >= MEMBER_WITHDRAWAL_TIME;
+//        return between.getSeconds() >= MEMBER_WITHDRAWAL_TIME;
+    }
+
+    public void changeToWithDrawlStatus(){
+        this.status = MemberStatus.WITHDRAWAL;
+        this.accountNonLocked=false;
     }
 }

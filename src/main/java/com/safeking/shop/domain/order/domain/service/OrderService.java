@@ -24,4 +24,5 @@ public interface OrderService {
     Long modifyOrderByAdmin(AdminModifyInfoRequest modifyInfoRequest, Long orderId); //관리자 주문 정보 수정
     Page<Order> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition);
     void delete(Member member);
+    void deleteByMemberBatch(Member member);
 }

@@ -13,16 +13,18 @@ import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -43,106 +45,101 @@ class OrderServiceTest {
     SafekingPaymentRepository paymentRepository;
     @Autowired
     OrderServiceImpl orderService;
+    @Autowired
+    EntityManager em;
 
     @Test
-    public void deleteAllByMemberBatch(){
+    public void deleteByMemberBatch() {
         //given
+        // member create
         GeneralMember member = GeneralMember.builder().build();
         GeneralMember savedMember = memberRepository.save(member);
 
-        Item savedItem1 = itemRepository.save(
-                Item.createItem("name"
-                        ,10
-                        , "description"
-                        , 1000, "adminId"
-                        , null
-                        , 100
-                        , "Y"));
-        Item savedItem2 = itemRepository.save(
-                Item.createItem("name"
-                        ,10
-                        , "description"
-                        , 1000, "adminId"
-                        , null
-                        , 100
-                        , "Y"));
-        Item savedItem3 = itemRepository.save(
-                Item.createItem("name"
-                        ,10
-                        , "description"
-                        , 1000, "adminId"
-                        , null
-                        , 100
-                        , "Y"));
+        GeneralMember member2 = GeneralMember.builder().build();
+        GeneralMember savedMember2 = memberRepository.save(member2);
+
+        // item create
+        Item savedItem1 = itemRepository.save(getItem());
+        Item savedItem2 = itemRepository.save(getItem());
+        Item savedItem3 = itemRepository.save(getItem());
 
         OrderItem orderItem = OrderItem
-                .createOrderItem(savedItem1, 1000, 10);
+                .createOrderItem(savedItem1, 1001, 10);
 
         OrderItem orderItem2 = OrderItem
-                .createOrderItem(savedItem2, 1000, 10);
+                .createOrderItem(savedItem2, 1002, 10);
 
         OrderItem orderItem3 = OrderItem
-                .createOrderItem(savedItem3, 1000, 10);
+                .createOrderItem(savedItem3, 1003, 10);
 
-        OrderItem savedOrderItem1 = orderItemRepository.save(orderItem);
-        OrderItem savedOrderItem2 = orderItemRepository.save(orderItem2);
-        OrderItem savedOrderItem3 = orderItemRepository.save(orderItem3);
+        OrderItem orderItem4 = OrderItem
+                .createOrderItem(savedItem3, 1003, 10);
 
-        Delivery delivery = Delivery.createDelivery(
-                "receiver"
-                , "phoneNumber"
-                , "address"
-                , DeliveryStatus.COMPLETE
-                , "memo");
-        Delivery savedDelivery = deliveryRepository.save(delivery);
+        OrderItem orderItem5 = OrderItem
+                .createOrderItem(savedItem3, 1003, 10);
 
-        ArrayList<OrderItem> orderItems = new ArrayList<>();
-        orderItems.add(savedOrderItem1);
-        orderItems.add(savedOrderItem2);
-        orderItems.add(savedOrderItem3);
+        // delivery create
+        Delivery delivery1 = createDelivery();
+        Delivery savedDelivery1 = deliveryRepository.save(delivery1);
 
-        SafekingPayment payment = SafekingPayment.createPayment(orderItems);
-        SafekingPayment savedPayment = paymentRepository.save(payment);
+        Delivery delivery2 = createDelivery();
+        Delivery savedDelivery2 = deliveryRepository.save(delivery2);
 
-        Order order1 = Order.createOrder(
-                savedMember
-                , savedDelivery
-                , "memo"
-                , savedPayment
-                , orderItems);
-        Order order2 = Order.createOrder(
-                savedMember
-                , savedDelivery
-                , "memo"
-                , savedPayment
-                , orderItems);
-        Order order3 = Order.createOrder(
-                savedMember
-                , savedDelivery
-                , "memo"
-                , savedPayment
-                , orderItems);
+        Delivery delivery3 = createDelivery();
+        Delivery savedDelivery3 = deliveryRepository.save(delivery3);
+
+        //orderItem create
+        ArrayList<OrderItem> orderItems1 = new ArrayList<>();
+        orderItems1.add(orderItem);
+        orderItems1.add(orderItem2);
+
+        ArrayList<OrderItem> orderItems2 = new ArrayList<>();
+        orderItems2.add(orderItem3);
+
+        ArrayList<OrderItem> orderItems3 = new ArrayList<>();
+        orderItems3.add(orderItem4);
+        orderItems3.add(orderItem5);
+        // payment create
+        SafekingPayment payment1 = SafekingPayment.createPayment(orderItems1);
+        paymentRepository.save(payment1);
+
+        SafekingPayment payment2 = SafekingPayment.createPayment(orderItems2);
+        paymentRepository.save(payment2);
+
+        SafekingPayment payment3 = SafekingPayment.createPayment(orderItems3);
+        paymentRepository.save(payment3);
+
+        //order create
+        Order order1 = createOrder(savedMember, savedDelivery1, orderItems1, payment1);
+
+        Order order2 = createOrder(savedMember, savedDelivery2, orderItems2, payment2);
+
+        Order order3 = createOrder(savedMember2, savedDelivery3, orderItems3, payment3);
+
         Order savedOrder1 = orderRepository.save(order1);
         Order savedOrder2 = orderRepository.save(order2);
         Order savedOrder3 = orderRepository.save(order3);
 
-        orderService.delete(savedMember);
+        // when
+        orderService.deleteByMemberBatch(member);
 
+        em.flush(); // 영속성 컨텍스트 내용을 DB에 반영
+        em.clear(); // 영속성 컨텍스트 비움
         //then
         assertAll(
                 ()->assertThrows(NoSuchElementException.class
                         , () -> orderItemRepository
-                                .findById(savedOrderItem1.getId())
+                                .findById(orderItem.getId())
+                                .orElseThrow(NoSuchElementException::new))
+
+                , ()->assertThrows(NoSuchElementException.class
+                        , () -> orderItemRepository
+                                .findById(orderItem2.getId())
                                 .orElseThrow())
 
                 , ()->assertThrows(NoSuchElementException.class
                         , () -> orderItemRepository
-                                .findById(savedOrderItem2.getId())
-                                .orElseThrow())
-
-                , ()->assertThrows(NoSuchElementException.class
-                        , () -> orderItemRepository
-                                .findById(savedOrderItem3.getId())
+                                .findById(orderItem3.getId())
                                 .orElseThrow())
 
                 , ()->assertThrows(NoSuchElementException.class
@@ -156,11 +153,62 @@ class OrderServiceTest {
                                 .orElseThrow())
 
                 , ()->assertThrows(NoSuchElementException.class
-                        , () -> orderRepository
-                                .findById(savedOrder3.getId())
+                        , () -> deliveryRepository
+                                .findById(savedDelivery1.getId())
                                 .orElseThrow())
-        );
 
+                , ()->assertThrows(NoSuchElementException.class
+                        , () -> deliveryRepository
+                                .findById(savedDelivery2.getId())
+                                .orElseThrow())
+
+                , ()->assertThrows(NoSuchElementException.class
+                        , () -> paymentRepository
+                                .findById(payment1.getId())
+                                .orElseThrow())
+
+                , ()->assertThrows(NoSuchElementException.class
+                        , () -> paymentRepository
+                                .findById(payment2.getId())
+                                .orElseThrow())
+
+                , () -> assertThat(deliveryRepository.findAll().size())
+                        .isEqualTo(1)
+
+                , () -> assertThat(paymentRepository.findAll().size())
+                        .isEqualTo(1)
+        );
+    }
+
+    @NotNull
+    private static Order createOrder(GeneralMember savedMember, Delivery savedDelivery1, ArrayList<OrderItem> orderItems1, SafekingPayment payment) {
+        return Order.createOrder(
+                savedMember
+                , savedDelivery1
+                , "memo"
+                , payment
+                , orderItems1);
+    }
+
+    @NotNull
+    private static Delivery createDelivery() {
+        return Delivery.createDelivery(
+                "receiver"
+                , "phoneNumber"
+                , "address"
+                , DeliveryStatus.COMPLETE
+                , "memo");
+    }
+
+    @NotNull
+    private static Item getItem() {
+        return Item.createItem("name"
+                , 100
+                , "description"
+                , 1000, "adminId"
+                , null
+                , 100
+                , "Y");
     }
 
 

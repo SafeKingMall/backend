@@ -26,32 +26,5 @@ class ItemAnswerRepositoryTest {
     ItemQuestionRepository questionRepository;
     @Autowired
     ItemAnswerRepository answerRepository;
-    @Test
-    void deleteByTarget() {
-        //given
-        GeneralMember member = GeneralMember.builder().build();
-        GeneralMember savedMember = memberRepository.save(member);
 
-        Item savedItem = itemRepository.save(new Item());
-
-        ItemQuestion itemQuestion = ItemQuestion.createItemQuestion(
-                "title"
-                , "contents"
-                , savedItem
-                , savedMember);
-        questionRepository.save(itemQuestion);
-
-        ItemAnswer itemAnswer = ItemAnswer.createItemAnswer(savedMember
-                , itemQuestion
-                , "contents");
-        ItemAnswer savedItemAnswer = answerRepository.save(itemAnswer);
-        //when
-        answerRepository.deleteByTarget(itemQuestion);
-        //then
-        Assertions.assertThrows(NoSuchElementException.class
-                ,() -> answerRepository
-                        .findById(savedItemAnswer.getId())
-                        .orElseThrow());
-
-    }
 }

@@ -7,6 +7,8 @@ import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.item.domain.entity.ItemQuestion;
 import com.safeking.shop.domain.item.domain.repository.ItemAnswerRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemQuestionRepository;
+import com.safeking.shop.domain.order.domain.service.OrderService;
+import com.safeking.shop.domain.order.domain.service.OrderServiceImpl;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
@@ -29,8 +31,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import static com.safeking.shop.global.jwt.TokenUtils.getUsername;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +53,9 @@ public class MemberService {
     private final CartItemRepository cartItemRepository;
     private final ItemQuestionRepository questionRepository;
     private final ItemAnswerRepository answerRepository;
+    private final OrderService orderService;
+    private final MemberRedisRepository redisRepository;
+
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
 
@@ -230,37 +238,50 @@ public class MemberService {
         }
     }
 
+    public void changeToWithDrawlStatus(String username) {
+        findMember(username).changeToWithDrawlStatus();
 
+        logout(username);
+    }
 
-    public void delete(String username){
+    public boolean checkAuthority(String username){
+        return findMember(username).getRoles().contains("ROLE_ADMIN");
+    }
+
+    public void withdrawal(String username) {
         // member
-        Member member = memberRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+        Member member = findMember(username);
 
         // 1. 장바구니 관련 삭제
         Cart cart = cartRepository
                 .findCartByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("장바구니가 존재하지 않습니다."));
+
         // 1_1. cartItem 삭제
         cartItemRepository.deleteCartItemBatch(cart.getId());
         // 1_2. cart 삭제
         cartRepository.delete(cart);
 
         // 2. qna 관련 삭제
-        ItemQuestion itemQuestion = questionRepository
-                .findByWriter(member)
-                .orElse(null);
-        // 2-1. answer 삭제 question 삭제
-        if (itemQuestion != null){
-            answerRepository.deleteByTarget(itemQuestion);
+        List<ItemQuestion> questionList = questionRepository.findByWriter(member);
 
-            questionRepository.delete(itemQuestion);
-        }
+        // 2-1. answer 삭제 question 삭제
+        answerRepository.deleteByTargetBatch(questionList);
+        questionRepository.deleteByTargetBatch(questionList);
 
         // 3. 주문관련 삭제
+        orderService.deleteByMemberBatch(member);
 
+        // 4. member 삭제
+        memberRepository.delete(member);
+    }
 
+    public void logout(String username) {
+        RedisMember redisMember = redisRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new MemberNotFoundException("redis member not found"));
+
+        redisRepository.delete(redisMember);
     }
 
     public String sendTemporaryPassword(String username){
@@ -282,6 +303,13 @@ public class MemberService {
             code+=ran;
         }
         return code;
+    }
+
+    private Member findMember(String username) {
+        Member member = memberRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+        return member;
     }
 
 }

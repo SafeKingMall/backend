@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 @Component
-@Profile("dev2")
+@Profile("dev")
 @RequiredArgsConstructor
 @Slf4j
 public class InitDB_dev {
@@ -43,8 +43,6 @@ public class InitDB_dev {
     static class InitService{
         private final EntityManager em;
         private final CustomBCryPasswordEncoder encoder;
-        private final MemberRepository memberRepository;
-        private final MemberRedisRepository redisRepository;
         private final RedisService redisService;
         private final CartService cartService;
 

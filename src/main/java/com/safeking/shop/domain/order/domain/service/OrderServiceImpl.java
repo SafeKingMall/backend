@@ -5,6 +5,7 @@ import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
+import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
@@ -17,6 +18,7 @@ import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelOrderReq
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
+import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.COMPLETE;
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.IN_DELIVERY;
@@ -39,6 +42,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderServiceSubMethod orderServiceSubMethod;
+    private final OrderItemRepository orderItemRepository;
+    private final SafekingPaymentRepository paymentRepository;
+    private final DeliveryRepository deliveryRepository;
 
     /**
      * 주문
@@ -181,5 +187,31 @@ public class OrderServiceImpl implements OrderService {
                 .findByMember(member)
                 .stream()
                 .forEach(order -> orderRepository.delete(order));
+    }
+
+    @Override
+    public void deleteByMemberBatch(Member member) {
+        List<Order> orderList = orderRepository.findByMember(member);
+
+        List<Delivery> deliveryList =
+                orderList.stream()
+                .map(order -> order.getDelivery())
+                .collect(Collectors.toList());
+
+        List<SafekingPayment> safekingPaymentList =
+                orderList.stream()
+                .map(order -> order.getSafeKingPayment())
+                .collect(Collectors.toList());
+
+        List<OrderItem> orderItemList = orderItemRepository.findByOrderList(orderList);
+
+        // orderItem delete
+        orderItemRepository.deleteByOrderBatch(orderItemList);
+        // order delete
+        orderRepository.deleteAllByMemberBatch(orderList);
+        // delivery delete
+        deliveryRepository.deleteByOrderBatch(deliveryList);
+        // payments delete
+        paymentRepository.deleteByOrderBatch(safekingPaymentList);
     }
 }

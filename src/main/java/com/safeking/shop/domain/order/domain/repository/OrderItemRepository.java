@@ -13,6 +13,9 @@ import java.util.Optional;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
     List<OrderItem> findByOrder(Order order);
+
+    @Query("select oi from OrderItem oi where oi.order in :orderList")
+    List<OrderItem> findByOrderList(@Param("orderList") List<Order> order);
     @Modifying
     @Query("delete from OrderItem oi where oi in :orderItems")
     void deleteByOrderBatch(@Param("orderItems") List<OrderItem> orderItems);
