@@ -24,7 +24,6 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/user")
 public class UserDeliveryController {
 
-    private final ModelMapper modelMapper;
     private final ValidationOrderService validationOrderService;
 
     @GetMapping("/delivery")
@@ -32,10 +31,17 @@ public class UserDeliveryController {
 
         Member findMember = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
-        DeliveryResponse dto = modelMapper.map(findMember, DeliveryResponse.class);
+        DeliveryResponse deliveryResponse = DeliveryResponse.builder()
+                .receiver(findMember.getName())
+                .phoneNumber(findMember.getPhoneNumber())
+                .email(findMember.getEmail())
+                .address(findMember.getAddress().getBasicAddress())
+                .detailAddress(findMember.getAddress().getDetailedAddress())
+                .zipcode(findMember.getAddress().getZipcode())
+                .build();
 
         UserDeliveryResponse response = new UserDeliveryResponse();
-        response.setDelivery(dto);
+        response.setDelivery(deliveryResponse);
         response.setMessage(DEFAULT_USER_DELIVERY_FIND_SUCCESS);
 
         return new ResponseEntity<>(response, OK);
