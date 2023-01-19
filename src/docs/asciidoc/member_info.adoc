@@ -54,10 +54,6 @@ operation::idFind_error2[snippets='http-request,request-fields,http-response,res
 operation::refreshToken[snippets='http-request,request-headers,http-response,response-headers']
 
 [[Member-9]]
-=== 9. 탈퇴 회원 리스트 조회
-operation::showWithDrawlList[snippets='http-request,request-headers,request-parameters,http-response,response-fields,response-body']
-
-[[Member-10]]
-=== 10. 회원 탈퇴
+=== 9. 회원 탈퇴
 operation::withdrawal[snippets='http-request,request-headers,http-response']
 
