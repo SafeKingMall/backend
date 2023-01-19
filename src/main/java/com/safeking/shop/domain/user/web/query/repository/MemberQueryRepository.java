@@ -30,7 +30,7 @@ public class MemberQueryRepository {
 
     public Page <MemberListDto> searchAllCondition(String name, Pageable pageable){
         List<MemberListDto> result = queryFactory
-                .select(new QMemberListDto(member.id, member.name, member.status.stringValue()))
+                .select(new QMemberListDto(member.id, member.name, member.status))
                 .from(member)
                 .where(usernameEq(name))
                 .orderBy(member.id.desc())

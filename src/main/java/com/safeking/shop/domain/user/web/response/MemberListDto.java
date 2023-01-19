@@ -15,9 +15,9 @@ public class MemberListDto {
     private String memberStatus;
 
     @QueryProjection
-    public MemberListDto(Long memberId, String name, String memberStatus) {
+    public MemberListDto(Long memberId, String name, MemberStatus memberStatus) {
         this.memberId = memberId;
         this.name = name;
-        this.memberStatus = MemberStatus.getDescription(memberStatus);
+        this.memberStatus = MemberStatus.getDescription(memberStatus.toString());
     }
 }
