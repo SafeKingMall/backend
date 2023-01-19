@@ -1,0 +1,22 @@
+= Admin-API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Admin-API]]
+== Admin API
+
+[[Member-1]]
+=== 1. 회원 리스트 조회
+operation::showMemberList[snippets='http-request,request-headers,request-parameters,http-response,response-fields,response-body']
+
+[[Member-2]]
+=== 2. 탈퇴 회원 리스트 조회
+operation::showWithDrawlList[snippets='http-request,request-headers,request-parameters,http-response,response-fields,response-body']
+
+[[Member-3]]
+=== 3. 관리자에 의한 회원 탈퇴
+operation::withdrawalByAdmin[snippets='http-request,request-headers,path-parameters,http-response']

@@ -94,6 +94,7 @@ public class MemberController {
     public void withdrawal(HttpServletRequest request){
         memberService.changeToWithDrawlStatus(getUsername(request));
     }
+
     @PostMapping("/signup/criticalItems")
     public Long signUpCriticalItems(@RequestBody @Validated CriticalItems criticalItems) {
 
@@ -228,6 +229,14 @@ public class MemberController {
         // 권한처리
         if (memberService.checkAuthority(getUsername(request))) return memberQueryRepository.searchWithDrawlList(name, pageable);
         throw new IllegalArgumentException("관리자만 접근할 수 있습니다.");
+    }
+
+    @GetMapping("/admin/withdrawal/{memberId}")
+    public void withdrawalByAdmin(HttpServletRequest request, @PathVariable Long memberId){
+        Member member = memberRepository.findById(memberId).orElseThrow();
+
+        if (memberService.checkAuthority(getUsername(request))) memberService.changeToWithDrawlStatus(member.getUsername());
+        else throw new IllegalArgumentException("관리자만 접근할 수 있습니다.");
     }
 
     @PostMapping("/oauth/{registrationId}")

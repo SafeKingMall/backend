@@ -242,7 +242,8 @@ public class MemberService {
     public void changeToWithDrawlStatus(String username) {
         findMember(username).changeToWithDrawlStatus();
 
-        logout(username);
+        RedisMember redisMember = redisRepository.findByUsername(username).orElse(null);
+        if (redisMember != null) logout(username);
     }
 
     public boolean checkAuthority(String username){
