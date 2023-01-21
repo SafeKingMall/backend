@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class IamportConfig {
     private final String apiKey = "8177680216511350";
-    private final String apiSecret = "zpbnXVhACL6hAQK6LYEohYTTQBGT7fF8BaWeH1WhOKZUhTrp5Ws4m6YZR6GGyxJAGbJZr1zHshI9aiJx";
+    private final String apiSecret = "eXxBCpFRI92d8FITgDalK1n5EC4ZTyrQXe4tmuW1GbCPq5IVIFOGRezez0T8Slx9Y293TPYM7BOIhKbT";
     @Bean
     public IamportClient iamportClient() {
         return new IamportClient(apiKey, apiSecret);
