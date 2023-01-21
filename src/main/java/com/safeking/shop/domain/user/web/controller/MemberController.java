@@ -206,7 +206,7 @@ public class MemberController {
 
     @PostMapping("/temporaryPassword")
     public String sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest) {
-        return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
+        return memberService.sendTemporaryPassword(pwFindRequest.getUsername() , pwFindRequest.getEmail());
     }
 
     @GetMapping("/admin/member/list")
