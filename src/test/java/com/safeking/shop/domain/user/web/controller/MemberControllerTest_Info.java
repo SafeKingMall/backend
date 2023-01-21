@@ -421,7 +421,7 @@ class MemberControllerTest_Info extends MvcTest {
     @DisplayName("임시 비밀번호 발급")
     void sendTemporaryPassword() throws Exception {
         //given
-        PWFindRequest pwFindRequest = new PWFindRequest(USER_USERNAME);
+        PWFindRequest pwFindRequest = new PWFindRequest(USER_USERNAME, EMAIL);
         String content = om.writeValueAsString(pwFindRequest);
         //when
         ResultActions resultActions = mockMvc.perform(post("/api/v1/temporaryPassword")
@@ -434,6 +434,7 @@ class MemberControllerTest_Info extends MvcTest {
                 document("sendTemporaryPassword"
                         ,requestFields(
                                 fieldWithPath("username").attributes(IdValidation()).description("회원 ID")
+                                , fieldWithPath("email").attributes(EmailValidation()).description("이메일")
                         )
                 )
         );

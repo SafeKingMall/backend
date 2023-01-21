@@ -38,6 +38,7 @@ public class TestUserHelper {
 
     public static String USER_USERNAME="testUser1234";
     public static String USER_PASSWORD="testUser1234*";
+    public static String EMAIL = "kms199719@naver.com";
     public static String USER_ROLE="ROLE_USER";
 
     public static String ADMIN_USERNAME="admin1234";
@@ -50,7 +51,7 @@ public class TestUserHelper {
                 .birth("birth")
                 .username("testUser1234")
                 .password(encoder.encode("testUser1234*"))
-                .email("email")
+                .email(EMAIL)
                 .roles("ROLE_USER")
                 .phoneNumber("01082460887")
                 .companyName("safeking")

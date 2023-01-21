@@ -8,7 +8,6 @@ import com.safeking.shop.domain.item.domain.entity.ItemQuestion;
 import com.safeking.shop.domain.item.domain.repository.ItemAnswerRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemQuestionRepository;
 import com.safeking.shop.domain.order.domain.service.OrderService;
-import com.safeking.shop.domain.order.domain.service.OrderServiceImpl;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
 import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
@@ -31,11 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.constraints.Email;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import static com.safeking.shop.global.jwt.TokenUtils.getUsername;
 
 @Service
 @RequiredArgsConstructor
@@ -218,6 +216,8 @@ public class MemberService {
 
     }
 
+
+
     public Long revertCommonAccounts(Long id, Boolean agreement){
 
         memberRepository.findById(id).orElseThrow(()->new MemberNotFoundException("회원을 찾을 수가 없습니다.")).revertCommonAccounts();
@@ -286,9 +286,11 @@ public class MemberService {
         redisRepository.delete(redisMember);
     }
 
-    public String sendTemporaryPassword(String username){
+    public String sendTemporaryPassword(String username, String email){
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new MemberNotFoundException("아이디와 일치하는 회원이 없습니다."));
+
+        if (!member.getEmail().equals(email)) throw new IllegalArgumentException("회원님이 입력하신 이메일과 작성하신 이메일이 일치하지 않습니다");
 
         String temporaryPassword = createCode();
 
