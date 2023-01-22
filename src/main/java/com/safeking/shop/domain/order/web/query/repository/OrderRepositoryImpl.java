@@ -130,7 +130,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         }
 
         //시작 주문일시만 있을 경우
-        if (hasText(fromDate)) {
+        else if (hasText(fromDate)) {
 
             from = LocalDate.parse(fromDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
             to = LocalDate.parse(fromDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
@@ -139,7 +139,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         }
 
         //종료 주문일시만 있을 경우
-        if(hasText(toDate)) {
+        else if(hasText(toDate)) {
 
             from = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
             to = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);

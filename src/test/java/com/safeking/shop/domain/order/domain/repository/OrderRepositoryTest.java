@@ -104,7 +104,7 @@ class OrderRepositoryTest {
         orderItems.add(savedOrderItem2);
         orderItems.add(savedOrderItem3);
 
-        SafekingPayment payment = SafekingPayment.createPayment(orderItems);
+        SafekingPayment payment = SafekingPayment.createPayment(orderItems, "123");
         SafekingPayment savedPayment = paymentRepository.save(payment);
 
         Order order = Order.createOrder(

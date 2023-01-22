@@ -100,13 +100,13 @@ class OrderServiceTest {
         orderItems3.add(orderItem4);
         orderItems3.add(orderItem5);
         // payment create
-        SafekingPayment payment1 = SafekingPayment.createPayment(orderItems1);
+        SafekingPayment payment1 = SafekingPayment.createPayment(orderItems1, "123");
         paymentRepository.save(payment1);
 
-        SafekingPayment payment2 = SafekingPayment.createPayment(orderItems2);
+        SafekingPayment payment2 = SafekingPayment.createPayment(orderItems2, "1234");
         paymentRepository.save(payment2);
 
-        SafekingPayment payment3 = SafekingPayment.createPayment(orderItems3);
+        SafekingPayment payment3 = SafekingPayment.createPayment(orderItems3, "12345");
         paymentRepository.save(payment3);
 
         //order create

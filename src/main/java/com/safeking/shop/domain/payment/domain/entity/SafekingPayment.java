@@ -77,20 +77,21 @@ public class SafekingPayment extends BaseTimeEntity {
     private String customerUidUsage; // customer_uid가 결제처리에 사용된 상세 용도.(null:일반결제, issue:빌링키 발급, payment:결제, payment.scheduled:예약결제 = ['issue', 'payment', 'payment.scheduled']
     // 아임포트 단건 결제 조회 응답 끝
 
-    public static SafekingPayment createPayment(List<OrderItem> orderItems) {
+    public static SafekingPayment createPayment(List<OrderItem> orderItems, String merchantUid) {
 
         SafekingPayment safeKingPayment = new SafekingPayment();
         int totalItemsPrice = safeKingPayment.sumTotalItemsPrice(orderItems); //총 상품 금액
         int totalPaymentPrice = safeKingPayment.sumTotalPaymentPrice(totalItemsPrice); //총 결제 금액(총 상품 금액 + 배송비)
 
-        safeKingPayment.changeSafekingPayment(totalPaymentPrice);
+        safeKingPayment.changeSafekingPayment(totalPaymentPrice, merchantUid);
 
         return safeKingPayment;
     }
 
-    private void changeSafekingPayment(int amount) {
+    private void changeSafekingPayment(int amount, String merchantUid) {
         this.amount = amount;
         this.status = READY;
+        this.merchantUid = merchantUid;
     }
 
     /**
