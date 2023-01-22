@@ -35,7 +35,7 @@ public class PaymentController {
     @PostMapping("/payment")
     public ResponseEntity<PaymentResponse> payment(@Valid @RequestBody PaymentCallbackRequest paymentCallbackRequest, HttpServletRequest request) {
 
-        //validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         PaymentResponse<PaymentCallbackResponse> response = iamportService.paymentByCallback(paymentCallbackRequest);
 

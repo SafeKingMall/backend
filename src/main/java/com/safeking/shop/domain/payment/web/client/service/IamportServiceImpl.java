@@ -155,7 +155,7 @@ public class IamportServiceImpl implements IamportService {
             // 결제 취소
             CancelData cancelData = new CancelData(impUid, true);
             cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData);
-            findSafekingPayment.changeSafekingPayment(CANCELLED, cancelPaymentResponse.getResponse());
+            findSafekingPayment.changeSafekingPayment(CANCEL, cancelPaymentResponse.getResponse());
 
         } catch (IamportResponseException e) {
             log.error("[IamportResponseException] ", e.getMessage());

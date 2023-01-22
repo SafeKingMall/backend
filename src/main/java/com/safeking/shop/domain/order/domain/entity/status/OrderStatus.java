@@ -3,8 +3,8 @@ package com.safeking.shop.domain.order.domain.entity.status;
 
 public enum OrderStatus {
 
-    COMPLETE("COMPLETE"),
-    CANCEL("CANCEL"),
+    COMPLETE("COMPLETE"), // 주문 완료
+    CANCEL("CANCEL"), // 주문 취소
     ;
 
     private final String description;
