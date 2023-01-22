@@ -111,6 +111,7 @@ class OrderRepositoryTest {
                 member
                 , savedDelivery
                 , "memo"
+                ,"123"
                 , savedPayment
                 , orderItems);
         Order savedOrder = orderRepository.save(order);
