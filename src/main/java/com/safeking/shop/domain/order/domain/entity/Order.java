@@ -58,19 +58,20 @@ public class Order extends BaseTimeEntity {
     @Lob
     private String cancelReason; // 주문 취소 사유
 
-    public static Order createOrder(Member member, Delivery delivery, String memo, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
+    public static Order createOrder(Member member, Delivery delivery, String memo, String merchantUid, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
         Order order = new Order();
-        order.changeOrder(member, delivery, memo, safeKingPayment, orderItems);
+        order.changeOrder(member, delivery, memo, merchantUid, safeKingPayment, orderItems);
 
         return order;
     }
 
-    public void changeOrder(Member member, Delivery delivery, String memo, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
+    public void changeOrder(Member member, Delivery delivery, String memo, String merchantUid, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
         this.member = member;
         this.delivery = delivery;
         this.status = OrderStatus.READY;
         this.memo = memo;
         this.safeKingPayment = safeKingPayment;
+        this.merchantUid = merchantUid;
 
         for(OrderItem orderItem : orderItems) {
             changeOrderItem(orderItem);

@@ -30,6 +30,7 @@ public class OrderRequest {
     @JsonProperty("items")
     @NotNull
     private List<OrderItemRequest> orderItemRequests;
+    @NotBlank(message = "고유한 주문번호를 입력해주세요.")
     private String merchantUid;
 
     public OrderRequest(String receiver, String email, String phoneNumber, String address, String memo, List<OrderItemRequest> orderItemRequests, String deliveryMemo, String merchantUid) {
