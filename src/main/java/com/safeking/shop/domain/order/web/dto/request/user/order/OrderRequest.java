@@ -30,8 +30,9 @@ public class OrderRequest {
     @JsonProperty("items")
     @NotNull
     private List<OrderItemRequest> orderItemRequests;
+    private String merchantUid;
 
-    public OrderRequest(String receiver, String email, String phoneNumber, String address, String memo, List<OrderItemRequest> orderItemRequests, String deliveryMemo) {
+    public OrderRequest(String receiver, String email, String phoneNumber, String address, String memo, List<OrderItemRequest> orderItemRequests, String deliveryMemo, String merchantUid) {
         this.receiver = receiver;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -39,5 +40,6 @@ public class OrderRequest {
         this.memo = memo;
         this.orderItemRequests = orderItemRequests;
         this.deliveryMemo = deliveryMemo;
+        this.merchantUid = merchantUid;
     }
 }

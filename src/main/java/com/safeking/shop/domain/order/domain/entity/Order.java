@@ -68,7 +68,7 @@ public class Order extends BaseTimeEntity {
     public void changeOrder(Member member, Delivery delivery, String memo, SafekingPayment safeKingPayment, List<OrderItem> orderItems) {
         this.member = member;
         this.delivery = delivery;
-        this.status = OrderStatus.COMPLETE;
+        this.status = OrderStatus.READY;
         this.memo = memo;
         this.safeKingPayment = safeKingPayment;
 

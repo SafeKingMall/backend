@@ -4,7 +4,8 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/safeking_dev
+    #url: jdbc:mariadb://localhost:3306/safeking_dev
+    url: jdbc:mariadb://211.45.175.33:3306/safeking_dev
     username: safeking_dev
     password: 1234
 

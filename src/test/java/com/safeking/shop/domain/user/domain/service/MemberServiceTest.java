@@ -252,13 +252,13 @@ class MemberServiceTest {
         orderItems3.add(orderItem4);
         orderItems3.add(orderItem5);
         // payment create
-        SafekingPayment payment1 = SafekingPayment.createPayment(orderItems1);
+        SafekingPayment payment1 = SafekingPayment.createPayment(orderItems1, "1");
         paymentRepository.save(payment1);
 
-        SafekingPayment payment2 = SafekingPayment.createPayment(orderItems2);
+        SafekingPayment payment2 = SafekingPayment.createPayment(orderItems2, "2");
         paymentRepository.save(payment2);
 
-        SafekingPayment payment3 = SafekingPayment.createPayment(orderItems3);
+        SafekingPayment payment3 = SafekingPayment.createPayment(orderItems3, "3");
         paymentRepository.save(payment3);
 
         //order create
