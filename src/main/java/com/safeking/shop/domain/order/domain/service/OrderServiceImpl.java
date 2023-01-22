@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
         SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems, orderRequest.getMerchantUid());
 
         // 주문 생성
-        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), safeKingPayment, orderItems);
+        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), orderRequest.getMerchantUid(), safeKingPayment, orderItems);
         orderRepository.save(order);
 
         return order.getId();

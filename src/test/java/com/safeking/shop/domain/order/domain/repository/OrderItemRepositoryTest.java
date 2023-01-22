@@ -115,6 +115,7 @@ class OrderItemRepositoryTest {
                 savedMember
                 , savedDelivery
                 , "memo"
+                , "1"
                 , null
                 , orderItems1);
 
@@ -122,6 +123,7 @@ class OrderItemRepositoryTest {
                 savedMember
                 , savedDelivery
                 , "memo"
+                ,"2"
                 , null
                 , orderItems2);
 
@@ -129,6 +131,7 @@ class OrderItemRepositoryTest {
                 savedMember2
                 , savedDelivery
                 , "memo"
+                , "3"
                 , null
                 , orderItems3);
 

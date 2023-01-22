@@ -326,6 +326,7 @@ class MemberServiceTest {
                 savedMember
                 , savedDelivery1
                 , "memo"
+                ,"1"
                 , payment
                 , orderItems1);
     }
