@@ -136,6 +136,7 @@ public class MemberControllerTest_Admin extends MvcTest {
                         .header(AUTH_HEADER,jwtToken)
                         .accept(MediaType.APPLICATION_JSON_UTF8)
                         .param("name","user1")
+                        .param("status","COMMON")
                         .param("page","0")
                         .param("size","15"))
                 .andExpect(status().isOk());
@@ -150,6 +151,8 @@ public class MemberControllerTest_Admin extends MvcTest {
                 .andExpect(jsonPath("size").value("15"))
                 .andExpect(jsonPath("numberOfElements").value("11"))
         ;
+
+
         //docs
         resultActions.andDo(
                 document("showMemberList"
@@ -158,6 +161,7 @@ public class MemberControllerTest_Admin extends MvcTest {
                         )
                         ,requestParameters(
                                 parameterWithName("name").optional().description("회원 이름")
+                                ,parameterWithName("status").optional().description("회원 상태")
                                 ,parameterWithName("page").optional().description("page 는 0부터 시작")
                                 ,parameterWithName("size").optional().description("size 는 기본 15")
                         )

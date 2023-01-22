@@ -11,6 +11,9 @@
 
 [[Member-1]]
 === 1. 회원 리스트 조회
+|===
+| 설명 | 일반 회원: COMMON 휴면 회원: HUMAN
+|===
 operation::showMemberList[snippets='http-request,request-headers,request-parameters,http-response,response-fields,response-body']
 
 [[Member-2]]

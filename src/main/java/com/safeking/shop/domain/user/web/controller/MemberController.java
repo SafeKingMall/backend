@@ -211,19 +211,20 @@ public class MemberController {
 
     @GetMapping("/admin/member/list")
     public Page<MemberListDto> showMemberList(
-            String name,
-            HttpServletRequest request
+            String name
+            , String status
+            , HttpServletRequest request
             , @PageableDefault(page = 0, size = 15) Pageable pageable
     ) {
         // 권한처리
-         if (memberService.checkAuthority(getUsername(request))) return memberQueryRepository.searchAllCondition(name, pageable);
+         if (memberService.checkAuthority(getUsername(request))) return memberQueryRepository.searchAllCondition(name, status, pageable);
          throw new IllegalArgumentException("관리자만 접근할 수 있습니다.");
     }
 
     @GetMapping("/admin/member/withDrawlList")
     public Page<WithDrawlListDto> showWithDrawlsList(
-            String name,
-            HttpServletRequest request
+            String name
+            , HttpServletRequest request
             , @PageableDefault(page = 0, size = 15) Pageable pageable
     ) {
         // 권한처리
