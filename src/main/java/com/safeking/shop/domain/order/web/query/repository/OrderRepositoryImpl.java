@@ -21,6 +21,7 @@ import static com.safeking.shop.domain.item.domain.entity.QItem.item;
 import static com.safeking.shop.domain.order.domain.entity.QDelivery.delivery;
 import static com.safeking.shop.domain.order.domain.entity.QOrder.order;
 import static com.safeking.shop.domain.order.domain.entity.QOrderItem.orderItem;
+import static com.safeking.shop.domain.payment.domain.entity.QSafekingPayment.safekingPayment;
 import static com.safeking.shop.domain.user.domain.entity.member.QMember.member;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.util.StringUtils.*;
@@ -41,7 +42,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         List<Order> content = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.orderItems, orderItem).fetchJoin()
-                .leftJoin(order.safeKingPayment, order.safeKingPayment).fetchJoin()
+                .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()
                 .leftJoin(order.delivery, delivery).fetchJoin()
                 .leftJoin(orderItem.item, item).fetchJoin()
                 .where(
@@ -75,7 +76,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         List<Order> content = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.orderItems, orderItem).fetchJoin()
-                .leftJoin(order.safeKingPayment, order.safeKingPayment).fetchJoin()
+                .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()
                 .leftJoin(order.delivery, delivery).fetchJoin()
                 .leftJoin(order.member, member).fetchJoin()
                 .leftJoin(orderItem.item, item).fetchJoin()
