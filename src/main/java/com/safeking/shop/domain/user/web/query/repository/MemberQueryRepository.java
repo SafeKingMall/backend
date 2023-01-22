@@ -1,6 +1,7 @@
 package com.safeking.shop.domain.user.web.query.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.domain.user.domain.entity.MemberStatus;
@@ -28,11 +29,12 @@ public class MemberQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page <MemberListDto> searchAllCondition(String name, Pageable pageable){
+    public Page <MemberListDto> searchAllCondition(String name, String status, Pageable pageable){
         List<MemberListDto> result = queryFactory
                 .select(new QMemberListDto(member.id, member.name, member.status))
                 .from(member)
                 .where(usernameEq(name))
+                .where(statusEq(status))
                 .orderBy(member.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -74,5 +76,11 @@ public class MemberQueryRepository {
     private BooleanExpression usernameEq(String name){
         return !isEmpty(name) ? member.name.contains(name) : null;
     }
+    private BooleanExpression statusEq(String status){
+        return !isEmpty(status) ? member.status.stringValue().contains(status) : null;
+    }
+
+
+
 
 }
