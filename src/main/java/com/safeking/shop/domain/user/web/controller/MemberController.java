@@ -181,6 +181,7 @@ public class MemberController {
     public void updatePassword(@RequestBody @Validated UpdatePWRequest updatePWRequest, HttpServletRequest request) {
         memberService.updatePassword(
                 TokenUtils.getUsername(request)
+                , updatePWRequest.getPreviousPassword()
                 , updatePWRequest.getPassword());
     }
 

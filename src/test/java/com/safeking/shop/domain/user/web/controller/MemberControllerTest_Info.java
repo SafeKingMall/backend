@@ -231,7 +231,7 @@ class MemberControllerTest_Info extends MvcTest {
         //given
         String token=jwtToken;
 
-        UpdatePWRequest updatePWRequest = new UpdatePWRequest("password1234*");
+        UpdatePWRequest updatePWRequest = new UpdatePWRequest(USER_PASSWORD,"password1234*");
         String content = om.writeValueAsString(updatePWRequest);
         //when
         ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/v1/user/update/password")
@@ -247,7 +247,8 @@ class MemberControllerTest_Info extends MvcTest {
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
                         )
                         ,requestFields(
-                                fieldWithPath("password").attributes(PWValidation()).description("password")
+                                fieldWithPath("previousPassword").attributes().description("이전 비밀번호")
+                                , fieldWithPath("password").attributes(PWValidation()).description("password")
                         )
                 )
         );
@@ -258,7 +259,7 @@ class MemberControllerTest_Info extends MvcTest {
         //given
         String NoValidToken=jwtToken+"no";
 
-        UpdatePWRequest updatePWRequest = new UpdatePWRequest("password1234*");
+        UpdatePWRequest updatePWRequest = new UpdatePWRequest(USER_PASSWORD,"password1234*");
         String content = om.writeValueAsString(updatePWRequest);
         //when
         ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/v1/user/update/password")
@@ -279,7 +280,8 @@ class MemberControllerTest_Info extends MvcTest {
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
                         )
                         ,requestFields(
-                                fieldWithPath("password").attributes(PWValidation()).description("password")
+                                fieldWithPath("previousPassword").attributes().description("이전 비밀번호")
+                                , fieldWithPath("password").attributes(PWValidation()).description("password")
                         )
                 )
         );
