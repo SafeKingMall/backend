@@ -207,7 +207,7 @@ public class MemberService {
 
             if (!encoder.matches(previousPassword, member.getPassword())) throw new IllegalArgumentException("기존 비밀번호와 일치하지 않습니다.");
 
-            member.updatePassword(password);
+            member.updatePassword(encoder.encode(password));
     }
 
     public void humanAccountConverterBatch(){
