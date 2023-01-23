@@ -143,15 +143,25 @@ class MemberControllerTest_Info extends MvcTest {
                 memberRepository
                         .findByUsername(USER_USERNAME)
                         .orElseThrow());
+
+        WithdrawalRequest withdrawalRequest = new WithdrawalRequest(USER_USERNAME, USER_PASSWORD);
+
         //when
         ResultActions resultActions = mockMvc.perform(get("/api/v1/user/withdrawal")
+                        .param("inputUsername", withdrawalRequest.getInputUsername())
+                        .param("password", withdrawalRequest.getPassword())
                         .header(AUTH_HEADER, token))
+
                 .andExpect(status().isOk());
         //docs
         resultActions.andDo(
                 document("withdrawal"
                         ,requestHeaders(
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,requestParameters(
+                                parameterWithName("inputUsername").description(InputValidation())
+                                , parameterWithName("password").description(InputValidation())
                         )
                 )
         );
