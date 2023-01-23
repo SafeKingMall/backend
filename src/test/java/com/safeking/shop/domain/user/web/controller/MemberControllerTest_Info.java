@@ -145,23 +145,24 @@ class MemberControllerTest_Info extends MvcTest {
                         .orElseThrow());
 
         WithdrawalRequest withdrawalRequest = new WithdrawalRequest(USER_USERNAME, USER_PASSWORD);
+        String content = om.writeValueAsString(withdrawalRequest);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/user/withdrawal")
-                        .param("inputUsername", withdrawalRequest.getInputUsername())
-                        .param("password", withdrawalRequest.getPassword())
-                        .header(AUTH_HEADER, token))
-
-                .andExpect(status().isOk());
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/user/withdrawal")
+                            .header(AUTH_HEADER, token)
+                            .content(content)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                            .andExpect(status().isOk());
         //docs
         resultActions.andDo(
                 document("withdrawal"
                         ,requestHeaders(
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
                         )
-                        ,requestParameters(
-                                parameterWithName("inputUsername").description(InputValidation())
-                                , parameterWithName("password").description(InputValidation())
+                        ,requestFields(
+                                fieldWithPath("inputUsername").attributes(InputValidation()).description("user 가 작성한 아이디")
+                                , fieldWithPath("password").attributes(InputValidation()).description("user 가 작성한 비밀번호")
                         )
                 )
         );

@@ -82,8 +82,8 @@ public class MemberController {
     public void logout(HttpServletRequest request){
         memberService.logout(getUsername(request));
     }
-    @GetMapping("/user/withdrawal")
-    public void withdrawal(WithdrawalRequest withdrawalRequest, HttpServletRequest request){
+    @PostMapping("/user/withdrawal")
+    public void withdrawal(@RequestBody @Validated WithdrawalRequest withdrawalRequest, HttpServletRequest request){
         memberService.changeToWithDrawlStatusByUser(
                 withdrawalRequest.getInputUsername()
                 , withdrawalRequest.getPassword()
