@@ -35,6 +35,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 
 import static com.safeking.shop.domain.order.domain.entity.Order.createOrder;
@@ -71,6 +72,8 @@ public class MemberControllerTest_Admin extends MvcTest {
     SMSService smsService;
     @Autowired
     CartService cartService;
+    @Autowired
+    EntityManager em;
 
     String jwtToken=null;
 
@@ -92,8 +95,10 @@ public class MemberControllerTest_Admin extends MvcTest {
                         .header(AUTH_HEADER,jwtToken)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
+        em.flush();
+        em.clear();
         // then
-        Member findMember = memberRepository.findByUsername(member.getUsername()).orElseThrow();
+        Member findMember = memberRepository.findById(member.getId()).orElseThrow();
 
         assertAll(
                 () -> assertThat(findMember.getStatus()).isEqualTo(MemberStatus.WITHDRAWAL)

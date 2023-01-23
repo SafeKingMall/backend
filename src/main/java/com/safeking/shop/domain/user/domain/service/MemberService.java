@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.constraints.Email;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -241,12 +240,25 @@ public class MemberService {
         }
     }
 
+    public void changeToWithDrawlStatusByUser(String inputUsername, String password, String username) {
+        Member member = findMember(username);
+
+        if (!member.getUsername().equals(inputUsername)) throw new IllegalArgumentException("아이디가 일치하지 않습니다.");
+        if (!encoder.matches(password, member.getPassword())) throw new IllegalArgumentException("비밀번호가 일치 하지 않습니다.");
+
+        member.changeToWithDrawlStatus();
+
+        RedisMember redisMember = redisRepository.findByUsername(username).orElse(null);
+        if (redisMember != null) logout(username);
+    }
+
     public void changeToWithDrawlStatus(String username) {
         findMember(username).changeToWithDrawlStatus();
 
         RedisMember redisMember = redisRepository.findByUsername(username).orElse(null);
         if (redisMember != null) logout(username);
     }
+
 
     public boolean checkAuthority(String username){
         return findMember(username).getRoles().contains("ROLE_ADMIN");
