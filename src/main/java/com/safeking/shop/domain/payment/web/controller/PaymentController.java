@@ -60,7 +60,7 @@ public class PaymentController {
     @PostMapping("/payment/cancel")
     public ResponseEntity<IamportResponse<Payment>> cancelPayment(@Valid @RequestBody PaymentCancelRequest paymentCancelRequest, HttpServletRequest request) {
 
-        //validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 결제 취소
         IamportResponse<Payment> response = iamportService.cancel(

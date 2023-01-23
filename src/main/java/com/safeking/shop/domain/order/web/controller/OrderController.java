@@ -160,6 +160,7 @@ public class OrderController {
                 .phoneNumber(findOrderDetail.getDelivery().getPhoneNumber())
                 .address(findOrderDetail.getDelivery().getAddress())
                 .memo(findOrderDetail.getDelivery().getMemo())
+                .cost(findOrderDetail.getDelivery().getCost())
                 .build();
 
         OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
