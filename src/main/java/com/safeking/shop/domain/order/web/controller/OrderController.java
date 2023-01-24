@@ -193,15 +193,15 @@ public class OrderController {
 
         //주문 다건 조회
         Page<Order> ordersPage = orderService.searchOrders(pageable, condition, member.getId());
-        List<Order> findOrders = ordersPage.getContent();
 
-        OrderListResponse orderListResponse = getOrderListResponse(findOrders);
+        OrderListResponse orderListResponse = getOrderListResponse(ordersPage);
 
         return new ResponseEntity<>(orderListResponse, OK);
     }
 
-    private static OrderListResponse getOrderListResponse(List<Order> findOrders) {
+    private static OrderListResponse getOrderListResponse(Page<Order> ordersPage) {
 
+        List<Order> findOrders = ordersPage.getContent();
         List<OrderListOrdersResponse> orders = new ArrayList<>();
 
         for(Order o : findOrders) {
@@ -230,6 +230,9 @@ public class OrderController {
         return OrderListResponse.builder()
                 .message(ORDER_LIST_FIND_SUCCESS)
                 .orders(orders)
+                .totalElements(ordersPage.getTotalElements())
+                .totalPages(ordersPage.getTotalPages())
+                .size(ordersPage.getSize())
                 .build();
     }
 }
