@@ -11,7 +11,7 @@ public class OrderSearchCondition {
     private String toDate;
     private String keyword;
     private String deliveryStatus;
-    private String paymentStats;
+    private String paymentStatus;
 
     @Builder
     public OrderSearchCondition(String fromDate, String toDate, String keyword, String deliveryStatus, String paymentStats) {
@@ -19,6 +19,6 @@ public class OrderSearchCondition {
         this.toDate = toDate;
         this.keyword = keyword;
         this.deliveryStatus = deliveryStatus;
-        this.paymentStats = paymentStats;
+        this.paymentStatus = paymentStats;
     }
 }

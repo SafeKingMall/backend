@@ -133,16 +133,16 @@ public class OrderAdminController {
 
         // 주문관리 목록 조회
         Page<Order> ordersPage = orderService.searchOrdersByAdmin(pageable, condition);
-        List<Order> findOrders = ordersPage.getContent();
 
-        AdminOrderListResponse adminOrderListResponse = getAdminOrderListResponse(findOrders);
+        AdminOrderListResponse adminOrderListResponse = getAdminOrderListResponse(ordersPage);
 
         return new ResponseEntity<>(adminOrderListResponse, OK);
     }
 
-    private static AdminOrderListResponse getAdminOrderListResponse(List<Order> findOrders) {
+    private static AdminOrderListResponse getAdminOrderListResponse(Page<Order> ordersPage) {
 
         List<AdminOrderListOrderResponse> orders = new ArrayList<>();
+        List<Order> findOrders = ordersPage.getContent();
 
         for(Order o : findOrders) {
             AdminOrderListOrderItemResponse orderItem = AdminOrderListOrderItemResponse.builder()
@@ -181,6 +181,9 @@ public class OrderAdminController {
         return AdminOrderListResponse.builder()
                 .message(ADMIN_ORDER_LIST_FIND_SUCCESS)
                 .orders(orders)
+                .totalElements(ordersPage.getTotalElements())
+                .totalPages(ordersPage.getTotalPages())
+                .size(ordersPage.getSize())
                 .build();
     }
 

@@ -18,6 +18,7 @@ import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class IamportServiceImpl implements IamportService {
     private final IamportClient client;
     private final SafekingPaymentRepository safekingPaymentRepository;
@@ -37,6 +39,7 @@ public class IamportServiceImpl implements IamportService {
     /**
      * 결제(콜백 방식)
      */
+    @Transactional
     @Override
     public PaymentResponse<PaymentCallbackResponse> paymentByCallback(PaymentCallbackRequest request) {
 
@@ -93,6 +96,7 @@ public class IamportServiceImpl implements IamportService {
      * 결제(웹훅 방식)
      * 웹훅의 목적은 가맹점(DB)과 동기화
      */
+    @Transactional
     @Override
     public void paymentByWebhook(PaymentWebhookRequest request) {
 
@@ -141,6 +145,7 @@ public class IamportServiceImpl implements IamportService {
     /**
      * 결제, 주문 취소
      */
+    @Transactional
     @Override
     public IamportResponse<Payment> cancel(String impUid, String merchantUid, String cancelReason, SafekingPayment findSafekingPayment) {
         IamportResponse<Payment> cancelPaymentResponse = null; //imp_uid를 통한 전액취소

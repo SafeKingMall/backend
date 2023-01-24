@@ -14,14 +14,16 @@ public class OrderDetailDeliveryResponse {
     private String phoneNumber;
     private String address;
     private String memo;
+    private Integer cost;
 
     @Builder
-    public OrderDetailDeliveryResponse(Long id, String status, String receiver, String phoneNumber, String address, String memo) {
+    public OrderDetailDeliveryResponse(Long id, String status, String receiver, String phoneNumber, String address, String memo, Integer cost) {
         this.id = id;
         this.status = status;
         this.receiver = receiver;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.memo = memo;
+        this.cost = cost;
     }
 }
