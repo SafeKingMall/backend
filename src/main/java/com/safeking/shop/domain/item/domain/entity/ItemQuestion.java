@@ -28,7 +28,7 @@ public class ItemQuestion extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member writer;
+    private Member member;
 
     @OneToOne(mappedBy = "target",cascade = CascadeType.ALL,orphanRemoval = true)
     private ItemAnswer itemAnswer;
@@ -43,7 +43,7 @@ public class ItemQuestion extends BaseTimeEntity {
 
         itemQuestion.item = item;
 
-        itemQuestion.writer = writer;
+        itemQuestion.member = writer;
 
         return itemQuestion;
     }

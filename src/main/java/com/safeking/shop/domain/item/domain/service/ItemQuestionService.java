@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -59,7 +60,7 @@ public class ItemQuestionService {
 
         ItemQuestion itemQuestion = itemQuestionRepository.findById(itemQuestionUpdateDto.getId()).orElseThrow();
         //임시로 만듦
-        if(!itemQuestion.getWriter().getUsername().equals(username)) throw new IllegalArgumentException("권한이 없습니다.");
+        if(!itemQuestion.getMember().getUsername().equals(username)) throw new IllegalArgumentException("권한이 없습니다.");
 
         itemQuestion.update(itemQuestionUpdateDto.getTitle(),itemQuestionUpdateDto.getContents());
     }
@@ -68,7 +69,7 @@ public class ItemQuestionService {
 
         ItemQuestion itemQuestion = itemQuestionRepository.findById(id).orElseThrow();
         //임시로 만듦
-        if(!itemQuestion.getWriter().getUsername().equals(username)) throw new IllegalArgumentException("권한이 없습니다.");
+        if(!itemQuestion.getMember().getUsername().equals(username)) throw new IllegalArgumentException("권한이 없습니다.");
 
         itemQuestionRepository.delete(itemQuestion);
 
@@ -81,18 +82,57 @@ public class ItemQuestionService {
                 , itemQuestion.getTitle()
                 , itemQuestion.getContents()
                 , itemQuestion.getItem().getId()
-                , itemQuestion.getWriter().getUsername()
+                , itemQuestion.getMember().getUsername()
                 , itemAnswerQueryRepository.findAnswerByTargetQuestionId(itemQuestion.getId())
         );
         return itemQuestionViewDto;
     }
 
-    public Page<ItemQuestionListDto> list(Pageable pageable, String title){
+    public Page<ItemQuestionListDto> listAndTitle(Pageable pageable, String title){
         Page<ItemQuestionListDto> posts = itemQuestionRepository.findByTitleContaining(pageable, title).map(m->ItemQuestionListDto.builder()
                 .id(m.getId())
                 .title(m.getTitle())
                 .itemId(m.getItem().getId())
-                .memberId(m.getWriter().getUsername())
+                .memberId(m.getMember().getUsername())
+                .createDate(m.getCreateDate().toString())
+                .lastModifiedDate(m.getLastModifiedDate().toString())
+                .build()
+        );
+        return posts;
+    }
+
+    public Page<ItemQuestionListDto> listAndMemeberId(Pageable pageable, String memberId){
+        Page<ItemQuestionListDto> posts = itemQuestionRepository.findByMemberUsername(pageable, memberId).map(m->ItemQuestionListDto.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .itemId(m.getItem().getId())
+                .memberId(m.getMember().getUsername())
+                .createDate(m.getCreateDate().toString())
+                .lastModifiedDate(m.getLastModifiedDate().toString())
+                .build()
+        );
+        return posts;
+    }
+
+    public Page<ItemQuestionListDto> listAndCreateDate(Pageable pageable, LocalDateTime startDateTime, LocalDateTime endDateTime){
+        Page<ItemQuestionListDto> posts = itemQuestionRepository.findByCreateDateBetween(pageable, startDateTime, endDateTime).map(m->ItemQuestionListDto.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+
+                .itemId(m.getItem().getId())
+                .memberId(m.getMember().getUsername())
+                .createDate(m.getCreateDate().toString())
+                .lastModifiedDate(m.getLastModifiedDate().toString())
+                .build()
+        );
+        return posts;
+    }
+    public Page<ItemQuestionListDto> list(Pageable pageable){
+        Page<ItemQuestionListDto> posts = itemQuestionRepository.findAll(pageable).map(m->ItemQuestionListDto.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .itemId(m.getItem().getId())
+                .memberId(m.getMember().getUsername())
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
                 .build()
