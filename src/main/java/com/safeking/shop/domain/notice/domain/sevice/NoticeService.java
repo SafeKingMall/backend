@@ -12,6 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -48,9 +51,24 @@ public class NoticeService {
                 , notice.getLastModifiedDate().toString());
     }
 
-    public Page<Notice> list(Pageable pageable, String title){
-        Page<Notice> posts = noticeRepository.findByTitleContaining(pageable, title);
+    public Page<Notice> listAndTitle(Pageable pageable, String title){
+        Page<Notice> posts = null;
+
+        posts = noticeRepository.findByTitleContaining(pageable, title);
         return posts;
     }
 
+    public Page<Notice> listAndCreateDate(Pageable pageable, LocalDateTime startDateTime, LocalDateTime endDateTime){
+        Page<Notice> posts = null;
+
+        posts = noticeRepository.findByCreateDateBetween(pageable, startDateTime, endDateTime);
+        return posts;
+    }
+
+    public Page<Notice> list(Pageable pageable){
+        Page<Notice> posts = null;
+
+        posts = noticeRepository.findAll(pageable);
+        return posts;
+    }
 }
