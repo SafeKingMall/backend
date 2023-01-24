@@ -2,14 +2,10 @@ package com.safeking.shop.domain.user.web.controller;
 
 import com.safeking.shop.domain.coolsms.domain.respository.SMSMemoryRepository;
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
-import com.safeking.shop.domain.user.domain.entity.RedisMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.safeking.shop.domain.user.domain.entity.member.OauthMember;
-import com.safeking.shop.domain.user.domain.repository.MemberRedisRepository;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryMemberRepository;
-import com.safeking.shop.domain.user.domain.service.CacheService;
 import com.safeking.shop.domain.user.domain.service.DormantMemberService;
 import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.safeking.shop.domain.user.domain.service.RedisService;
@@ -29,9 +25,6 @@ import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.exception.MemberNotFoundException;
 import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.Tokens;
-import com.safeking.shop.global.oauth.provider.GoogleUserInfo;
-import com.safeking.shop.global.oauth.provider.KakaoUserInfo;
-import com.safeking.shop.global.oauth.provider.Oauth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -42,7 +35,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,9 +82,12 @@ public class MemberController {
     public void logout(HttpServletRequest request){
         memberService.logout(getUsername(request));
     }
-    @GetMapping("/user/withdrawal")
-    public void withdrawal(HttpServletRequest request){
-        memberService.changeToWithDrawlStatus(getUsername(request));
+    @PostMapping("/user/withdrawal")
+    public void withdrawal(@RequestBody @Validated WithdrawalRequest withdrawalRequest, HttpServletRequest request){
+        memberService.changeToWithDrawlStatusByUser(
+                withdrawalRequest.getInputUsername()
+                , withdrawalRequest.getPassword()
+                , getUsername(request));
     }
 
     @PostMapping("/signup/criticalItems")
@@ -181,6 +176,7 @@ public class MemberController {
     public void updatePassword(@RequestBody @Validated UpdatePWRequest updatePWRequest, HttpServletRequest request) {
         memberService.updatePassword(
                 TokenUtils.getUsername(request)
+                , updatePWRequest.getPreviousPassword()
                 , updatePWRequest.getPassword());
     }
 
@@ -211,19 +207,20 @@ public class MemberController {
 
     @GetMapping("/admin/member/list")
     public Page<MemberListDto> showMemberList(
-            String name,
-            HttpServletRequest request
+            String name
+            , String status
+            , HttpServletRequest request
             , @PageableDefault(page = 0, size = 15) Pageable pageable
     ) {
         // 권한처리
-         if (memberService.checkAuthority(getUsername(request))) return memberQueryRepository.searchAllCondition(name, pageable);
+         if (memberService.checkAuthority(getUsername(request))) return memberQueryRepository.searchAllCondition(name, status, pageable);
          throw new IllegalArgumentException("관리자만 접근할 수 있습니다.");
     }
 
     @GetMapping("/admin/member/withDrawlList")
     public Page<WithDrawlListDto> showWithDrawlsList(
-            String name,
-            HttpServletRequest request
+            String name
+            , HttpServletRequest request
             , @PageableDefault(page = 0, size = 15) Pageable pageable
     ) {
         // 권한처리

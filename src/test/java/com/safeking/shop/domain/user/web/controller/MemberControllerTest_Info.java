@@ -143,15 +143,26 @@ class MemberControllerTest_Info extends MvcTest {
                 memberRepository
                         .findByUsername(USER_USERNAME)
                         .orElseThrow());
+
+        WithdrawalRequest withdrawalRequest = new WithdrawalRequest(USER_USERNAME, USER_PASSWORD);
+        String content = om.writeValueAsString(withdrawalRequest);
+
         //when
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/user/withdrawal")
-                        .header(AUTH_HEADER, token))
-                .andExpect(status().isOk());
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/user/withdrawal")
+                            .header(AUTH_HEADER, token)
+                            .content(content)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                            .andExpect(status().isOk());
         //docs
         resultActions.andDo(
                 document("withdrawal"
                         ,requestHeaders(
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
+                        )
+                        ,requestFields(
+                                fieldWithPath("inputUsername").attributes(InputValidation()).description("user 가 작성한 아이디")
+                                , fieldWithPath("password").attributes(InputValidation()).description("user 가 작성한 비밀번호")
                         )
                 )
         );
@@ -231,7 +242,7 @@ class MemberControllerTest_Info extends MvcTest {
         //given
         String token=jwtToken;
 
-        UpdatePWRequest updatePWRequest = new UpdatePWRequest("password1234*");
+        UpdatePWRequest updatePWRequest = new UpdatePWRequest(USER_PASSWORD,"password1234*");
         String content = om.writeValueAsString(updatePWRequest);
         //when
         ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/v1/user/update/password")
@@ -247,7 +258,8 @@ class MemberControllerTest_Info extends MvcTest {
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
                         )
                         ,requestFields(
-                                fieldWithPath("password").attributes(PWValidation()).description("password")
+                                fieldWithPath("previousPassword").attributes().description("이전 비밀번호")
+                                , fieldWithPath("password").attributes(PWValidation()).description("password")
                         )
                 )
         );
@@ -258,7 +270,7 @@ class MemberControllerTest_Info extends MvcTest {
         //given
         String NoValidToken=jwtToken+"no";
 
-        UpdatePWRequest updatePWRequest = new UpdatePWRequest("password1234*");
+        UpdatePWRequest updatePWRequest = new UpdatePWRequest(USER_PASSWORD,"password1234*");
         String content = om.writeValueAsString(updatePWRequest);
         //when
         ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/v1/user/update/password")
@@ -279,7 +291,8 @@ class MemberControllerTest_Info extends MvcTest {
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
                         )
                         ,requestFields(
-                                fieldWithPath("password").attributes(PWValidation()).description("password")
+                                fieldWithPath("previousPassword").attributes().description("이전 비밀번호")
+                                , fieldWithPath("password").attributes(PWValidation()).description("password")
                         )
                 )
         );

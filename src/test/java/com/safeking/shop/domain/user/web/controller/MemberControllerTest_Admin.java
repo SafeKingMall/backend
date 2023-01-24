@@ -35,6 +35,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 
 import static com.safeking.shop.domain.order.domain.entity.Order.createOrder;
@@ -71,6 +72,8 @@ public class MemberControllerTest_Admin extends MvcTest {
     SMSService smsService;
     @Autowired
     CartService cartService;
+    @Autowired
+    EntityManager em;
 
     String jwtToken=null;
 
@@ -92,8 +95,10 @@ public class MemberControllerTest_Admin extends MvcTest {
                         .header(AUTH_HEADER,jwtToken)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
+        em.flush();
+        em.clear();
         // then
-        Member findMember = memberRepository.findByUsername(member.getUsername()).orElseThrow();
+        Member findMember = memberRepository.findById(member.getId()).orElseThrow();
 
         assertAll(
                 () -> assertThat(findMember.getStatus()).isEqualTo(MemberStatus.WITHDRAWAL)
@@ -136,6 +141,7 @@ public class MemberControllerTest_Admin extends MvcTest {
                         .header(AUTH_HEADER,jwtToken)
                         .accept(MediaType.APPLICATION_JSON_UTF8)
                         .param("name","user1")
+                        .param("status","COMMON")
                         .param("page","0")
                         .param("size","15"))
                 .andExpect(status().isOk());
@@ -150,6 +156,8 @@ public class MemberControllerTest_Admin extends MvcTest {
                 .andExpect(jsonPath("size").value("15"))
                 .andExpect(jsonPath("numberOfElements").value("11"))
         ;
+
+
         //docs
         resultActions.andDo(
                 document("showMemberList"
@@ -158,6 +166,7 @@ public class MemberControllerTest_Admin extends MvcTest {
                         )
                         ,requestParameters(
                                 parameterWithName("name").optional().description("회원 이름")
+                                ,parameterWithName("status").optional().description("회원 상태")
                                 ,parameterWithName("page").optional().description("page 는 0부터 시작")
                                 ,parameterWithName("size").optional().description("size 는 기본 15")
                         )
