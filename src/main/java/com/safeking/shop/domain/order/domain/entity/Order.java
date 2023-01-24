@@ -51,7 +51,7 @@ public class Order extends BaseTimeEntity {
     private String adminMemo;
 
     @OneToOne
-    @JoinColumn(name = "payment_id")
+    @JoinColumn(name = "safeking_payment_id")
     private SafekingPayment safeKingPayment;
 
     private String merchantUid; // 가맹점에서 전달한 고유 번호

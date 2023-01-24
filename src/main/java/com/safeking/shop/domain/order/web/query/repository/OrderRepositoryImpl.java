@@ -50,7 +50,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStats())
+                        paymentStatusEq(condition.getPaymentStatus())
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -64,7 +64,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStats())
+                        paymentStatusEq(condition.getPaymentStatus())
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
@@ -84,7 +84,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStats())
+                        paymentStatusEq(condition.getPaymentStatus())
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -97,7 +97,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStats())
+                        paymentStatusEq(condition.getPaymentStatus())
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
