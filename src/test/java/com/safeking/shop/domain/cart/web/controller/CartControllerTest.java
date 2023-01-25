@@ -1,7 +1,9 @@
 package com.safeking.shop.domain.cart.web.controller;
 
+import com.safeking.shop.domain.cart.domain.entity.Cart;
 import com.safeking.shop.domain.cart.domain.entity.CartItem;
 import com.safeking.shop.domain.cart.domain.repository.CartItemRepository;
+import com.safeking.shop.domain.cart.domain.repository.CartRepository;
 import com.safeking.shop.domain.cart.domain.service.CartItemService;
 import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.cart.web.query.repository.CartQueryRepository;
@@ -58,6 +60,9 @@ class CartControllerTest extends MvcTest {
     ItemRepository itemRepository;
     @Autowired
     CartItemRepository cartItemRepository;
+    @Autowired
+    CartRepository cartRepository;
+
     String jwtToken=null;
     List<Long> putItemIdList=null;
 
@@ -100,6 +105,7 @@ class CartControllerTest extends MvcTest {
                 )
         );
     }
+
 
     @Test
     void updateCartItem() throws Exception {
@@ -149,11 +155,14 @@ class CartControllerTest extends MvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
         //then
         assertThrows(NoSuchElementException.class,()->
                 cartItemRepository.findByItemIdAndUsername(itemIdList.get(0), TestUserHelper.USER_USERNAME).orElseThrow());
+
         assertThrows(NoSuchElementException.class,()->
                 cartItemRepository.findByItemIdAndUsername(itemIdList.get(1), TestUserHelper.USER_USERNAME).orElseThrow());
+
         //docs
         resultActions.andDo(
                 document("deleteCartItem"

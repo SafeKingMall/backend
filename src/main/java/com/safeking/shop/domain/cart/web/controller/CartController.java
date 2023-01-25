@@ -43,8 +43,8 @@ public class CartController {
     }
 
     @DeleteMapping("user/cartItem")
-    public void deleteCartItem(HttpServletRequest request,Long... itemId){
-        cartItemService.deleteCartItemFromCart(TokenUtils.getUsername(request),itemId);
+    public void deleteCartItem(HttpServletRequest request, Long... itemId){
+        cartItemService.deleteCartItemFromCart(TokenUtils.getUsername(request), itemId);
     }
     
     @GetMapping("user/cart")
