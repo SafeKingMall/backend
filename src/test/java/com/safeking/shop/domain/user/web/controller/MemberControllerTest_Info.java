@@ -251,6 +251,7 @@ class MemberControllerTest_Info extends MvcTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
         //docs
         resultActions.andDo(
                 document("updatePassword"

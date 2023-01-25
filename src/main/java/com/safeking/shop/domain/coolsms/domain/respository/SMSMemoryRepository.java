@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Repository
 public class SMSMemoryRepository {
@@ -38,11 +39,14 @@ public class SMSMemoryRepository {
     }
 
 
-    public Optional<CoolSMS> findByClientPhoneNumber(String clientPhoneNumber) {
-        return store.values()
+    public CoolSMS findByClientPhoneNumber(String clientPhoneNumber) {
+        List<CoolSMS> collect = store.values()
                 .stream()
-                .filter(coolSMS -> coolSMS.getClientPhoneNumber().equals(clientPhoneNumber)).findFirst();
+                .filter(coolSMS -> coolSMS.getClientPhoneNumber().equals(clientPhoneNumber)).collect(Collectors.toList());
 
+        if (collect.size() - 1 < 0) throw new IllegalArgumentException("등록된 전화번호가 없습니다.");
+
+        return collect.get(collect.size() - 1);
     }
     public Optional<CoolSMS> findByCode(String code) {
         return store.values()
