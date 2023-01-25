@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cart extends BaseTimeEntity {
     public static final int DELIVERY_FEE = 3000;
-    public static final int LIMIT_COUNT = 20;
+    public static final int LIMIT_COUNT = 19;
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
