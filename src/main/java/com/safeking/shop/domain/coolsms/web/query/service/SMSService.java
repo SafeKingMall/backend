@@ -26,7 +26,7 @@ public class SMSService {
     public String sendCodeToClient(String clientPhoneNumber) throws CoolsmsException {
         String code = createCode(clientPhoneNumber).getCode();
 
-//        sendInformation(clientPhoneNumber, code, "code");
+        sendInformation(clientPhoneNumber, code, "code");
         return code;
     }
 
