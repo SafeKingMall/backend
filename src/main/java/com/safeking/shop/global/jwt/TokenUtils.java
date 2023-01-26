@@ -70,9 +70,9 @@ public class TokenUtils {
     private Date getLifeTime(TokenType type) {
         switch(type){
             case refresh:
-                return new Date(System.currentTimeMillis() + (60000 * 10));
-            case access:
                 return new Date(System.currentTimeMillis() + (60000 * 60));
+            case access:
+                return new Date(System.currentTimeMillis() + (60000 * 10));
         }
         return null;
     }
