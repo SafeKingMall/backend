@@ -16,4 +16,6 @@ public class ItemQuestionSaveDto {
 
     private String memberId;//수정 가능, id OR member
 
+    private String password;
+
 }
