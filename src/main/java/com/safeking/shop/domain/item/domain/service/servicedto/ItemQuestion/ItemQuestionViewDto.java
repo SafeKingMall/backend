@@ -27,4 +27,6 @@ public class ItemQuestionViewDto {
 
     private List<ItemAnswerViewDto> answer;
 
+    private String password;
+
 }

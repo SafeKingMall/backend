@@ -15,6 +15,7 @@ import com.safeking.shop.domain.item.web.query.repository.ItemAnswerQueryReposit
 import com.safeking.shop.domain.order.constant.OrderConst;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
+import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,11 +36,9 @@ public class ItemQuestionService {
 
     private final MemberRepository memberRepository;
 
-    private final ItemAnswerRepository itemAnswerRepository;
-
-    private final JPAQueryFactory queryFactory;
-
     private final ItemAnswerQueryRepository itemAnswerQueryRepository;
+
+    private final CustomBCryPasswordEncoder encoder;
 
     public Long save(ItemQuestionSaveDto itemQuestionSaveDto){
 
@@ -48,7 +47,7 @@ public class ItemQuestionService {
         Optional<Member> member = memberRepository.findByUsername(itemQuestionSaveDto.getMemberId());
         Member findMember = member.orElseThrow(() -> new OrderException(OrderConst.ORDER_MEMBER_NONE));
         ItemQuestion itemQuestion = ItemQuestion
-                .createItemQuestion(itemQuestionSaveDto.getTitle(), itemQuestionSaveDto.getContents(), item, findMember);
+                .createItemQuestion(itemQuestionSaveDto.getTitle(), itemQuestionSaveDto.getContents(), item, findMember, encoder.encode(itemQuestionSaveDto.getPassword()));
 
         itemQuestionRepository.save(itemQuestion);
 
@@ -62,7 +61,7 @@ public class ItemQuestionService {
         //임시로 만듦
         if(!itemQuestion.getMember().getUsername().equals(username)) throw new IllegalArgumentException("권한이 없습니다.");
 
-        itemQuestion.update(itemQuestionUpdateDto.getTitle(),itemQuestionUpdateDto.getContents());
+        itemQuestion.update(itemQuestionUpdateDto.getTitle(),itemQuestionUpdateDto.getContents(), encoder.encode(itemQuestionUpdateDto.getPassword()));
     }
 
     public void delete(Long id, String username){
@@ -84,6 +83,7 @@ public class ItemQuestionService {
                 , itemQuestion.getItem().getId()
                 , itemQuestion.getMember().getUsername()
                 , itemAnswerQueryRepository.findAnswerByTargetQuestionId(itemQuestion.getId())
+                , itemQuestion.getPassword()
         );
         return itemQuestionViewDto;
     }
@@ -138,5 +138,23 @@ public class ItemQuestionService {
                 .build()
         );
         return posts;
+    }
+
+    public ItemQuestionViewDto viewPassword(Long id, String password) throws Exception {
+        ItemQuestion itemQuestion = itemQuestionRepository.findById(id).orElseThrow();
+        System.out.println(encoder.matches(password, itemQuestion.getPassword()) );
+        if(encoder.matches(password, itemQuestion.getPassword()) == false){
+            throw new Exception("비밀번호가 틀립니다.");
+        }
+        ItemQuestionViewDto itemQuestionViewDto = new ItemQuestionViewDto(
+                itemQuestion.getId()
+                , itemQuestion.getTitle()
+                , itemQuestion.getContents()
+                , itemQuestion.getItem().getId()
+                , itemQuestion.getMember().getUsername()
+                , itemAnswerQueryRepository.findAnswerByTargetQuestionId(itemQuestion.getId())
+                , itemQuestion.getPassword()
+        );
+        return itemQuestionViewDto;
     }
 }

@@ -34,4 +34,6 @@ public interface ItemQuestionRepository extends JpaRepository<ItemQuestion,Long>
     Page<ItemQuestion> findByMemberUsername(Pageable pageable, String memberId);
 
     Page<ItemQuestion> findByCreateDateBetween(Pageable pageable, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    ItemQuestion findByIdAndPassword(Long id, String password);
 }
