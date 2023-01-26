@@ -40,6 +40,8 @@ public class TestUserHelper {
     public static String USER_PASSWORD="testUser1234*";
     public static String EMAIL = "kms199719@naver.com";
     public static String USER_ROLE="ROLE_USER";
+    public static String PHONE_NUMBER = "01082460887";
+    public static String NAME = "user";
 
     public static String ADMIN_USERNAME="admin1234";
     public static String ADMIN_PASSWORD="admin1234*";

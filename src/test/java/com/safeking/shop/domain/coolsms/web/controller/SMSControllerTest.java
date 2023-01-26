@@ -52,7 +52,6 @@ class SMSControllerTest extends MvcTest {
         );
 
     }
-
     @Test
     void checkCode() throws Exception {
         //given
