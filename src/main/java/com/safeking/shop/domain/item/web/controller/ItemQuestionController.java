@@ -63,6 +63,7 @@ public class ItemQuestionController {
                 , itemQuestionViewDto.getItemId()
                 , itemQuestionViewDto.getMemberId()
                 , itemQuestionViewDto.getAnswer()
+                , itemQuestionViewDto.getPassword()
         );
         return itemQuestionViewResponse;
     }
@@ -119,5 +120,20 @@ public class ItemQuestionController {
             );
         }
         return lst;
+    }
+
+    @GetMapping("/itemQna/password/{itemQnaId}/{password}")
+    public ItemQuestionViewResponse viewPassword(@PathVariable Long itemQnaId, @PathVariable String password) throws Exception {
+        ItemQuestionViewDto itemQuestionViewDto = itemQuestionService.viewPassword(itemQnaId, password);
+        ItemQuestionViewResponse itemQuestionViewResponse = new ItemQuestionViewResponse(
+                itemQuestionViewDto.getId()
+                , itemQuestionViewDto.getTitle()
+                , itemQuestionViewDto.getContents()
+                , itemQuestionViewDto.getItemId()
+                , itemQuestionViewDto.getMemberId()
+                , itemQuestionViewDto.getAnswer()
+                , itemQuestionViewDto.getPassword()
+        );
+        return itemQuestionViewResponse;
     }
 }

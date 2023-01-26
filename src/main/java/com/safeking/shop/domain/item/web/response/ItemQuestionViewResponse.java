@@ -21,4 +21,6 @@ public class ItemQuestionViewResponse {
     private String memberId;//수정 가능, id OR member
 
     private List<ItemAnswerViewDto> answer;
+
+    private String password;
 }
