@@ -36,7 +36,7 @@ public class Item extends BaseTimeEntity {
     private String viewYn = "Y";
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Category category;
 
