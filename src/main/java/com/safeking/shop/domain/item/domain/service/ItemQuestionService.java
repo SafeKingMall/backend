@@ -32,8 +32,6 @@ public class ItemQuestionService {
 
     private final ItemQuestionRepository itemQuestionRepository;
 
-    private final ItemRepository itemRepository;
-
     private final MemberRepository memberRepository;
 
     private final ItemAnswerQueryRepository itemAnswerQueryRepository;
@@ -41,13 +39,10 @@ public class ItemQuestionService {
     private final CustomBCryPasswordEncoder encoder;
 
     public Long save(ItemQuestionSaveDto itemQuestionSaveDto){
-
-        Item item = itemRepository.findById(itemQuestionSaveDto.getItemId()).orElseThrow();
-
         Optional<Member> member = memberRepository.findByUsername(itemQuestionSaveDto.getMemberId());
         Member findMember = member.orElseThrow(() -> new OrderException(OrderConst.ORDER_MEMBER_NONE));
         ItemQuestion itemQuestion = ItemQuestion
-                .createItemQuestion(itemQuestionSaveDto.getTitle(), itemQuestionSaveDto.getContents(), item, findMember, encoder.encode(itemQuestionSaveDto.getPassword()));
+                .createItemQuestion(itemQuestionSaveDto.getTitle(), itemQuestionSaveDto.getContents(), findMember, encoder.encode(itemQuestionSaveDto.getPassword()));
 
         itemQuestionRepository.save(itemQuestion);
 
@@ -80,7 +75,6 @@ public class ItemQuestionService {
                 itemQuestion.getId()
                 , itemQuestion.getTitle()
                 , itemQuestion.getContents()
-                , itemQuestion.getItem().getId()
                 , itemQuestion.getMember().getUsername()
                 , itemAnswerQueryRepository.findAnswerByTargetQuestionId(itemQuestion.getId())
                 , itemQuestion.getPassword()
@@ -92,7 +86,6 @@ public class ItemQuestionService {
         Page<ItemQuestionListDto> posts = itemQuestionRepository.findByTitleContaining(pageable, title).map(m->ItemQuestionListDto.builder()
                 .id(m.getId())
                 .title(m.getTitle())
-                .itemId(m.getItem().getId())
                 .memberId(m.getMember().getUsername())
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
@@ -105,7 +98,6 @@ public class ItemQuestionService {
         Page<ItemQuestionListDto> posts = itemQuestionRepository.findByMemberUsername(pageable, memberId).map(m->ItemQuestionListDto.builder()
                 .id(m.getId())
                 .title(m.getTitle())
-                .itemId(m.getItem().getId())
                 .memberId(m.getMember().getUsername())
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
@@ -118,8 +110,6 @@ public class ItemQuestionService {
         Page<ItemQuestionListDto> posts = itemQuestionRepository.findByCreateDateBetween(pageable, startDateTime, endDateTime).map(m->ItemQuestionListDto.builder()
                 .id(m.getId())
                 .title(m.getTitle())
-
-                .itemId(m.getItem().getId())
                 .memberId(m.getMember().getUsername())
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
@@ -131,7 +121,6 @@ public class ItemQuestionService {
         Page<ItemQuestionListDto> posts = itemQuestionRepository.findAll(pageable).map(m->ItemQuestionListDto.builder()
                 .id(m.getId())
                 .title(m.getTitle())
-                .itemId(m.getItem().getId())
                 .memberId(m.getMember().getUsername())
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
@@ -150,7 +139,6 @@ public class ItemQuestionService {
                 itemQuestion.getId()
                 , itemQuestion.getTitle()
                 , itemQuestion.getContents()
-                , itemQuestion.getItem().getId()
                 , itemQuestion.getMember().getUsername()
                 , itemAnswerQueryRepository.findAnswerByTargetQuestionId(itemQuestion.getId())
                 , itemQuestion.getPassword()

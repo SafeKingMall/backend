@@ -60,7 +60,6 @@ public class ItemQuestionController {
                 itemQuestionViewDto.getId()
                 , itemQuestionViewDto.getTitle()
                 , itemQuestionViewDto.getContents()
-                , itemQuestionViewDto.getItemId()
                 , itemQuestionViewDto.getMemberId()
                 , itemQuestionViewDto.getAnswer()
                 , itemQuestionViewDto.getPassword()
@@ -77,7 +76,6 @@ public class ItemQuestionController {
         if(!"".equals(title)){
             lst = itemQuestionService.listAndTitle(pageable, title).map(m -> ItemQuestionListResponse.builder()
                     .id(m.getId())
-                    .itemId(m.getItemId())
                     .title(m.getTitle())
                     .createDate(m.getCreateDate())
                     .lastModifiedDate(m.getLastModifiedDate())
@@ -87,7 +85,6 @@ public class ItemQuestionController {
         }else if(!"".equals(memberId)){
             lst = itemQuestionService.listAndMemeberId(pageable, memberId).map(m -> ItemQuestionListResponse.builder()
                     .id(m.getId())
-                    .itemId(m.getItemId())
                     .title(m.getTitle())
                     .createDate(m.getCreateDate())
                     .lastModifiedDate(m.getLastModifiedDate())
@@ -101,7 +98,6 @@ public class ItemQuestionController {
             log.debug(s2.toString());
             lst = itemQuestionService.listAndCreateDate(pageable, s1, s2).map(m -> ItemQuestionListResponse.builder()
                     .id(m.getId())
-                    .itemId(m.getItemId())
                     .title(m.getTitle())
                     .createDate(m.getCreateDate())
                     .lastModifiedDate(m.getLastModifiedDate())
@@ -111,7 +107,6 @@ public class ItemQuestionController {
         }else{
             lst = itemQuestionService.list(pageable).map(m -> ItemQuestionListResponse.builder()
                     .id(m.getId())
-                    .itemId(m.getItemId())
                     .title(m.getTitle())
                     .createDate(m.getCreateDate())
                     .lastModifiedDate(m.getLastModifiedDate())
@@ -129,7 +124,6 @@ public class ItemQuestionController {
                 itemQuestionViewDto.getId()
                 , itemQuestionViewDto.getTitle()
                 , itemQuestionViewDto.getContents()
-                , itemQuestionViewDto.getItemId()
                 , itemQuestionViewDto.getMemberId()
                 , itemQuestionViewDto.getAnswer()
                 , itemQuestionViewDto.getPassword()

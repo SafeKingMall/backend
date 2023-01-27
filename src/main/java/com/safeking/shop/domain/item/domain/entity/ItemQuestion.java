@@ -24,10 +24,6 @@ public class ItemQuestion extends BaseTimeEntity {
     private String contents;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
-    private Item item;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -36,15 +32,13 @@ public class ItemQuestion extends BaseTimeEntity {
 
     private String password;
 
-    public static ItemQuestion createItemQuestion(String title, String contents, Item item, Member writer, String password) {
+    public static ItemQuestion createItemQuestion(String title, String contents, Member writer, String password) {
 
         ItemQuestion itemQuestion = new ItemQuestion();
 
         itemQuestion.title = title;
 
         itemQuestion.contents = contents;
-
-        itemQuestion.item = item;
 
         itemQuestion.member = writer;
 
