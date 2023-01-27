@@ -35,6 +35,7 @@ public class PaymentController {
     @PostMapping("/payment")
     public ResponseEntity<PaymentResponse> payment(@Valid @RequestBody PaymentCallbackRequest paymentCallbackRequest, HttpServletRequest request) {
 
+        // 회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         PaymentResponse<PaymentCallbackResponse> response = iamportService.paymentByCallback(paymentCallbackRequest);
@@ -60,6 +61,7 @@ public class PaymentController {
     @PostMapping("/payment/cancel")
     public ResponseEntity<IamportResponse<Payment>> cancelPayment(@Valid @RequestBody PaymentCancelRequest paymentCancelRequest, HttpServletRequest request) {
 
+        // 회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 결제 취소

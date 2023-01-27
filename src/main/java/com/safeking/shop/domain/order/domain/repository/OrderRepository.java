@@ -24,6 +24,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " join fetch o.orderItems oi" +
             " join fetch o.safeKingPayment p" +
             " join fetch oi.item i" +
+            " join fetch ItemPhoto ip on i.id = ip.id" +
             " where o.id = :id")
     Optional<Order> findOrderDetail(@Param("id") Long id);
 //    @Query("select o from Order o" +

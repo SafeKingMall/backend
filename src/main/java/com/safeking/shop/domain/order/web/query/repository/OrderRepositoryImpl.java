@@ -7,6 +7,7 @@ import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -27,15 +28,10 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.util.StringUtils.*;
 
 @Repository
+@RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
-    private final EntityManager em;
     private final JPAQueryFactory queryFactory;
-
-    public OrderRepositoryImpl(EntityManager em) {
-        this.em = em;
-        this.queryFactory = new JPAQueryFactory(em);
-    }
 
     @Override
     public Page<Order> findOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {

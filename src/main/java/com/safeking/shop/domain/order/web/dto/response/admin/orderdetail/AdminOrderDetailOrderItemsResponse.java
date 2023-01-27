@@ -12,12 +12,14 @@ public class AdminOrderDetailOrderItemsResponse {
     private String name;
     private int count;
     private int price;
+    private String thumbnail;
 
     @Builder
-    public AdminOrderDetailOrderItemsResponse(Long id, String name, int count, int price) {
+    public AdminOrderDetailOrderItemsResponse(Long id, String name, int count, int price, String thumbnail) {
         this.id = id;
         this.name = name;
         this.count = count;
         this.price = price;
+        this.thumbnail = thumbnail;
     }
 }
