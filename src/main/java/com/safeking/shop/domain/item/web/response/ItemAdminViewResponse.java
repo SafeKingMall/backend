@@ -17,4 +17,8 @@ public class ItemAdminViewResponse {
     private String lastModifiedDate;
 
     private String fileName;
+
+    private String viewYn;
+
+    private int viewPrice;
 }

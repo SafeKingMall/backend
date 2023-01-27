@@ -69,6 +69,8 @@ public class ItemController {
                 , itemViewDto.getCreateDate()
                 , itemViewDto.getLastModifiedDate()
                 , itemViewDto.getFileName()
+                , itemViewDto.getViewYn()
+                , itemViewDto.getViewPrice()
         );
         return itemAdminViewResponse;
     }
