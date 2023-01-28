@@ -36,7 +36,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> payment(@Valid @RequestBody PaymentCallbackRequest paymentCallbackRequest, HttpServletRequest request) {
 
         // 회원 검증
-        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        //validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         PaymentResponse<PaymentCallbackResponse> response = iamportService.paymentByCallback(paymentCallbackRequest);
 

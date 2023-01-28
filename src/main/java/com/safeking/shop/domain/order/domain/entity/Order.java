@@ -114,4 +114,8 @@ public class Order extends BaseTimeEntity {
     public void changeMerchantUid(String merchantUid) {
         this.merchantUid = merchantUid;
     }
+
+    public void changeOrderStatus(OrderStatus status) {
+        this.status = status;
+    }
 }

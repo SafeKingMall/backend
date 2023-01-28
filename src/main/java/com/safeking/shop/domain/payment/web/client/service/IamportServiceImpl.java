@@ -3,6 +3,7 @@ package com.safeking.shop.domain.payment.web.client.service;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.exception.PaymentException;
 import com.safeking.shop.domain.order.domain.entity.Order;
+import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static com.safeking.shop.domain.order.constant.OrderConst.*;
+import static com.safeking.shop.domain.order.domain.entity.status.OrderStatus.COMPLETE;
 import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.*;
 import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.*;
 
@@ -47,8 +49,8 @@ public class IamportServiceImpl implements IamportService {
         // 결제 성공 여부
         if(!request.getSuccess()) {
             // 주문 취소
-            cancelOrder(request.getMerchantUid(), PAYMENT_PAID_FAILED);
-            throw new PaymentException(PAYMENT_PAID_FAILED);
+            cancelOrder(request.getMerchantUid(), PAYMENT_PAID_CANCEL);
+            throw new PaymentException(PAYMENT_PAID_CANCEL);
         }
 
         PaymentCallbackResponse paymentCallbackResponse = null;
@@ -71,8 +73,15 @@ public class IamportServiceImpl implements IamportService {
             }
 
             // 결제 완료
-            if (response.getStatus().equals("paid")) {
+            if(response.getStatus().equals("paid")) {
+                // 결제 상태 변경(결제 완료)
                 findSafekingPayment.changeSafekingPayment(PAID, response);
+
+                // 주문 상태 변경(주문 완료)
+                Optional<Order> optionalOrder = orderRepository.findOrderByMerchantUid(request.getMerchantUid());
+                Order findOrder = optionalOrder.orElseThrow(() -> new OrderException(ORDER_NONE));
+                findOrder.changeOrderStatus(COMPLETE);
+                findOrder.changeSafekingPayment(findSafekingPayment);
 
                 paymentCallbackResponse = PaymentCallbackResponse.builder()
                         .payMethod(response.getPayMethod())
@@ -125,7 +134,14 @@ public class IamportServiceImpl implements IamportService {
 
             // 결제 완료
             if(response.getStatus().equals("paid")) {
+                // 결제 상태 변경(결제 완료)
                 findSafekingPayment.changeSafekingPayment(PAID, response);
+
+                // 주문 상태 변경(주문 완료)
+                Optional<Order> optionalOrder = orderRepository.findOrderByMerchantUid(request.getMerchantUid());
+                Order findOrder = optionalOrder.orElseThrow(() -> new OrderException(ORDER_NONE));
+                findOrder.changeOrderStatus(COMPLETE);
+                findOrder.changeSafekingPayment(findSafekingPayment);
             }
 
         } catch (IamportResponseException e) {
@@ -190,7 +206,7 @@ public class IamportServiceImpl implements IamportService {
      */
     private Order cancelOrder(String merchantUid, String cancelReason) {
         Optional<Order> orderOptional = orderRepository.findOrderByMerchantUid(merchantUid);
-        Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_CANCEL_FAIL));
+        Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_NONE));
         findOrder.cancel(cancelReason);
 
         return findOrder;

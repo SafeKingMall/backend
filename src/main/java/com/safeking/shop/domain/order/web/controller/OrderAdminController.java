@@ -35,6 +35,9 @@ public class OrderAdminController {
     private final OrderService orderService;
     private final ValidationOrderService validationOrderService;
 
+    /**
+     * 관리자 주문 상세 조회
+     */
     @GetMapping("/order/detail/{orderId}")
     public ResponseEntity<AdminOrderDetailResponse> searchOrderDetailByAdmin(@PathVariable("orderId") Long orderId,
                                                                              HttpServletRequest request) {
