@@ -253,7 +253,10 @@ public class MemberService {
     }
 
     public void changeToWithDrawlStatus(String username) {
-        findMember(username).changeToWithDrawlStatus();
+        Member member = findMember(username);
+
+        member.changeToWithDrawlStatus();
+        member.addLastLoginTime();
 
         RedisMember redisMember = redisRepository.findByUsername(username).orElse(null);
         if (redisMember != null) logout(username);

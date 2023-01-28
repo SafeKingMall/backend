@@ -2,6 +2,7 @@ package com.safeking.shop.domain.user.web.controller;
 
 import com.safeking.shop.domain.coolsms.domain.respository.SMSMemoryRepository;
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
+import com.safeking.shop.domain.coolsms.web.request.PhoneNumber;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.domain.user.domain.repository.MemoryDormantRepository;
@@ -27,6 +28,7 @@ import com.safeking.shop.global.jwt.TokenUtils;
 import com.safeking.shop.global.jwt.Tokens;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -198,6 +200,18 @@ public class MemberController {
 
         return ResponseEntity.badRequest().body(new Error(1300, "코드가 일치하지 않습니다."));
 
+    }
+
+    @PostMapping("/coolsms/id/find")
+    public String sendCodeToClientByIdFind(@RequestBody @Validated IdFindSMSRequest idFindSMSRequest) throws CoolsmsException {
+        Member member = memberRepository
+                .findByPhoneNumber(idFindSMSRequest.getClientPhoneNumber())
+                .orElseThrow(() -> new MemberNotFoundException("휴대 번호와 일치하는 회원이 없습니다."));
+
+        if (!member.getName().equals(idFindSMSRequest.getName()))
+            throw new IllegalArgumentException("등록하신 휴대 번호와 이름이 일치하지 않습니다.");
+
+        return smsService.sendCodeToClient(idFindSMSRequest.getClientPhoneNumber());
     }
 
     @PostMapping("/temporaryPassword")

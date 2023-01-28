@@ -24,6 +24,8 @@ public class SMSController {
         return smsService.sendCodeToClient(phoneNumber.getClientPhoneNumber());
     }
 
+
+
     @PostMapping("/code")
     public ResponseEntity checkCode(@RequestBody @Validated SMSCode smsCode){
 

@@ -37,8 +37,8 @@ public class SMSService {
 
     public boolean checkCode(String clientCode, String clientPhoneNumber) {
         CoolSMS coolSMS = coolSmsRepository
-                .findByClientPhoneNumber(clientPhoneNumber)
-                .orElseThrow(() -> new MemberNotFoundException("휴대번호가 일치하지 않습니다. 휴대전화 인증을 처음부터 다시 해주세요"));
+                .findByClientPhoneNumber(clientPhoneNumber);
+
         //3분이 지나면 삭제
         if(coolSMS.isExpired()){
             coolSmsRepository.delete(coolSMS.getId());
@@ -49,7 +49,7 @@ public class SMSService {
             coolSmsRepository.delete(coolSMS.getId());
             return true;
         } else {
-            coolSmsRepository.delete(coolSMS.getId());
+//            coolSmsRepository.delete(coolSMS.getId());
             return false;
         }
     }

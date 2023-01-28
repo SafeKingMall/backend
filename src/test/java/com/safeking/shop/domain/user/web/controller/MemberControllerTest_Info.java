@@ -1,5 +1,6 @@
 package com.safeking.shop.domain.user.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
@@ -251,6 +252,7 @@ class MemberControllerTest_Info extends MvcTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
         //docs
         resultActions.andDo(
                 document("updatePassword"
@@ -357,6 +359,82 @@ class MemberControllerTest_Info extends MvcTest {
                 )
         );
     }
+
+    @Test
+    @DisplayName("아이디 찾기시에 회원에게 코드 전송")
+    void sendCodeToClientByIdFind() throws Exception {
+        // given
+        IdFindSMSRequest idFindSMSRequest = new IdFindSMSRequest(PHONE_NUMBER, NAME);
+        String content = om.writeValueAsString(idFindSMSRequest);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/coolsms/id/find")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        // docs
+        resultActions.andDo(
+                document("sendCodeToClientByIdFind"
+                        ,requestFields(
+                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호")
+                                ,fieldWithPath("name").description("회원가입 시에 작성한 이름")
+                        )
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("아이디 찾기시에 회원에게 코드 전송시 에러(이름이 일치 하지 않을 시)")
+    void sendCodeToClientByIdFindErrorV1() throws Exception {
+        // given
+        IdFindSMSRequest idFindSMSRequest = new IdFindSMSRequest(PHONE_NUMBER, NAME+"1");
+        String content = om.writeValueAsString(idFindSMSRequest);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/coolsms/id/find")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        // docs
+        resultActions.andDo(
+                document("sendCodeToClientByIdFindErrorV1"
+                        ,requestFields(
+                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호")
+                                ,fieldWithPath("name").description("회원가입 시에 작성한 이름")
+                        )
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("아이디 찾기시에 회원에게 코드 전송(전화번호가 일치하지 않을 시)")
+    void sendCodeToClientByIdFindErrorV2() throws Exception {
+        // given
+        IdFindSMSRequest idFindSMSRequest = new IdFindSMSRequest("01001112222", NAME);
+        String content = om.writeValueAsString(idFindSMSRequest);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/coolsms/id/find")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        // docs
+        resultActions.andDo(
+                document("sendCodeToClientByIdFindErrorV2"
+                        ,requestFields(
+                                fieldWithPath("clientPhoneNumber").attributes(PhoneNumberValidation()).description("회원가입 시 작성한 휴대폰 번호")
+                                ,fieldWithPath("name").description("회원가입 시에 작성한 이름")
+                        )
+                )
+        );
+    }
+
     @Test
     @DisplayName("코드가 옳바르지 않는 경우")
     void idFind_error1() throws Exception {

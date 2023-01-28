@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import java.util.Arrays;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -53,12 +55,18 @@ public class CartItemService {
         cartItem.changeCount(count);
     }
 
-    public void deleteCartItemFromCart(String username, Long... itemId){
+    public void deleteCartItemFromCart(String username, Long... itemId) {
         Cart cart = cartRepository
                 .findCartByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("장바구니가 없습니다."));
 
-        if(itemId!=null) cartItemRepository.deleteCartItem(cart.getId(), itemId);
+
+
+        if(itemId!=null) {
+            cartItemRepository.deleteCartItem(cart.getId(), itemId);
+
+            cart.deleteCartItem(Arrays.asList(itemId));
+        }
     }
 
 }
