@@ -10,6 +10,8 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.OnDelete;
+import org.junit.experimental.categories.Categories;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
@@ -36,7 +38,7 @@ public class Item extends BaseTimeEntity {
     private String viewYn = "Y";
 
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
@@ -88,6 +90,10 @@ public class Item extends BaseTimeEntity {
         this.viewPrice=viewPrice;
     }
 
+    public void updateCategory(Category category){
+        this.category = category;
+    }
+
     /**
      * 상품수량 감소
      * @param count 주문 상품 수량
@@ -108,4 +114,5 @@ public class Item extends BaseTimeEntity {
     public void addItemQuantity(int count) {
         this.quantity += count;
     }
+
 }
