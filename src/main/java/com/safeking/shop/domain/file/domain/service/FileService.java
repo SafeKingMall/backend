@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -70,5 +71,19 @@ public class FileService {
 
     public List<FileListResponse> list(String type, Long targetId){
         return fileRepository.findAllByTargetIdAndType(targetId, type);
+    }
+
+    public void delete(Long id) throws Exception {
+        File file = fileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("파일이 없습니다."));
+
+        java.io.File sfile = new java.io.File(uploadPath+file.getFilePath()+file.getFileName());
+        boolean result = sfile.delete();
+        /*
+        if(!result){
+            throw new Exception("파일삭제에 실패했습니다.");
+        }
+         */
+
+        fileRepository.delete(file);
     }
 }

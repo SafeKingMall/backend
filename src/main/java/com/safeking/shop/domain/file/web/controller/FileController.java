@@ -46,4 +46,10 @@ public class FileController {
     public List<FileListResponse> list(@PathVariable String type,@PathVariable Long targetId){
         return fileService.list(type, targetId);
     }
+
+    @DeleteMapping("/file/{fileId}")
+    public void delete(@PathVariable Long fileId) throws Exception {
+        fileService.delete(fileId);
+        return;
+    }
 }
