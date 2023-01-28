@@ -2,6 +2,8 @@ package com.safeking.shop.domain.payment.domain.entity;
 
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
+import com.safeking.shop.domain.payment.domain.repository.CustomCardCodeRepository;
+import com.siot.IamportRestClient.constant.CardConstant;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,6 +22,7 @@ import java.util.TimeZone;
 
 import static com.safeking.shop.domain.order.constant.OrderConst.DeliveryCost;
 import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.*;
+import static com.siot.IamportRestClient.constant.CardConstant.*;
 import static org.junit.rules.Timeout.millis;
 
 /**
@@ -49,7 +52,7 @@ public class SafekingPayment extends BaseTimeEntity {
     private String cardCode; // 카드사 코드번호
     private int cardQuota; // 할부개월 수(0이면 일시불)
     private String cardNumber; // 결제에 사용된 마스킹된 카드번호. 7~12번째 자리를 마스킹하는 것이 일반적이지만, PG사의 정책/설정에 따라 다소 차이가 있을 수 있음
-    private String cardType; // 카드유형. (주의)해당 정보를 제공하지 않는 일부 PG사의 경우 null 로 응답됨(ex. JTNet, 이니시스-빌링) = ['null', '0(신용카드)', '1(체크카드)']
+    private int cardType; // 카드유형. (주의)해당 정보를 제공하지 않는 일부 PG사의 경우 null 로 응답됨(ex. JTNet, 이니시스-빌링) = ['null', '0(신용카드)', '1(체크카드)']
     private String vbankCode; // 가상계좌 은행 표준코드 - (금융결제원기준)
     private String vbankName; // 입금받을 가상계좌 은행명
     private String vbankNum; // 입금받을 가상계좌 계좌번호
@@ -137,16 +140,16 @@ public class SafekingPayment extends BaseTimeEntity {
         this.applyNum = response.getApplyNum();
         this.bankCode = response.getBankCode();
         this.bankName = response.getBankName();
-        this.cardCode = response.getCardCode();
+        this.cardCode = convertCardCode2CardName(response.getCardCode());
         this.cardQuota = response.getCardQuota();
         this.cardNumber = response.getCardNumber();
-        this.cardType = response.getCardCode();
+        this.cardType = response.getCardType();
         this.vbankCode = response.getVbankCode();
         this.vbankName = response.getVbankName();
         this.vbankNum = response.getVbankNum();
         this.vbankHolder = response.getVbankHolder();
         this.vbankDate = response.getVbankDate();
-        this.vbankIssuedAt = convertUNIXTimeStampToLocalDateTime(response.getVbankIssuedAt());
+        this.vbankIssuedAt = convertUNIXTimeStamp2LocalDateTime(response.getVbankIssuedAt());
         this.name = response.getName();
         this.amount = response.getAmount().intValue();
         this.cancelAmount = response.getCancelAmount().intValue();
@@ -158,10 +161,10 @@ public class SafekingPayment extends BaseTimeEntity {
         this.buyerPostcode = response.getBuyerPostcode();
         this.customData = response.getCustomData();
         this.userAgent = response.getApplyNum();
-        this.startedAt = convertUNIXTimeStampToLocalDateTime(response.getStartedAt());
+        this.startedAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
         this.paidAt = response.getPaidAt();
-        this.failedAt = convertUNIXTimeStampToLocalDateTime(response.getStartedAt());
-        this.cancelledAt = convertUNIXTimeStampToLocalDateTime(response.getStartedAt());
+        this.failedAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
+        this.cancelledAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
         this.failReason = response.getFailReason();
         this.cancelReason = response.getCancelReason();
         this.receiptUrl = response.getReceiptUrl();
@@ -169,11 +172,15 @@ public class SafekingPayment extends BaseTimeEntity {
         this.customerUidUsage = response.getCustomerUidUsage();
     }
 
-    private LocalDateTime convertUNIXTimeStampToLocalDateTime(Long unixTimeStamp) {
+    private LocalDateTime convertUNIXTimeStamp2LocalDateTime(Long unixTimeStamp) {
         LocalDateTime localDateTime =
                 LocalDateTime.ofInstant(Instant.ofEpochMilli(unixTimeStamp),
                         TimeZone.getDefault().toZoneId());
 
         return localDateTime;
+    }
+
+    private String convertCardCode2CardName(String cardCode) {
+        return CustomCardCodeRepository.getElement(cardCode);
     }
 }
