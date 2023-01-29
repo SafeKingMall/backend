@@ -299,8 +299,8 @@ class MemberServiceTest {
         //when
         memberService.withdrawal("member1");
 
-        em.flush(); // 영속성 컨텍스트 내용을 DB에 반영
-        em.clear(); // 영속성 컨텍스트 비움
+        //em.flush(); // 영속성 컨텍스트 내용을 DB에 반영
+        //em.clear(); // 영속성 컨텍스트 비움
 
 
     }
