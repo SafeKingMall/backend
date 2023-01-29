@@ -95,7 +95,7 @@ public class ItemQuestionService {
     }
 
     public Page<ItemQuestionListDto> listAndMemeberId(Pageable pageable, String memberId){
-        Page<ItemQuestionListDto> posts = itemQuestionRepository.findByMemberUsername(pageable, memberId).map(m->ItemQuestionListDto.builder()
+        Page<ItemQuestionListDto> posts = itemQuestionRepository.findByMemberUsernameContaining(pageable, memberId).map(m->ItemQuestionListDto.builder()
                 .id(m.getId())
                 .title(m.getTitle())
                 .memberId(m.getMember().getUsername())
