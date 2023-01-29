@@ -10,7 +10,6 @@ import com.safeking.shop.domain.item.domain.service.servicedto.ItemAnswer.ItemAn
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemAnswer.ItemAnswerSaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.ItemAnswer.ItemAnswerUpdateDto;
 import com.safeking.shop.domain.item.web.request.ItemAnswerSaveRequest;
-import com.safeking.shop.domain.order.web.OrderConst;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
