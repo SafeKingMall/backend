@@ -62,8 +62,6 @@ public class ItemQuestionService {
     public void delete(Long id, String username){
 
         ItemQuestion itemQuestion = itemQuestionRepository.findById(id).orElseThrow();
-        //임시로 만듦
-        if(!itemQuestion.getMember().getUsername().equals(username)) throw new IllegalArgumentException("권한이 없습니다.");
 
         itemQuestionRepository.delete(itemQuestion);
 
