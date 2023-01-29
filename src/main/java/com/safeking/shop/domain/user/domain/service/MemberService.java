@@ -282,11 +282,13 @@ public class MemberService {
         cartRepository.delete(cart);
 
         // 2. qna 관련 삭제
-        List<ItemQuestion> questionList = questionRepository.findByWriter(member);
+        // 230129 배포중 에러로 인한 주석
+        //List<ItemQuestion> questionList = questionRepository.findByWriter(member);
 
         // 2-1. answer 삭제 question 삭제
-        answerRepository.deleteByTargetBatch(questionList);
-        questionRepository.deleteByTargetBatch(questionList);
+        // 230129 배포중 에러로 인한 주석
+        //answerRepository.deleteByTargetBatch(questionList);
+        //questionRepository.deleteByTargetBatch(questionList);
 
         // 3. 주문관련 삭제
         orderService.deleteByMemberBatch(member);

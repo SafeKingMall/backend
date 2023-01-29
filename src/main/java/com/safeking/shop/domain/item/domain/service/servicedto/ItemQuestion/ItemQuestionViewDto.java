@@ -21,10 +21,10 @@ public class ItemQuestionViewDto {
 
     private String contents;
 
-    private Long itemId;
-
     private String memberId;
 
     private List<ItemAnswerViewDto> answer;
+
+    private String password;
 
 }

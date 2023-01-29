@@ -19,9 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static com.safeking.shop.global.jwt.TokenUtils.BEARER;
@@ -69,15 +74,41 @@ public class NoticeController {
 
     @GetMapping("admin/notice/list")
     public Page<NoticeListResponse> adminList(Pageable pageable, @RequestParam(required = false, defaultValue = "") String title
+                                              , @RequestParam(required = false, defaultValue = "") String createDate
             ){
-        Page<NoticeListResponse> page = noticeService.list(pageable, title).map(m->NoticeListResponse.builder()
-                .id(m.getId())
-                .title(m.getTitle())
-                .memberId(m.getMemberId())
-                .createDate(m.getCreateDate().toString())
-                .lastModifiedDate(m.getLastModifiedDate().toString())
-                .build()
-        );
+        Page<NoticeListResponse> page = null;
+        if(!"".equals(title)){
+            page = noticeService.listAndTitle(pageable, title).map(m->NoticeListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .memberId(m.getMemberId())
+                    .createDate(m.getCreateDate().toString())
+                    .lastModifiedDate(m.getLastModifiedDate().toString())
+                    .build()
+            );
+        }else if(!"".equals(createDate)){
+            LocalDateTime s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            log.debug(s1.toString());
+            log.debug(s2.toString());
+            page = noticeService.listAndCreateDate(pageable, s1, s2).map(m->NoticeListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .memberId(m.getMemberId())
+                    .createDate(m.getCreateDate().toString())
+                    .lastModifiedDate(m.getLastModifiedDate().toString())
+                    .build()
+            );
+        }else {
+            page = noticeService.list(pageable).map(m -> NoticeListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .memberId(m.getMemberId())
+                    .createDate(m.getCreateDate().toString())
+                    .lastModifiedDate(m.getLastModifiedDate().toString())
+                    .build()
+            );
+        }
         return page;
     }
 
@@ -95,15 +126,44 @@ public class NoticeController {
 
     @GetMapping("notice/list")
     public Page<NoticeListResponse> list(Pageable pageable, @RequestParam(required = false, defaultValue = "") String title
+            , @RequestParam(required = false, defaultValue = "") String createDate
             ){
-        Page<NoticeListResponse> page = noticeService.list(pageable, title).map(m->NoticeListResponse.builder()
-                .id(m.getId())
-                .title(m.getTitle())
-                .memberId(m.getMemberId())
-                .createDate(m.getCreateDate().toString())
-                .lastModifiedDate(m.getLastModifiedDate().toString())
-                .build()
-        );
+        Page<NoticeListResponse> page = null;
+
+        if(!"".equals(title)){
+            page = noticeService.listAndTitle(pageable, title).map(m->NoticeListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .memberId(m.getMemberId())
+                    .createDate(m.getCreateDate().toString())
+                    .lastModifiedDate(m.getLastModifiedDate().toString())
+                    .build()
+            );
+        }else if(!"".equals(createDate)){
+            LocalDateTime s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            log.debug(s1.toString());
+            log.debug(s2.toString());
+            page = noticeService.listAndCreateDate(pageable, s1, s2).map(m->NoticeListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .memberId(m.getMemberId())
+                    .createDate(m.getCreateDate().toString())
+                    .lastModifiedDate(m.getLastModifiedDate().toString())
+                    .build()
+            );
+        }else{
+            page = noticeService.list(pageable).map(m->NoticeListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .memberId(m.getMemberId())
+                    .createDate(m.getCreateDate().toString())
+                    .lastModifiedDate(m.getLastModifiedDate().toString())
+                    .build()
+            );
+        }
+
+
         return page;
     }
 

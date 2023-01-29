@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
@@ -58,23 +60,74 @@ public class ItemQuestionController {
                 itemQuestionViewDto.getId()
                 , itemQuestionViewDto.getTitle()
                 , itemQuestionViewDto.getContents()
-                , itemQuestionViewDto.getItemId()
                 , itemQuestionViewDto.getMemberId()
                 , itemQuestionViewDto.getAnswer()
+                , itemQuestionViewDto.getPassword()
         );
         return itemQuestionViewResponse;
     }
 
     @GetMapping("/itemQna/list")
-    public Page<ItemQuestionListResponse> list(@PageableDefault(size=10) Pageable pageable, @RequestParam(required = false, defaultValue = "") String title){
-        return itemQuestionService.list(pageable, title).map(m -> ItemQuestionListResponse.builder()
-                .id(m.getId())
-                .itemId(m.getItemId())
-                .title(m.getTitle())
-                .createDate(m.getCreateDate())
-                .lastModifiedDate(m.getLastModifiedDate())
-                .memberId(m.getMemberId())
-                .build()
+    public Page<ItemQuestionListResponse> list(@PageableDefault(size=10) Pageable pageable, @RequestParam(required = false, defaultValue = "") String title
+            , @RequestParam(required = false, defaultValue = "") String memberId
+            , @RequestParam(required = false, defaultValue = "") String createDate
+    ){
+        Page<ItemQuestionListResponse> lst = null;
+        if(!"".equals(title)){
+            lst = itemQuestionService.listAndTitle(pageable, title).map(m -> ItemQuestionListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .createDate(m.getCreateDate())
+                    .lastModifiedDate(m.getLastModifiedDate())
+                    .memberId(m.getMemberId())
+                    .build()
+            );
+        }else if(!"".equals(memberId)){
+            lst = itemQuestionService.listAndMemeberId(pageable, memberId).map(m -> ItemQuestionListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .createDate(m.getCreateDate())
+                    .lastModifiedDate(m.getLastModifiedDate())
+                    .memberId(m.getMemberId())
+                    .build()
+            );
+        }else if(!"".equals(createDate)){
+            LocalDateTime s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            log.debug(s1.toString());
+            log.debug(s2.toString());
+            lst = itemQuestionService.listAndCreateDate(pageable, s1, s2).map(m -> ItemQuestionListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .createDate(m.getCreateDate())
+                    .lastModifiedDate(m.getLastModifiedDate())
+                    .memberId(m.getMemberId())
+                    .build()
+            );
+        }else{
+            lst = itemQuestionService.list(pageable).map(m -> ItemQuestionListResponse.builder()
+                    .id(m.getId())
+                    .title(m.getTitle())
+                    .createDate(m.getCreateDate())
+                    .lastModifiedDate(m.getLastModifiedDate())
+                    .memberId(m.getMemberId())
+                    .build()
+            );
+        }
+        return lst;
+    }
+
+    @GetMapping("/itemQna/password/{itemQnaId}/{password}")
+    public ItemQuestionViewResponse viewPassword(@PathVariable Long itemQnaId, @PathVariable String password) throws Exception {
+        ItemQuestionViewDto itemQuestionViewDto = itemQuestionService.viewPassword(itemQnaId, password);
+        ItemQuestionViewResponse itemQuestionViewResponse = new ItemQuestionViewResponse(
+                itemQuestionViewDto.getId()
+                , itemQuestionViewDto.getTitle()
+                , itemQuestionViewDto.getContents()
+                , itemQuestionViewDto.getMemberId()
+                , itemQuestionViewDto.getAnswer()
+                , itemQuestionViewDto.getPassword()
         );
+        return itemQuestionViewResponse;
     }
 }

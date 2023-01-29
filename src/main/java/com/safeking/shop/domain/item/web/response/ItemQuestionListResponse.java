@@ -16,8 +16,6 @@ public class ItemQuestionListResponse {
 
     private String title;
 
-    private Long itemId;
-
     private String memberId;
 
     private String createDate;

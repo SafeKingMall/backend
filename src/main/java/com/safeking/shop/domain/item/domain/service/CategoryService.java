@@ -1,7 +1,9 @@
 package com.safeking.shop.domain.item.domain.service;
 
 import com.safeking.shop.domain.item.domain.entity.Category;
+import com.safeking.shop.domain.item.domain.entity.Item;
 import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
+import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.item.domain.service.servicedto.category.CategorySaveDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.category.CategoryUpdateDto;
 import com.safeking.shop.domain.item.web.request.CategorySaveRequest;
@@ -12,12 +14,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+
+    private final ItemRepository itemRepository;
 
     public Long save(CategorySaveRequest categorySaveRequest){
 
@@ -38,6 +44,10 @@ public class CategoryService {
     }
 
     public void delete(Long id){
+        List<Item> list = itemRepository.findByCategoryId(id);
+        for(Item i : list){
+            i.updateCategory(null);
+        }
 
         Category category = categoryRepository.findById(id).orElseThrow();
 

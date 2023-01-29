@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 
 @Entity
@@ -23,17 +24,15 @@ public class ItemQuestion extends BaseTimeEntity {
     private String contents;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
-    private Item item;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member writer;
+    private Member member;
 
     @OneToOne(mappedBy = "target",cascade = CascadeType.ALL,orphanRemoval = true)
     private ItemAnswer itemAnswer;
 
-    public static ItemQuestion createItemQuestion(String title, String contents, Item item, Member writer) {
+    private String password;
+
+    public static ItemQuestion createItemQuestion(String title, String contents, Member writer, String password) {
 
         ItemQuestion itemQuestion = new ItemQuestion();
 
@@ -41,9 +40,9 @@ public class ItemQuestion extends BaseTimeEntity {
 
         itemQuestion.contents = contents;
 
-        itemQuestion.item = item;
+        itemQuestion.member = writer;
 
-        itemQuestion.writer = writer;
+        itemQuestion.password = password;
 
         return itemQuestion;
     }
@@ -52,11 +51,13 @@ public class ItemQuestion extends BaseTimeEntity {
         this.itemAnswer=itemAnswer;
     }
 
-    public void update(String title,String contents){
+    public void update(String title,String contents, String password){
 
         this.title=title;
 
         this.contents=contents;
+
+        this.password=password;
 
     }
 

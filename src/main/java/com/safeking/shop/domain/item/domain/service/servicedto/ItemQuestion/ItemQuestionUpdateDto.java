@@ -13,5 +13,7 @@ public class ItemQuestionUpdateDto {
 
     private String contents;
 
+    private String password;
+
 
 }
