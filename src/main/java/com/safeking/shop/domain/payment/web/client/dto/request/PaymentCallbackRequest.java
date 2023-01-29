@@ -21,4 +21,5 @@ public class PaymentCallbackRequest {
     private String merchantUid; //주문 번호
     @NotNull(message = "결제 금액이 null 입니다.")
     private Integer paidAmount; // 결제 금액
+    private String errorMsg; // 결제실패 메시지
 }

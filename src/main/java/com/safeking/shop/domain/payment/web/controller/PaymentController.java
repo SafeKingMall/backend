@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/test")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class PaymentController {
     private final IamportService iamportService;
@@ -36,7 +36,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> payment(@Valid @RequestBody PaymentCallbackRequest paymentCallbackRequest, HttpServletRequest request) {
 
         // 회원 검증
-        //validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         PaymentResponse<PaymentCallbackResponse> response = iamportService.paymentByCallback(paymentCallbackRequest);
 

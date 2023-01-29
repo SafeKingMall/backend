@@ -3,7 +3,10 @@ package com.safeking.shop.domain.payment.web.client.service;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.exception.PaymentException;
 import com.safeking.shop.domain.order.domain.entity.Order;
+import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
+import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
+import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
@@ -22,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -36,8 +40,7 @@ import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.*;
 @Transactional(readOnly = true)
 public class IamportServiceImpl implements IamportService {
     private final IamportClient client;
-    private final SafekingPaymentRepository safekingPaymentRepository;
-    private final OrderRepository orderRepository;
+    private final IamportServiceSubMethod iamportServiceSubMethod;
 
     /**
      * 결제(콜백 방식)
@@ -48,9 +51,15 @@ public class IamportServiceImpl implements IamportService {
 
         // 결제 성공 여부
         if(!request.getSuccess()) {
-            // 주문 취소
-            cancelOrder(request.getMerchantUid(), PAYMENT_PAID_CANCEL);
-            throw new PaymentException(PAYMENT_PAID_CANCEL);
+            // 주문 삭제
+            iamportServiceSubMethod.deleteOrder(request.getMerchantUid());
+
+            // 응답 생성
+            PaymentCallbackResponse paymentCallbackResponse = PaymentCallbackResponse.builder()
+                    .errorMsg(request.getErrorMsg())
+                    .build();
+
+            return new PaymentResponse<>(PAYMENT_PAID_CANCEL, paymentCallbackResponse);
         }
 
         PaymentCallbackResponse paymentCallbackResponse = null;
@@ -66,10 +75,11 @@ public class IamportServiceImpl implements IamportService {
             // 결제 금액 비교(결제 금액이 다르다면)
             if(findSafekingPayment.getAmount() != response.getAmount().intValue()) {
                 // 결제, 주문 취소 로직
-                cancel(request.getImpUid(), response.getMerchantUid(), PAYMENT_AMOUNT_ERROR_CALLBACK, findSafekingPayment);
+                cancel(request.getImpUid(), response.getMerchantUid(), PAYMENT_AMOUNT_DIFFERENT_CALLBACK, findSafekingPayment);
+                log.debug("[결제검증 위조] {}", PAYMENT_AMOUNT_DIFFERENT_CALLBACK);
 
-                log.debug("[PaymentException] ", PAYMENT_AMOUNT_ERROR_CALLBACK);
-                throw new PaymentException(PAYMENT_AMOUNT_ERROR_CALLBACK);
+                // 응답 생성
+                return new PaymentResponse<>(PAYMENT_AMOUNT_DIFFERENT_CALLBACK, getPaymentCallbackResponse(response));
             }
 
             // 결제 완료
@@ -78,22 +88,12 @@ public class IamportServiceImpl implements IamportService {
                 findSafekingPayment.changeSafekingPayment(PAID, response);
 
                 // 주문 상태 변경(주문 완료)
-                Optional<Order> optionalOrder = orderRepository.findOrderByMerchantUid(request.getMerchantUid());
-                Order findOrder = optionalOrder.orElseThrow(() -> new OrderException(ORDER_NONE));
+                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
                 findOrder.changeOrderStatus(COMPLETE);
                 findOrder.changeSafekingPayment(findSafekingPayment);
 
-                paymentCallbackResponse = PaymentCallbackResponse.builder()
-                        .payMethod(response.getPayMethod())
-                        .buyerEmail(response.getBuyerEmail())
-                        .name(response.getName())
-                        .buyerName(response.getBuyerName())
-                        .buyerPostcode(response.getBuyerPostcode())
-                        .buyerAddr(response.getBuyerAddr())
-                        .buyerTel(response.getBuyerTel())
-                        .amount(response.getAmount().intValue())
-                        .merchantUid(response.getMerchantUid())
-                        .build();
+                // 응답 생성
+                paymentCallbackResponse = getPaymentCallbackResponse(response);
             }
 
         } catch (IamportResponseException e) {
@@ -105,6 +105,26 @@ public class IamportServiceImpl implements IamportService {
         }
 
         return new PaymentResponse<>(PAYMENT_PAID_SUCCESS, paymentCallbackResponse);
+    }
+
+    /**
+     * 결제(콜백) 응답 데이터
+     */
+    private PaymentCallbackResponse getPaymentCallbackResponse(Payment response) {
+
+        PaymentCallbackResponse paymentCallbackResponse = PaymentCallbackResponse.builder()
+                .payMethod(response.getPayMethod())
+                .buyerEmail(response.getBuyerEmail())
+                .name(response.getName())
+                .buyerName(response.getBuyerName())
+                .buyerPostcode(response.getBuyerPostcode())
+                .buyerAddr(response.getBuyerAddr())
+                .buyerTel(response.getBuyerTel())
+                .amount(response.getAmount().intValue())
+                .merchantUid(response.getMerchantUid())
+                .build();
+
+        return paymentCallbackResponse;
     }
 
     /**
@@ -128,8 +148,8 @@ public class IamportServiceImpl implements IamportService {
                 // 결제, 주문 취소 로직
                 cancel(request.getImpUid(), response.getMerchantUid(), response.getCancelReason(), findSafekingPayment);
 
-                log.debug("[PaymentException] ", PAYMENT_AMOUNT_ERROR_WEBHOOK);
-                throw new PaymentException(PAYMENT_AMOUNT_ERROR_WEBHOOK);
+                log.debug("[결제검증 위조] {}",PAYMENT_AMOUNT_DIFFERENT_WEBHOOK);
+                return;
             }
 
             // 결제 완료
@@ -138,8 +158,7 @@ public class IamportServiceImpl implements IamportService {
                 findSafekingPayment.changeSafekingPayment(PAID, response);
 
                 // 주문 상태 변경(주문 완료)
-                Optional<Order> optionalOrder = orderRepository.findOrderByMerchantUid(request.getMerchantUid());
-                Order findOrder = optionalOrder.orElseThrow(() -> new OrderException(ORDER_NONE));
+                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
                 findOrder.changeOrderStatus(COMPLETE);
                 findOrder.changeSafekingPayment(findSafekingPayment);
             }
@@ -153,16 +172,6 @@ public class IamportServiceImpl implements IamportService {
         }
     }
 
-    /**
-     * DB에서 결제 내역 조회
-     */
-    @Override
-    public SafekingPayment getSafekingPayment(String merchantUid) {
-        Optional<SafekingPayment> safekingPaymentOptional = safekingPaymentRepository.findByMerchantUid(merchantUid);
-        SafekingPayment findSafekingPayment = safekingPaymentOptional.orElseThrow(() -> new PaymentException(SAFEKING_PAYMENT_NONE));
-
-        return findSafekingPayment;
-    }
 
     /**
      * 결제, 주문 취소
@@ -172,10 +181,10 @@ public class IamportServiceImpl implements IamportService {
     public IamportResponse<Payment> cancel(String impUid, String merchantUid, String cancelReason, SafekingPayment findSafekingPayment) {
         try {
             // 결제 취소
-            IamportResponse<Payment> cancelPaymentResponse = cancelPayment(impUid, findSafekingPayment);
+            IamportResponse<Payment> cancelPaymentResponse = iamportServiceSubMethod.cancelPayment(impUid, findSafekingPayment);
 
             // 주문 취소
-            Order findOrder = cancelOrder(merchantUid, cancelReason);
+            Order findOrder = iamportServiceSubMethod.cancelOrder(merchantUid, cancelReason);
             findOrder.changeSafekingPayment(findSafekingPayment); // 연관관계 적용
 
             return cancelPaymentResponse;
@@ -190,25 +199,10 @@ public class IamportServiceImpl implements IamportService {
     }
 
     /**
-     * 결제 취소
+     * DB에서 결제 내역 조회
      */
-    @NotNull
-    private IamportResponse<Payment> cancelPayment(String impUid, SafekingPayment findSafekingPayment) throws IamportResponseException, IOException {
-        CancelData cancelData = new CancelData(impUid, true);
-        IamportResponse<Payment> cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData); //imp_uid를 통한 전액취소
-        findSafekingPayment.changeSafekingPayment(CANCEL, cancelPaymentResponse.getResponse());
-
-        return cancelPaymentResponse;
-    }
-
-    /**
-     * 주문 취소
-     */
-    private Order cancelOrder(String merchantUid, String cancelReason) {
-        Optional<Order> orderOptional = orderRepository.findOrderByMerchantUid(merchantUid);
-        Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_NONE));
-        findOrder.cancel(cancelReason);
-
-        return findOrder;
+    @Override
+    public SafekingPayment getSafekingPayment(String merchantUid) {
+        return iamportServiceSubMethod.getSafekingPayment(merchantUid);
     }
 }
