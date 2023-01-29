@@ -22,7 +22,7 @@ public interface ItemQuestionRepository extends JpaRepository<ItemQuestion,Long>
 
     Page<ItemQuestion> findByTitleContaining(Pageable pageable, String title);
 
-    Page<ItemQuestion> findByMemberUsername(Pageable pageable, String memberId);
+    Page<ItemQuestion> findByMemberUsernameContaining(Pageable pageable, String memberId);
 
     Page<ItemQuestion> findByCreateDateBetween(Pageable pageable, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
