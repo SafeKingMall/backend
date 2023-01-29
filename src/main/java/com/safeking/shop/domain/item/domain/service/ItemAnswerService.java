@@ -40,7 +40,7 @@ public class ItemAnswerService {
 
         ItemAnswer itemAnswer = ItemAnswer.createItemAnswer(findMember, itemQuestion, itemAnswerSaveRequest.getContents());
 
-        itemQuestionRepository.save(itemQuestion);
+        itemAnswerRepository.save(itemAnswer);
 
         return itemAnswer.getId();
     }

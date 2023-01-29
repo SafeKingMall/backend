@@ -27,9 +27,6 @@ public class ItemQuestion extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToOne(mappedBy = "target",cascade = CascadeType.ALL,orphanRemoval = true)
-    private ItemAnswer itemAnswer;
-
     private String password;
 
     public static ItemQuestion createItemQuestion(String title, String contents, Member writer, String password) {
@@ -45,10 +42,6 @@ public class ItemQuestion extends BaseTimeEntity {
         itemQuestion.password = password;
 
         return itemQuestion;
-    }
-
-    public void addItemAnswer(ItemAnswer itemAnswer){
-        this.itemAnswer=itemAnswer;
     }
 
     public void update(String title,String contents, String password){
