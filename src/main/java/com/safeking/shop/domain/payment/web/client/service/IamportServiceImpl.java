@@ -70,7 +70,7 @@ public class IamportServiceImpl implements IamportService {
             Payment response = iamportResponse.getResponse();
 
             // DB에서 결제 내역 조회
-            SafekingPayment findSafekingPayment = getSafekingPayment(request.getMerchantUid());
+            SafekingPayment findSafekingPayment = iamportServiceSubMethod.getSafekingPayment(request.getMerchantUid());
 
             // 결제 금액 비교(결제 금액이 다르다면)
             if(findSafekingPayment.getAmount() != response.getAmount().intValue()) {
@@ -141,14 +141,14 @@ public class IamportServiceImpl implements IamportService {
             Payment response = iamportResponse.getResponse();
 
             // DB에서 결제 내역 조회
-            SafekingPayment findSafekingPayment = getSafekingPayment(request.getMerchantUid());
+            SafekingPayment findSafekingPayment = iamportServiceSubMethod.getSafekingPayment(request.getMerchantUid());
 
             // 결제 금액 비교(결제 금액이 다르다면)
             if(findSafekingPayment.getAmount() != response.getAmount().intValue()) {
                 // 결제, 주문 취소 로직
                 cancel(request.getImpUid(), response.getMerchantUid(), response.getCancelReason(), findSafekingPayment);
 
-                log.debug("[결제검증 위조] {}",PAYMENT_AMOUNT_DIFFERENT_WEBHOOK);
+                log.debug("[결제검증 위조] {}", PAYMENT_AMOUNT_DIFFERENT_WEBHOOK);
                 return;
             }
 

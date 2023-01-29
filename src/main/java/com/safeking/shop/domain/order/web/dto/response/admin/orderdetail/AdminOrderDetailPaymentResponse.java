@@ -11,15 +11,13 @@ public class AdminOrderDetailPaymentResponse {
     private String status;
     private String company;
     private String means;
-    private String businessNumber;
     private int price;
 
     @Builder
-    public AdminOrderDetailPaymentResponse(String status, String company, String means, String businessNumber, int price) {
+    public AdminOrderDetailPaymentResponse(String status, String company, String means, int price) {
         this.status = status;
         this.company = company;
         this.means = means;
-        this.businessNumber = businessNumber;
         this.price = price;
     }
 }

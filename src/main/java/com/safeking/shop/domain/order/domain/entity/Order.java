@@ -78,6 +78,7 @@ public class Order extends BaseTimeEntity {
         }
     }
 
+    // 연관관계 편의 메소드
     private void changeOrderItem(OrderItem orderItem) {
         this.orderItems.add(orderItem);
         orderItem.changeOrder(this);

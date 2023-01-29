@@ -17,6 +17,10 @@ public class ItemPhoto extends BaseTimeEntity {
 
     private String fileName;
 
+    /**
+     * 양방향 관계로 설정
+     * ItemPhoto가 연관관계 주인
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
@@ -26,6 +30,10 @@ public class ItemPhoto extends BaseTimeEntity {
         itemPhoto.fileName = fileName;
         itemPhoto.item = item;
         return  itemPhoto;
+    }
+
+    public void changeItem(Item item) {
+        this.item = item;
     }
 
 }

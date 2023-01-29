@@ -10,10 +10,12 @@ import lombok.Data;
 public class OrderOrderResponse {
     private Long id;
     private String memo;
+    private String merchantUid;
 
     @Builder
-    public OrderOrderResponse(Long id, String memo) {
+    public OrderOrderResponse(Long id, String memo, String merchantUid) {
         this.id = id;
         this.memo = memo;
+        this.merchantUid = merchantUid;
     }
 }
