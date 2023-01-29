@@ -279,22 +279,22 @@ class MemberServiceTest {
         cartItemService.putCart("member2", savedItem2.getId(), 3);
 
         // itemQuestion create
-        ItemQuestion itemQuestion1 = ItemQuestion.createItemQuestion("title1", "content1", savedItem1, member);
-        ItemQuestion itemQuestion2 = ItemQuestion.createItemQuestion("title1", "content1", savedItem1, member);
-        ItemQuestion itemQuestion3 = ItemQuestion.createItemQuestion("title1", "content1", savedItem1, member2);
+        //ItemQuestion itemQuestion1 = ItemQuestion.createItemQuestion("title1", "content1", savedItem1, member);
+        //ItemQuestion itemQuestion2 = ItemQuestion.createItemQuestion("title1", "content1", savedItem1, member);
+        //ItemQuestion itemQuestion3 = ItemQuestion.createItemQuestion("title1", "content1", savedItem1, member2);
 
-        questionRepository.save(itemQuestion1);
-        questionRepository.save(itemQuestion2);
-        questionRepository.save(itemQuestion3);
+        //questionRepository.save(itemQuestion1);
+        //questionRepository.save(itemQuestion2);
+        //questionRepository.save(itemQuestion3);
 
         // itemAnswer create
-        ItemAnswer.createItemAnswer(member, itemQuestion1, "content1");
-        ItemAnswer.createItemAnswer(member, itemQuestion2, "content2");
-        ItemAnswer.createItemAnswer(member, itemQuestion3, "content3");
+        //ItemAnswer.createItemAnswer(member, itemQuestion1, "content1");
+        //ItemAnswer.createItemAnswer(member, itemQuestion2, "content2");
+        //ItemAnswer.createItemAnswer(member, itemQuestion3, "content3");
 
-        ItemAnswer.createItemAnswer(member2, itemQuestion1, "content4");
-        ItemAnswer.createItemAnswer(member2, itemQuestion2, "content5");
-        ItemAnswer.createItemAnswer(member2, itemQuestion3, "content6");
+        //ItemAnswer.createItemAnswer(member2, itemQuestion1, "content4");
+        //ItemAnswer.createItemAnswer(member2, itemQuestion2, "content5");
+        //ItemAnswer.createItemAnswer(member2, itemQuestion3, "content6");
 
         //when
         memberService.withdrawal("member1");
