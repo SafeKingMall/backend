@@ -27,7 +27,7 @@ public class ItemQuestion extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "target",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToOne(mappedBy = "target",cascade = CascadeType.ALL,orphanRemoval = true)
     private ItemAnswer itemAnswer;
 
     private String password;

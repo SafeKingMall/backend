@@ -48,7 +48,7 @@ public class ItemAnswerController {
     }
 
     @PostMapping("user/itemAnswer")
-    public Long save(@RequestBody ItemAnswerSaveRequest itemAnswerSaveRequest){
+    public Long save(@RequestBody ItemAnswerSaveRequest itemAnswerSaveRequest) throws Exception {
         Long id = itemAnswerService.save(itemAnswerSaveRequest);
         return id;
     }
