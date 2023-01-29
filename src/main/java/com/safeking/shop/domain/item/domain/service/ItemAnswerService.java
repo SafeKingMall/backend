@@ -32,12 +32,12 @@ public class ItemAnswerService {
 
     private final MemberRepository memberRepository;
 
-    public Long save(ItemAnswerSaveRequest itemAnswerSaveRequest){
+    public Long save(ItemAnswerSaveRequest itemAnswerSaveRequest) throws Exception {
 
         ItemQuestion itemQuestion = itemQuestionRepository.findById(itemAnswerSaveRequest.getItemQnaId()).orElseThrow();
 
         Optional<Member> member = memberRepository.findByUsername(itemAnswerSaveRequest.getMemberId());
-        Member findMember = member.orElseThrow(() -> new OrderException(OrderConst.ORDER_MEMBER_NONE));
+        Member findMember = member.orElseThrow(() -> new Exception("회원정보가 없습니다."));
 
         ItemAnswer itemAnswer = ItemAnswer.createItemAnswer(findMember, itemQuestion, itemAnswerSaveRequest.getContents());
 
