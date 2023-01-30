@@ -85,7 +85,11 @@ public class ItemService {
         Item item = itemRepository.findById(id).orElseThrow();
 
         itemRepository.delete(item);
-
+        List<ItemPhoto> list = itemPhotoRepository.findByItemId(id);
+        for(ItemPhoto i : list){
+            java.io.File sfile = new java.io.File(uploadPath+i.getFileName());
+            boolean result = sfile.delete();
+        }
 
     }
 

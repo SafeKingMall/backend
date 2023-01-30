@@ -17,7 +17,7 @@ public class ItemPhoto extends BaseTimeEntity {
 
     private String fileName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_id")
     private Item item;
 
