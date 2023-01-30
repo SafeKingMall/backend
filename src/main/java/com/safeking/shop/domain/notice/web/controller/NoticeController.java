@@ -169,7 +169,7 @@ public class NoticeController {
 
     @GetMapping("admin/notice/prev/{noticeId}")
     public NoticeViewResponse adminViewPrev(@PathVariable Long noticeId, @RequestParam(required = false) String title
-            , @RequestParam(required = false) String createDate, Pageable pageable){
+            , @RequestParam(required = false) String createDate, @PageableDefault(size=1000000) Pageable pageable){
         NoticeViewDto noticeViewDto = noticeService.viewPrev(noticeId, title, createDate, pageable);
         if(noticeViewDto == null) return null;
         return new NoticeViewResponse(noticeViewDto.getId(),
@@ -183,7 +183,35 @@ public class NoticeController {
 
     @GetMapping("admin/notice/next/{noticeId}")
     public NoticeViewResponse adminViewNext(@PathVariable Long noticeId, @RequestParam(required = false) String title
-            , @RequestParam(required = false) String createDate, Pageable pageable){
+            , @RequestParam(required = false) String createDate, @PageableDefault(size=1000000) Pageable pageable){
+        NoticeViewDto noticeViewDto = noticeService.viewNext(noticeId, title, createDate, pageable);
+        if(noticeViewDto == null) return null;
+        return new NoticeViewResponse(noticeViewDto.getId(),
+                noticeViewDto.getTitle(),
+                noticeViewDto.getContents(),
+                noticeViewDto.getMemberId(),
+                noticeViewDto.getCreateDate(),
+                noticeViewDto.getLastModifiedDate()
+        );
+    }
+
+    @GetMapping("notice/prev/{noticeId}")
+    public NoticeViewResponse viewPrev(@PathVariable Long noticeId, @RequestParam(required = false) String title
+            , @RequestParam(required = false) String createDate, @PageableDefault(size=1000000) Pageable pageable){
+        NoticeViewDto noticeViewDto = noticeService.viewPrev(noticeId, title, createDate, pageable);
+        if(noticeViewDto == null) return null;
+        return new NoticeViewResponse(noticeViewDto.getId(),
+                noticeViewDto.getTitle(),
+                noticeViewDto.getContents(),
+                noticeViewDto.getMemberId(),
+                noticeViewDto.getCreateDate(),
+                noticeViewDto.getLastModifiedDate()
+        );
+    }
+
+    @GetMapping("notice/next/{noticeId}")
+    public NoticeViewResponse viewNext(@PathVariable Long noticeId, @RequestParam(required = false) String title
+            , @RequestParam(required = false) String createDate, @PageableDefault(size=1000000) Pageable pageable){
         NoticeViewDto noticeViewDto = noticeService.viewNext(noticeId, title, createDate, pageable);
         if(noticeViewDto == null) return null;
         return new NoticeViewResponse(noticeViewDto.getId(),
