@@ -116,6 +116,7 @@ public class OrderController {
         OrderOrderResponse order = OrderOrderResponse.builder()
                 .id(findOrder.getId())
                 .memo(findOrder.getMemo())
+                .merchantUid(findOrder.getMerchantUid())
                 .build();
 
         OrderResponse orderResponse = OrderResponse.builder()
@@ -136,52 +137,7 @@ public class OrderController {
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 주문 상세 조회
-        Order findOrderDetail = orderService.searchOrderDetail(orderId);
-
-        return new ResponseEntity<>(getOrderDetailResponse(findOrderDetail), OK);
-    }
-
-    private OrderDetailResponse getOrderDetailResponse(Order findOrderDetail) {
-
-        // 주문 상세 조회 응답 데이터
-        List<OrderDetailOrderItemResponse> orderItems = findOrderDetail.getOrderItems().stream()
-                .map(oi -> OrderDetailOrderItemResponse.builder()
-                        .id(oi.getId())
-                        .name(oi.getItem().getName())
-                        .count(oi.getCount())
-                        .price(oi.getOrderPrice())
-                        .build())
-                .collect(Collectors.toList());
-
-        OrderDetailDeliveryResponse delivery = OrderDetailDeliveryResponse.builder()
-                .id(findOrderDetail.getDelivery().getId())
-                .status(findOrderDetail.getDelivery().getStatus().getDescription())
-                .receiver(findOrderDetail.getDelivery().getReceiver())
-                .phoneNumber(findOrderDetail.getDelivery().getPhoneNumber())
-                .address(findOrderDetail.getDelivery().getAddress())
-                .memo(findOrderDetail.getDelivery().getMemo())
-                .cost(findOrderDetail.getDelivery().getCost())
-                .build();
-
-        OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
-                .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
-                .build();
-
-        OrderDetailOrderResponse order = OrderDetailOrderResponse.builder()
-                .id(findOrderDetail.getId())
-                .status(findOrderDetail.getStatus().getDescription())
-                .price(findOrderDetail.getSafeKingPayment().getAmount())
-                .memo(findOrderDetail.getMemo())
-                .date(findOrderDetail.getCreateDate())
-                .orderItems(orderItems)
-                .payment(payment)
-                .delivery(delivery)
-                .build();
-
-        return OrderDetailResponse.builder()
-                .message(ORDER_DETAIL_FIND_SUCCESS)
-                .order(order)
-                .build();
+        return new ResponseEntity<>(orderService.searchOrderDetailByUser(orderId), OK);
     }
 
     /**
@@ -216,6 +172,7 @@ public class OrderController {
 
             OrderListOrdersResponse order = OrderListOrdersResponse.builder()
                     .id(o.getId())
+                    .merchantUid(o.getMerchantUid())
                     .status(o.getStatus().getDescription())
                     .price(o.getSafeKingPayment().getAmount())
                     .date(o.getCreateDate())

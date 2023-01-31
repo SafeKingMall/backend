@@ -20,9 +20,10 @@ public class OrderDetailOrderResponse {
     private List<OrderDetailOrderItemResponse> orderItems;
     private OrderDetailPaymentResponse payment;
     private OrderDetailDeliveryResponse delivery;
+    private String merchantUid;
 
     @Builder
-    public OrderDetailOrderResponse(Long id, String status, int price, String memo, LocalDateTime date, List<OrderDetailOrderItemResponse> orderItems, OrderDetailPaymentResponse payment, OrderDetailDeliveryResponse delivery) {
+    public OrderDetailOrderResponse(Long id, String status, int price, String memo, LocalDateTime date, List<OrderDetailOrderItemResponse> orderItems, OrderDetailPaymentResponse payment, OrderDetailDeliveryResponse delivery, String merchantUid) {
         this.id = id;
         this.status = status;
         this.price = price;
@@ -31,5 +32,6 @@ public class OrderDetailOrderResponse {
         this.orderItems = orderItems;
         this.payment = payment;
         this.delivery = delivery;
+        this.merchantUid = merchantUid;
     }
 }

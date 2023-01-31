@@ -2,6 +2,8 @@ package com.safeking.shop.domain.payment.domain.entity;
 
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
+import com.safeking.shop.domain.payment.domain.repository.CustomCardCodeRepository;
+import com.siot.IamportRestClient.constant.CardConstant;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,12 +11,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import static com.safeking.shop.domain.order.constant.OrderConst.DeliveryCost;
 import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.*;
+import static com.siot.IamportRestClient.constant.CardConstant.*;
+import static org.junit.rules.Timeout.millis;
 
 /**
  * 금액은 Integer로 선언(21억까지 가능)
@@ -41,15 +50,15 @@ public class SafekingPayment extends BaseTimeEntity {
     private String bankCode;// 은행 표준코드 - (금융결제원기준)
     private String bankName; // 은행 명칭 - (실시간계좌이체 결제 건의 경우)
     private String cardCode; // 카드사 코드번호
-    private String cardQuota; // 할부개월 수(0이면 일시불)
+    private int cardQuota; // 할부개월 수(0이면 일시불)
     private String cardNumber; // 결제에 사용된 마스킹된 카드번호. 7~12번째 자리를 마스킹하는 것이 일반적이지만, PG사의 정책/설정에 따라 다소 차이가 있을 수 있음
-    private String cardType; // 카드유형. (주의)해당 정보를 제공하지 않는 일부 PG사의 경우 null 로 응답됨(ex. JTNet, 이니시스-빌링) = ['null', '0(신용카드)', '1(체크카드)']
+    private int cardType; // 카드유형. (주의)해당 정보를 제공하지 않는 일부 PG사의 경우 null 로 응답됨(ex. JTNet, 이니시스-빌링) = ['null', '0(신용카드)', '1(체크카드)']
     private String vbankCode; // 가상계좌 은행 표준코드 - (금융결제원기준)
     private String vbankName; // 입금받을 가상계좌 은행명
     private String vbankNum; // 입금받을 가상계좌 계좌번호
     private String vbankHolder; // 입금받을 가상계좌 예금주
-    private String vbankDate; // 입금받을 가상계좌 마감기한 UNIX timestamp
-    private String vbankIssuedAt; // 가상계좌 생성 시각 UNIX timestamp
+    private Date vbankDate; // 입금받을 가상계좌 마감기한 UNIX timestamp
+    private LocalDateTime vbankIssuedAt; // 가상계좌 생성 시각 UNIX timestamp
     private String name; // 주문명칭
     private Integer amount; // 주문(결제)금액
     private Integer cancelAmount; // 결제취소금액
@@ -63,10 +72,10 @@ public class SafekingPayment extends BaseTimeEntity {
     private String customData; // 가맹점에서 전달한 custom data. JSON string으로 전달
     private String userAgent;
 //    private String status; // -> PaymentStatus status로 대체
-    private Long startedAt; // 결제시작시점 UNIX timestamp. IMP.request_pay() 를 통해 결제창을 최초 오픈한 시각
+    private LocalDateTime startedAt; // 결제시작시점 UNIX timestamp. IMP.request_pay() 를 통해 결제창을 최초 오픈한 시각
     private Date paidAt; // 결제완료시점 UNIX timestamp. 결제완료가 아닐 경우 0
-    private Long failedAt; // 결제실패시점 UNIX timestamp. 결제실패가 아닐 경우 0
-    private Long cancelledAt; // 결제취소시점 UNIX timestamp. 결제취소가 아닐 경우 0
+    private LocalDateTime failedAt; // 결제실패시점 UNIX timestamp. 결제실패가 아닐 경우 0
+    private LocalDateTime cancelledAt; // 결제취소시점 UNIX timestamp. 결제취소가 아닐 경우 0
     private String failReason; // 결제실패 사유
     private String cancelReason; // 결제취소 사유
     private String receiptUrl; // 신용카드 매출전표 확인 URL
@@ -131,16 +140,16 @@ public class SafekingPayment extends BaseTimeEntity {
         this.applyNum = response.getApplyNum();
         this.bankCode = response.getBankCode();
         this.bankName = response.getBankName();
-        this.cardCode = response.getCardCode();
-        this.cardQuota = response.getCardCode();
+        this.cardCode = convertCardCode2CardName(response.getCardCode());
+        this.cardQuota = response.getCardQuota();
         this.cardNumber = response.getCardNumber();
-        this.cardType = response.getCardCode();
+        this.cardType = response.getCardType();
         this.vbankCode = response.getVbankCode();
         this.vbankName = response.getVbankName();
         this.vbankNum = response.getVbankNum();
         this.vbankHolder = response.getVbankHolder();
-        this.vbankDate = response.getVbankCode();
-        this.vbankIssuedAt = response.getVbankCode();
+        this.vbankDate = response.getVbankDate();
+        this.vbankIssuedAt = convertUNIXTimeStamp2LocalDateTime(response.getVbankIssuedAt());
         this.name = response.getName();
         this.amount = response.getAmount().intValue();
         this.cancelAmount = response.getCancelAmount().intValue();
@@ -152,14 +161,26 @@ public class SafekingPayment extends BaseTimeEntity {
         this.buyerPostcode = response.getBuyerPostcode();
         this.customData = response.getCustomData();
         this.userAgent = response.getApplyNum();
-        this.startedAt = response.getStartedAt();
+        this.startedAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
         this.paidAt = response.getPaidAt();
-        this.failedAt = response.getStartedAt();
-        this.cancelledAt = response.getStartedAt();
+        this.failedAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
+        this.cancelledAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
         this.failReason = response.getFailReason();
         this.cancelReason = response.getCancelReason();
         this.receiptUrl = response.getReceiptUrl();
         this.customerUid = response.getCustomerUid();
         this.customerUidUsage = response.getCustomerUidUsage();
+    }
+
+    private LocalDateTime convertUNIXTimeStamp2LocalDateTime(Long unixTimeStamp) {
+        LocalDateTime localDateTime =
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(unixTimeStamp),
+                        TimeZone.getDefault().toZoneId());
+
+        return localDateTime;
+    }
+
+    private String convertCardCode2CardName(String cardCode) {
+        return CustomCardCodeRepository.getElement(cardCode);
     }
 }

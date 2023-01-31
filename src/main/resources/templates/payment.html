@@ -21,7 +21,7 @@
                 pg : 'html5_inicis.INIpayTest',
                 pay_method : 'card',
                 // merchant_uid: "IMP"+makeMerchantUid,
-                merchant_uid: "6522",
+                merchant_uid: "09",
                 name : '안전모 결제 테스트',
                 amount : 2800,
                 buyer_email : 'safeKing@chai.finance',
@@ -51,7 +51,18 @@
                     alert('Please, Check your payment result page!!' + rsp);
                   })
                 } else {
-                  alert("결제에 실패하였습니다. 에러 내용: " + rsp.error_msg);
+                  alert("success? "+ rsp.success+ ", 결제에 실패하였습니다. 에러 내용: " + JSON.stringify(rsp));
+                  jQuery.ajax({
+                    url: "api/v1/test/payment",
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    data: JSON.stringify({
+                      imp_uid: rsp.imp_uid,            // 결제 고유번호
+                      merchant_uid: rsp.merchant_uid,   // 주문번호
+                      paid_amount: rsp.paid_amount, // 결제 금액
+                      success: rsp.success // 결제 성공 여부
+                    })
+                  })
                 }
               });
     }
@@ -64,8 +75,7 @@
         address : "제주 서귀포시 성산읍 성산리 1",
         memo : "납기일 준수해주세요.",
         delivery_memo : "문앞에 부탁 드립니다.",
-        items :[
-          {
+        items :[{
             id: 1,
             price : 1000,
             count: 1
@@ -74,8 +84,7 @@
             id: 2,
             price : 2000,
             count: 2
-          }
-        ]
+          }]
       };
       jQuery.ajax({
         url: "api/v1/user/order",

@@ -35,6 +35,9 @@ public class OrderAdminController {
     private final OrderService orderService;
     private final ValidationOrderService validationOrderService;
 
+    /**
+     * 관리자 주문 상세 조회
+     */
     @GetMapping("/order/detail/{orderId}")
     public ResponseEntity<AdminOrderDetailResponse> searchOrderDetailByAdmin(@PathVariable("orderId") Long orderId,
                                                                              HttpServletRequest request) {
@@ -43,66 +46,7 @@ public class OrderAdminController {
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 주문 상세 조회
-        Order findOrderDetail = orderService.searchOrderDetail(orderId);
-
-        return new ResponseEntity<>(getOrderDetailResponse(findOrderDetail), OK);
-    }
-
-    private AdminOrderDetailResponse getOrderDetailResponse(Order findOrderDetail) {
-
-        // 주문 상세 조회 응답 데이터
-        List<AdminOrderDetailOrderItemsResponse> orderItems = findOrderDetail.getOrderItems().stream()
-                .map(oi -> AdminOrderDetailOrderItemsResponse.builder()
-                        .id(oi.getId())
-                        .name(oi.getItem().getName())
-                        .count(oi.getCount())
-                        .price(oi.getOrderPrice())
-                        .build())
-                .collect(Collectors.toList());
-
-        /**
-         * 추후, 결제 API에서 데이터 수집해야함.
-         */
-        AdminOrderDetailDeliveryResponse delivery = AdminOrderDetailDeliveryResponse.builder()
-                .id(findOrderDetail.getDelivery().getId())
-                .status(findOrderDetail.getDelivery().getStatus().getDescription())
-                .receiver(findOrderDetail.getDelivery().getReceiver())
-                .phoneNumber(findOrderDetail.getDelivery().getPhoneNumber())
-                .address(findOrderDetail.getDelivery().getAddress())
-                .memo(findOrderDetail.getDelivery().getMemo())
-                .invoiceNumber(findOrderDetail.getDelivery().getInvoiceNumber())
-                .cost(findOrderDetail.getDelivery().getCost())
-                .company(findOrderDetail.getDelivery().getCompany())
-                .build();
-
-        /**
-         * 추후, 결제 API에서 데이터 수집해야함.
-         */
-        AdminOrderDetailPaymentResponse payment = AdminOrderDetailPaymentResponse.builder()
-                .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
-                .company(findOrderDetail.getSafeKingPayment().getCardCode())
-                .means(findOrderDetail.getSafeKingPayment().getPayMethod())
-                .price(findOrderDetail.getSafeKingPayment().getAmount())
-                .build();
-
-        AdminOrderDetailOrderResponse order = AdminOrderDetailOrderResponse.builder()
-                .id(findOrderDetail.getId())
-                .status(findOrderDetail.getStatus().getDescription())
-                .price(findOrderDetail.getSafeKingPayment().getAmount())
-                .memo(findOrderDetail.getMemo())
-                .date(findOrderDetail.getCreateDate())
-                .adminMemo(findOrderDetail.getAdminMemo())
-                .orderItems(orderItems)
-                .payment(payment)
-                .delivery(delivery)
-                .build();
-
-        AdminOrderDetailResponse adminOrderDetailResponse = AdminOrderDetailResponse.builder()
-                .message(ADMIN_ORDER_DETAIL_FIND_SUCCESS)
-                .order(order)
-                .build();
-
-        return adminOrderDetailResponse;
+        return new ResponseEntity<>(orderService.searchOrderDetailByAdmin(orderId), OK);
     }
 
     /**
@@ -165,6 +109,7 @@ public class OrderAdminController {
 
             AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
                     .id(o.getId())
+                    .merchantUid(o.getMerchantUid())
                     .status(o.getStatus().getDescription())
                     .price(o.getSafeKingPayment().getAmount())
                     .date(o.getCreateDate())

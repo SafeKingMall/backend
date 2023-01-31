@@ -21,9 +21,10 @@ public class AdminOrderDetailOrderResponse {
     private List<AdminOrderDetailOrderItemsResponse> orderItems;
     private AdminOrderDetailDeliveryResponse delivery;
     private AdminOrderDetailPaymentResponse payment;
+    private String merchantUid;
 
     @Builder
-    public AdminOrderDetailOrderResponse(Long id, String status, int price, String memo, LocalDateTime date, String adminMemo, List<AdminOrderDetailOrderItemsResponse> orderItems, AdminOrderDetailDeliveryResponse delivery, AdminOrderDetailPaymentResponse payment) {
+    public AdminOrderDetailOrderResponse(Long id, String status, int price, String memo, LocalDateTime date, String adminMemo, List<AdminOrderDetailOrderItemsResponse> orderItems, AdminOrderDetailDeliveryResponse delivery, AdminOrderDetailPaymentResponse payment, String merchantUid) {
         this.id = id;
         this.status = status;
         this.price = price;
@@ -33,5 +34,6 @@ public class AdminOrderDetailOrderResponse {
         this.orderItems = orderItems;
         this.delivery = delivery;
         this.payment = payment;
+        this.merchantUid = merchantUid;
     }
 }

@@ -7,6 +7,8 @@ import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
+import com.safeking.shop.domain.order.web.dto.response.admin.orderdetail.*;
+import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
@@ -75,6 +77,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 주문(배송) 정보 조회
      */
+    @Transactional(readOnly = true)
     @Override
     public Order searchOrder(Long id) {
         Optional<Order> orderOptional = orderRepository.findOrder(id);
@@ -84,19 +87,136 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 주문 상세 조회
+     * 주문 상세 조회(유저)
      */
+    @Transactional(readOnly = true)
     @Override
-    public Order searchOrderDetail(Long id) {
+    public OrderDetailResponse searchOrderDetailByUser(Long id) {
         Optional<Order> findOrderDetailOptional = orderRepository.findOrderDetail(id);
         Order findOrder = findOrderDetailOptional.orElseThrow(() -> new OrderException(ORDER_DETAIL_FIND_FAIL));
 
-        return findOrder;
+        return getOrderDetailResponseByUser(findOrder);
+    }
+
+    private OrderDetailResponse getOrderDetailResponseByUser(Order findOrderDetail) {
+
+        // 주문 상세 조회 응답 데이터
+        List<OrderDetailOrderItemResponse> orderItems = findOrderDetail.getOrderItems().stream()
+                .map(oi -> OrderDetailOrderItemResponse.builder()
+                        .id(oi.getId())
+                        .name(oi.getItem().getName())
+                        .count(oi.getCount())
+                        .price(oi.getOrderPrice())
+                        .thumbnail(oi.getItem().getItemPhotos().get(0).getFileName()) // 하나의 사진만
+                        .build())
+                .collect(Collectors.toList());
+
+        OrderDetailDeliveryResponse delivery = OrderDetailDeliveryResponse.builder()
+                .id(findOrderDetail.getDelivery().getId())
+                .status(findOrderDetail.getDelivery().getStatus().getDescription())
+                .receiver(findOrderDetail.getDelivery().getReceiver())
+                .phoneNumber(findOrderDetail.getDelivery().getPhoneNumber())
+                .address(findOrderDetail.getDelivery().getAddress())
+                .memo(findOrderDetail.getDelivery().getMemo())
+                .cost(findOrderDetail.getDelivery().getCost())
+                .build();
+
+        OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
+                .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
+                .build();
+
+        OrderDetailOrderResponse order = OrderDetailOrderResponse.builder()
+                .id(findOrderDetail.getId())
+                .merchantUid(findOrderDetail.getMerchantUid())
+                .status(findOrderDetail.getStatus().getDescription())
+                .price(findOrderDetail.getSafeKingPayment().getAmount())
+                .memo(findOrderDetail.getMemo())
+                .date(findOrderDetail.getCreateDate())
+                .orderItems(orderItems)
+                .payment(payment)
+                .delivery(delivery)
+                .build();
+
+        return OrderDetailResponse.builder()
+                .message(ORDER_DETAIL_FIND_SUCCESS)
+                .order(order)
+                .build();
+    }
+
+    /**
+     * 주문 상세 조회(어드민)
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public AdminOrderDetailResponse searchOrderDetailByAdmin(Long id) {
+        Optional<Order> findOrderDetailOptional = orderRepository.findOrderDetail(id);
+        Order findOrder = findOrderDetailOptional.orElseThrow(() -> new OrderException(ORDER_DETAIL_FIND_FAIL));
+
+        return getOrderDetailResponseByAdmin(findOrder);
+    }
+
+    private AdminOrderDetailResponse getOrderDetailResponseByAdmin(Order findOrderDetail) {
+
+        // 주문 상세 조회 응답 데이터
+        List<AdminOrderDetailOrderItemsResponse> orderItems = findOrderDetail.getOrderItems().stream()
+                .map(oi -> AdminOrderDetailOrderItemsResponse.builder()
+                        .id(oi.getId())
+                        .name(oi.getItem().getName())
+                        .count(oi.getCount())
+                        .price(oi.getOrderPrice())
+                        .build())
+                .collect(Collectors.toList());
+
+        /**
+         * 추후, 결제 API에서 데이터 수집해야함.
+         */
+        AdminOrderDetailDeliveryResponse delivery = AdminOrderDetailDeliveryResponse.builder()
+                .id(findOrderDetail.getDelivery().getId())
+                .status(findOrderDetail.getDelivery().getStatus().getDescription())
+                .receiver(findOrderDetail.getDelivery().getReceiver())
+                .phoneNumber(findOrderDetail.getDelivery().getPhoneNumber())
+                .address(findOrderDetail.getDelivery().getAddress())
+                .memo(findOrderDetail.getDelivery().getMemo())
+                .invoiceNumber(findOrderDetail.getDelivery().getInvoiceNumber())
+                .cost(findOrderDetail.getDelivery().getCost())
+                .company(findOrderDetail.getDelivery().getCompany())
+                .build();
+
+        /**
+         * 추후, 결제 API에서 데이터 수집해야함.
+         */
+        AdminOrderDetailPaymentResponse payment = AdminOrderDetailPaymentResponse.builder()
+                .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
+                .company(findOrderDetail.getSafeKingPayment().getCardCode())
+                .means(findOrderDetail.getSafeKingPayment().getPayMethod())
+                .price(findOrderDetail.getSafeKingPayment().getAmount())
+                .build();
+
+        AdminOrderDetailOrderResponse order = AdminOrderDetailOrderResponse.builder()
+                .id(findOrderDetail.getId())
+                .merchantUid(findOrderDetail.getMerchantUid())
+                .status(findOrderDetail.getStatus().getDescription())
+                .price(findOrderDetail.getSafeKingPayment().getAmount())
+                .memo(findOrderDetail.getMemo())
+                .date(findOrderDetail.getCreateDate())
+                .adminMemo(findOrderDetail.getAdminMemo())
+                .orderItems(orderItems)
+                .payment(payment)
+                .delivery(delivery)
+                .build();
+
+        AdminOrderDetailResponse adminOrderDetailResponse = AdminOrderDetailResponse.builder()
+                .message(ADMIN_ORDER_DETAIL_FIND_SUCCESS)
+                .order(order)
+                .build();
+
+        return adminOrderDetailResponse;
     }
 
     /**
      * 주문 다건 조회
      */
+    @Transactional(readOnly = true)
     @Override
     public Page<Order> searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
         Page<Order> findOrdersPage = orderRepository.findOrders(pageable, condition, memberId);
@@ -106,6 +226,7 @@ public class OrderServiceImpl implements OrderService {
 
         return findOrdersPage;
     }
+
     /**
      * 주문 취소
      */
@@ -176,6 +297,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 주문관리 목록 조회
      */
+    @Transactional(readOnly = true)
     @Override
     public Page<Order> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
         return orderRepository.findOrdersByAdmin(pageable, condition);

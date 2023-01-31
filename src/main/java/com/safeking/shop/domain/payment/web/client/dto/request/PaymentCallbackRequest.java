@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PaymentCallbackRequest {
-    @NotNull(message = "결제 성공 여부가 null 입니다.")
+    @NotNull(message = "결제 성공 여부가 빈 값입니다.")
     private Boolean success; // 결제 성공 여부
     @NotBlank(message = "결제 고유 번호가 빈 값입니다.")
     private String impUid; // 결제 고유 번호
@@ -21,4 +21,5 @@ public class PaymentCallbackRequest {
     private String merchantUid; //주문 번호
     @NotNull(message = "결제 금액이 null 입니다.")
     private Integer paidAmount; // 결제 금액
+    private String errorMsg; // 결제실패 메시지
 }

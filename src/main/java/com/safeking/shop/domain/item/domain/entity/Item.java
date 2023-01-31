@@ -3,6 +3,7 @@ package com.safeking.shop.domain.item.domain.entity;
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.admin.domain.entity.Admin;
 import com.safeking.shop.domain.exception.ItemException;
+import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,8 @@ import org.junit.experimental.categories.Categories;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity @Getter@Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
@@ -47,6 +50,12 @@ public class Item extends BaseTimeEntity {
 
     @Nullable
     private int viewPrice;
+
+    /**
+     * 양방향 관계로 설정
+     */
+    @OneToMany(mappedBy = "item")
+    private List<ItemPhoto> itemPhotos = new ArrayList<>();
 
     public static Item createItem(String name, int quantity, String description,int price, String adminId, Category category, int viewPrice, String viewYn){
 
@@ -113,6 +122,12 @@ public class Item extends BaseTimeEntity {
      */
     public void addItemQuantity(int count) {
         this.quantity += count;
+    }
+
+    // 연관관계 편의 메소드
+    private void changeItemPhoto(ItemPhoto itemPhoto) {
+        this.itemPhotos.add(itemPhoto);
+        itemPhoto.changeItem(this);
     }
 
 }
