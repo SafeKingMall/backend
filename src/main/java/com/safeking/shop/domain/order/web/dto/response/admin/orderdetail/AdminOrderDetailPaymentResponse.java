@@ -12,12 +12,14 @@ public class AdminOrderDetailPaymentResponse {
     private String company;
     private String means;
     private int price;
+    private String impUid;
 
     @Builder
-    public AdminOrderDetailPaymentResponse(String status, String company, String means, int price) {
+    public AdminOrderDetailPaymentResponse(String status, String company, String means, int price, String impUid) {
         this.status = status;
         this.company = company;
         this.means = means;
         this.price = price;
+        this.impUid = impUid;
     }
 }

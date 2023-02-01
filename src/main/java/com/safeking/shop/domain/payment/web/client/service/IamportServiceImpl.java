@@ -10,6 +10,7 @@ import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
+import com.safeking.shop.domain.payment.web.client.dto.request.PaymentAuthCancelRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCallbackRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentWebhookRequest;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentResponse;
@@ -41,6 +42,24 @@ import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.*;
 public class IamportServiceImpl implements IamportService {
     private final IamportClient client;
     private final IamportServiceSubMethod iamportServiceSubMethod;
+
+    /**
+     * 결제 인증 취소
+     */
+    @Transactional
+    @Override
+    public String authCancel(PaymentAuthCancelRequest request) {
+
+        Boolean success = request.getSuccess();
+
+        // 결제 성공 여부
+        if(!success) {
+            // 주문 삭제
+            iamportServiceSubMethod.deleteOrder(request.getMerchantUid());
+            return PAYMENT_REQUEST_CANCEL;
+        }
+        throw new PaymentException(PAYMENT_REQUEST_CANCEL_FAIL+", success="+success);
+    }
 
     /**
      * 결제(콜백 방식)

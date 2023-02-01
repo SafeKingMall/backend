@@ -77,19 +77,19 @@ class OrderItemRepositoryTest {
                         , "Y"));
 
         OrderItem orderItem = OrderItem
-                .createOrderItem(savedItem1, 1001, 10);
+                .createOrderItem(savedItem1, 1001, 10, null);
 
         OrderItem orderItem2 = OrderItem
-                .createOrderItem(savedItem2, 1002, 10);
+                .createOrderItem(savedItem2, 1002, 10, null);
 
         OrderItem orderItem3 = OrderItem
-                .createOrderItem(savedItem3, 1003, 10);
+                .createOrderItem(savedItem3, 1003, 10, null);
 
         OrderItem orderItem4 = OrderItem
-                .createOrderItem(savedItem3, 1004, 10);
+                .createOrderItem(savedItem3, 1004, 10, null);
 
         OrderItem orderItem5 = OrderItem
-                .createOrderItem(savedItem3, 1005, 10);
+                .createOrderItem(savedItem3, 1005, 10, null);
 
 
         Delivery delivery = Delivery.createDelivery(

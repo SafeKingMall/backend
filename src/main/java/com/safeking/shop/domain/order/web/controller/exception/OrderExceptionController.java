@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.exception;
+package com.safeking.shop.domain.order.web.controller.exception;
 
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.global.Error;

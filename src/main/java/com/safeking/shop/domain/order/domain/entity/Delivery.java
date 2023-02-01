@@ -30,6 +30,7 @@ public class Delivery extends BaseTimeEntity {
     private Integer cost;
     private String company;
     private String invoiceNumber;
+    private String email;
 
     public static Delivery createDelivery(String receiver, String phoneNumber,
                                           String address, DeliveryStatus status,
@@ -69,5 +70,9 @@ public class Delivery extends BaseTimeEntity {
         this.cost = cost;
         this.company = company;
         this.invoiceNumber = invoiceNumber;
+    }
+
+    public void changeDeliveryEmail() {
+
     }
 }

@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity @Getter@Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
@@ -107,11 +108,11 @@ public class Item extends BaseTimeEntity {
      * 상품수량 감소
      * @param count 주문 상품 수량
      */
-    public void removeItemQuantity(int count) {
+    public void removeItemQuantity(int count, List<String> itemName) {
         int restStock = this.quantity - count;
 
         if(restStock < 0) {
-            throw new ItemException("상품 재고가 부족합니다.");
+            itemName.add(this.name);
         }
         this.quantity = restStock;
     }

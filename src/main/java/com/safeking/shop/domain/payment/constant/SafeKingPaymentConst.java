@@ -7,4 +7,6 @@ public class SafeKingPaymentConst {
     public static final String PAYMENT_AMOUNT_DIFFERENT_WEBHOOK = "가맹점 결제금액과 요청 결제금액이 다릅니다.(웹훅)";
     public static final String PAYMENT_AMOUNT_DIFFERENT_CALLBACK = "가맹점 결제금액과 요청 결제금액이 다릅니다.(콜백)";
     public static final String IAMPORT_PAYMENT_ERROR = "아임포트 에러 발생";
+    public static final String PAYMENT_REQUEST_CANCEL = "결제 인증 취소요청";
+    public static final String PAYMENT_REQUEST_CANCEL_FAIL = "결제 인증 취소요청 실패";
 }

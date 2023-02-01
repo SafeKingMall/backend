@@ -79,13 +79,13 @@ class OrderRepositoryTest {
                         , "Y"));
 
         OrderItem orderItem = OrderItem
-                .createOrderItem(savedItem1, 1000, 10);
+                .createOrderItem(savedItem1, 1000, 10, null);
 
         OrderItem orderItem2 = OrderItem
-                .createOrderItem(savedItem2, 1000, 10);
+                .createOrderItem(savedItem2, 1000, 10, null);
 
         OrderItem orderItem3 = OrderItem
-                .createOrderItem(savedItem3, 1000, 10);
+                .createOrderItem(savedItem3, 1000, 10, null);
 
         OrderItem savedOrderItem1 = orderItemRepository.save(orderItem);
         OrderItem savedOrderItem2 = orderItemRepository.save(orderItem2);
