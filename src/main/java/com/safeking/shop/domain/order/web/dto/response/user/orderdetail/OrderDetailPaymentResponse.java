@@ -9,9 +9,10 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderDetailPaymentResponse {
     private String status;
-
+    private String impUid;
     @Builder
-    public OrderDetailPaymentResponse(String status) {
+    public OrderDetailPaymentResponse(String status, String impUid) {
         this.status = status;
+        this.impUid = impUid;
     }
 }

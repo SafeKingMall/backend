@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.payment.web.client.exception;
+package com.safeking.shop.domain.payment.web.controller.exception;
 
 import com.safeking.shop.domain.exception.PaymentException;
 import com.safeking.shop.global.Error;

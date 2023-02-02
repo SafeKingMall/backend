@@ -2,6 +2,7 @@ package com.safeking.shop.domain.payment.web.controller;
 
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
+import com.safeking.shop.domain.payment.web.client.dto.request.PaymentAuthCancelRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCallbackRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCancelRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentWebhookRequest;
@@ -30,7 +31,17 @@ public class PaymentController {
     private final ValidationOrderService validationOrderService;
 
     /**
-     * 콜백으로 결제 구현
+     * 결제 인증 취소(결제 취소 상태임)
+     */
+    @PostMapping("/payment/cancel/auth")
+    public ResponseEntity<String> cancelPaymentAuth(@Valid @RequestBody PaymentAuthCancelRequest paymentAuthCancelRequest, HttpServletRequest request) {
+        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+
+        return new ResponseEntity<>(iamportService.authCancel(paymentAuthCancelRequest), OK);
+    }
+
+    /**
+     * 콜백으로 결제 구현(결제 완료 상태임)
      */
     @PostMapping("/payment")
     public ResponseEntity<PaymentResponse> payment(@Valid @RequestBody PaymentCallbackRequest paymentCallbackRequest, HttpServletRequest request) {

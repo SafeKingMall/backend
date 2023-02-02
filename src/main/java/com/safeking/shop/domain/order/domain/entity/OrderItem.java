@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,18 +33,18 @@ public class OrderItem extends BaseTimeEntity {
 
     private Integer count;
 
-    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count, List<String> itemName) {
         OrderItem orderItem = new OrderItem();
-        orderItem.changeOrderItem(item, orderPrice, count);
+        orderItem.changeOrderItem(item, orderPrice, count, itemName);
 
         return orderItem;
     }
 
-    public void changeOrderItem(Item item, int orderPrice, int count) {
+    public void changeOrderItem(Item item, int orderPrice, int count, List<String> itemName) {
         this.item = item;
         this.orderPrice = orderPrice;
         this.count = count;
-        item.removeItemQuantity(count); //재고 감소
+        item.removeItemQuantity(count, itemName); //재고 감소
     }
 
     /**

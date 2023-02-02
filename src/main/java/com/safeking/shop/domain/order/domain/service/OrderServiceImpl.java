@@ -123,6 +123,7 @@ public class OrderServiceImpl implements OrderService {
 
         OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
                 .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
+                .impUid(findOrderDetail.getSafeKingPayment().getImpUid())
                 .build();
 
         OrderDetailOrderResponse order = OrderDetailOrderResponse.builder()
@@ -190,6 +191,7 @@ public class OrderServiceImpl implements OrderService {
                 .company(findOrderDetail.getSafeKingPayment().getCardCode())
                 .means(findOrderDetail.getSafeKingPayment().getPayMethod())
                 .price(findOrderDetail.getSafeKingPayment().getAmount())
+                .impUid(findOrderDetail.getSafeKingPayment().getImpUid())
                 .build();
 
         AdminOrderDetailOrderResponse order = AdminOrderDetailOrderResponse.builder()
