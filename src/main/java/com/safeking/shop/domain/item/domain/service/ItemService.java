@@ -124,6 +124,7 @@ public class ItemService {
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
                 .fileName((itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId())==null?null:itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId()).getFileName()))
+                .quantity(m.getQuantity())
                 .build());
         return posts;
     }
@@ -137,6 +138,7 @@ public class ItemService {
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
                 .fileName((itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId())==null?null:itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId()).getFileName()))
+                .quantity(m.getQuantity())
                 .build());
         return posts;
     }

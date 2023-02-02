@@ -113,6 +113,7 @@ public class ItemController {
                 .lastModifiedDate(m.getLastModifiedDate())
                 .categoryName(m.getCategoryName())
                 .name(m.getName())
+                .quantity(m.getQuantity())
                 .build());
         return itemLst;
     }
