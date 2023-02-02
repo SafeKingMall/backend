@@ -16,4 +16,6 @@ public class ItemListResponse {
     private String lastModifiedDate;
 
     private String fileName;
+
+    private int quantity;
 }
