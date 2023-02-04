@@ -198,7 +198,8 @@ class OrderServiceTest {
                 , "phoneNumber"
                 , "address"
                 , DeliveryStatus.COMPLETE
-                , "memo");
+                , "memo"
+                ,"dlwlrma@kakao.com");
     }
 
     @NotNull

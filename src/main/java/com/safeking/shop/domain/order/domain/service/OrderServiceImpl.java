@@ -28,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,11 +65,14 @@ public class OrderServiceImpl implements OrderService {
         // 주문상품 생성 및 저장
         List<OrderItem> orderItems = orderServiceSubMethod.createOrderItems(orderRequest, items);
 
+        // 주문 번호 생성
+        String merchantUid = createMerchantUid();
+
         // 결제 내역 임시 저장(실제 결제가 발생했을때 결제 완료로 변경)
-        SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems, orderRequest.getMerchantUid());
+        SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems, merchantUid);
 
         // 주문 생성
-        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), orderRequest.getMerchantUid(), safeKingPayment, orderItems);
+        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), merchantUid, safeKingPayment, orderItems);
         orderRepository.save(order);
 
         return order.getId();
@@ -337,5 +341,18 @@ public class OrderServiceImpl implements OrderService {
         deliveryRepository.deleteByOrderBatch(deliveryList);
         // payments delete
         paymentRepository.deleteByOrderBatch(safekingPaymentList);
+    }
+
+    private String createMerchantUid() {
+        String uuid = UUID.randomUUID().toString().substring(0, 8);
+        LocalDateTime localDateTime = LocalDateTime.now(); //2023-02-05T00:52:30.229273
+        String time = localDateTime.toString()
+                .substring(2, 17)
+                .replaceAll("T", "")
+                .replaceAll("-", "")
+                .replaceAll(":", "")
+                ;
+
+        return "SFK_"+time+"_"+uuid;
     }
 }
