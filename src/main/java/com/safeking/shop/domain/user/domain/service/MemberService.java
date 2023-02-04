@@ -131,6 +131,14 @@ public class MemberService {
         Member member = memoryMemberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
 
+        Member findMember = memberRepository
+                .findByPhoneNumber(authenticationInfoDto.getPhoneNumber())
+                .orElse(null);
+
+        if (findMember != null) {
+            throw new IllegalArgumentException("동일한 등록된 휴대번호가 존재합니다.");
+        }
+
         member.addAuthenticationInfo(
                 authenticationInfoDto.getName()
                 ,authenticationInfoDto.getBirth()
