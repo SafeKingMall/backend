@@ -10,9 +10,11 @@ import lombok.Data;
 public class OrderDetailPaymentResponse {
     private String status;
     private String impUid;
+    private String cancelReason;
     @Builder
-    public OrderDetailPaymentResponse(String status, String impUid) {
+    public OrderDetailPaymentResponse(String status, String impUid, String cancelReason) {
         this.status = status;
         this.impUid = impUid;
+        this.cancelReason = cancelReason;
     }
 }

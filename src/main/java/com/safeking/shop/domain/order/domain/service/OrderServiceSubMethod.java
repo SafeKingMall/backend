@@ -34,7 +34,7 @@ public class OrderServiceSubMethod {
     private final SafekingPaymentRepository safekingPaymentRepository;
 
     // 재고부족이 발생한 상품 이름을 담기 위한 list - 동기화, 동시성 이슈 우려
-    private ThreadLocal<List<String>> itemNameByStockIssueHolder = new ThreadLocal<>();
+    private ThreadLocal<List<String>> itemNameByStockIssueHolder = ThreadLocal.withInitial(ArrayList::new);
 
     /**
      * 배송 정보 생성 및 저장
