@@ -4,6 +4,8 @@ import com.safeking.shop.domain.cart.domain.entity.Cart;
 import com.safeking.shop.domain.cart.domain.repository.CartItemRepository;
 import com.safeking.shop.domain.cart.domain.repository.CartRepository;
 import com.safeking.shop.domain.cart.domain.service.CartService;
+import com.safeking.shop.domain.file.domain.service.FileService;
+import com.safeking.shop.domain.file.web.response.FileListResponse;
 import com.safeking.shop.domain.item.domain.entity.ItemQuestion;
 import com.safeking.shop.domain.item.domain.repository.ItemAnswerRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemQuestionRepository;
@@ -52,6 +54,7 @@ public class MemberService {
     private final ItemAnswerRepository answerRepository;
     private final OrderService orderService;
     private final MemberRedisRepository redisRepository;
+    private final FileService fileService;
 
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
@@ -127,6 +130,14 @@ public class MemberService {
 
         Member member = memoryMemberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("회원이 없습니다."));
+
+        Member findMember = memberRepository
+                .findByPhoneNumber(authenticationInfoDto.getPhoneNumber())
+                .orElse(null);
+
+        if (findMember != null) {
+            throw new IllegalArgumentException("동일한 등록된 휴대번호가 존재합니다.");
+        }
 
         member.addAuthenticationInfo(
                 authenticationInfoDto.getName()
@@ -282,13 +293,24 @@ public class MemberService {
         cartRepository.delete(cart);
 
         // 2. qna 관련 삭제
-        // 230129 배포중 에러로 인한 주석
-        //List<ItemQuestion> questionList = questionRepository.findByWriter(member);
+        List<ItemQuestion> questionList = questionRepository.findByMember(member);
+
+        // 2-1. qna 관련 첨부파일 삭제
+        questionList.stream().forEach(itemQuestion -> {
+            List<FileListResponse> itemQna = fileService.list("itemQna", itemQuestion.getId());
+
+            for (FileListResponse fileListResponse : itemQna) {
+                try {
+                    fileService.delete(fileListResponse.getId());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
         // 2-1. answer 삭제 question 삭제
-        // 230129 배포중 에러로 인한 주석
-        //answerRepository.deleteByTargetBatch(questionList);
-        //questionRepository.deleteByTargetBatch(questionList);
+        answerRepository.deleteByTargetBatch(questionList);
+        questionRepository.deleteByTargetBatch(questionList);
 
         // 3. 주문관련 삭제
         orderService.deleteByMemberBatch(member);
