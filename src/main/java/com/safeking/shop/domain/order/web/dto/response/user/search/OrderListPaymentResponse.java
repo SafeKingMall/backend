@@ -20,7 +20,11 @@ public class OrderListPaymentResponse {
     @Builder
     public OrderListPaymentResponse(String status, Date paidDate, LocalDateTime canceledDate) {
         this.status = status;
-        this.paidDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(paidDate);
-        this.canceledDate = canceledDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+        if(paidDate != null) {
+            this.paidDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(paidDate);
+        }
+        if(canceledDate != null) {
+            this.canceledDate = canceledDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+        }
     }
 }

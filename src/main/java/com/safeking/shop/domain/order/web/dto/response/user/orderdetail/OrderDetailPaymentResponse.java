@@ -26,9 +26,9 @@ public class OrderDetailPaymentResponse {
         this.status = status;
         this.impUid = impUid;
         this.cancelReason = cancelReason;
-        this.canceledRequestDate = canceledRequestDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
-        this.canceledDate = canceledDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
-        this.failedDate = failedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
-        this.paidDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(paidDate);
+        if(canceledRequestDate != null) this.canceledRequestDate = canceledRequestDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+        if(canceledDate != null) this.canceledDate = canceledDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+        if(failedDate != null) this.failedDate = failedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+        if(paidDate != null) this.paidDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(paidDate);
     }
 }
