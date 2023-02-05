@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.safeking.shop.domain.order.constant.OrderConst.ORDER_NONE;
@@ -43,6 +44,11 @@ public class IamportServiceSubMethod {
         CancelData cancelData = new CancelData(impUid, true);
         IamportResponse<Payment> cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData); //imp_uid를 통한 전액취소
         findSafekingPayment.changeSafekingPayment(CANCEL, cancelPaymentResponse.getResponse()); // 결제 취소 내용으로 갱신
+
+        // 접수일이 없는 경우에만 삽입
+        if(findSafekingPayment.getCanceledRequestDate() == null) {
+            findSafekingPayment.changeCanceledRequestDate(LocalDateTime.now()); // 결제 취소 접수일자 저장
+        }
 
         return cancelPaymentResponse;
     }

@@ -37,6 +37,8 @@ public class SafekingPayment extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    private LocalDateTime canceledRequestDate; // 결제 취소 접수일자
+
     // 아임포트 결제 단건 조회 응답 시작
     private String impUid; // 아임포트 결제 고유 번호
     private String merchantUid; //가맹점에서 전달한 거래 고유 번호
@@ -173,8 +175,12 @@ public class SafekingPayment extends BaseTimeEntity {
     }
 
     private LocalDateTime convertUNIXTimeStamp2LocalDateTime(Long unixTimeStamp) {
+
+        // 아닐경우 unixTimeStamp = 0
+        if (unixTimeStamp == 0) return null;
+
         LocalDateTime localDateTime =
-                LocalDateTime.ofInstant(Instant.ofEpochMilli(unixTimeStamp),
+                LocalDateTime.ofInstant(Instant.ofEpochSecond(unixTimeStamp),
                         TimeZone.getDefault().toZoneId());
 
         return localDateTime;
@@ -182,5 +188,9 @@ public class SafekingPayment extends BaseTimeEntity {
 
     private String convertCardCode2CardName(String cardCode) {
         return CustomCardCodeRepository.getElement(cardCode);
+    }
+
+    public void changeCanceledRequestDate(LocalDateTime now) {
+        this.canceledRequestDate = now;
     }
 }
