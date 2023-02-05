@@ -144,6 +144,10 @@ public class OrderServiceImpl implements OrderService {
                 .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
                 .impUid(findOrderDetail.getSafeKingPayment().getImpUid())
                 .cancelReason(findOrderDetail.getSafeKingPayment().getCancelReason())
+                .canceledRequestDate(findOrderDetail.getSafeKingPayment().getCanceledRequestDate())
+                .canceledDate(findOrderDetail.getSafeKingPayment().getCancelledAt())
+                .paidDate(findOrderDetail.getSafeKingPayment().getPaidAt())
+                .failedDate(findOrderDetail.getSafeKingPayment().getFailedAt())
                 .build();
 
         OrderDetailOrderResponse order = OrderDetailOrderResponse.builder()

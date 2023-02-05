@@ -163,6 +163,8 @@ public class OrderController {
         for(Order o : findOrders) {
             OrderListPaymentResponse payment = OrderListPaymentResponse.builder()
                     .status(o.getSafeKingPayment().getStatus().getDescription())
+                    .canceledDate(o.getSafeKingPayment().getCancelledAt())
+                    .paidDate(o.getSafeKingPayment().getPaidAt())
                     .build();
 
             OrderListOrderItemResponse orderItem = OrderListOrderItemResponse.builder()

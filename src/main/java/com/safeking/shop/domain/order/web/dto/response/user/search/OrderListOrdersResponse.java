@@ -25,7 +25,7 @@ public class OrderListOrdersResponse {
         this.id = id;
         this.status = status;
         this.price = price;
-        this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));;
+        this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         this.count = count;
         this.orderItem = orderItem;
         this.payment = payment;
