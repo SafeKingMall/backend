@@ -20,9 +20,12 @@ public class OrderDetailPaymentResponse {
     private String canceledDate; // 결제 취소 일시
     private String paidDate;
     private String failedDate;
+    private String cardCompany;
+    private String payMethod;
 
     @Builder
-    public OrderDetailPaymentResponse(String status, String impUid, String cancelReason, LocalDateTime canceledRequestDate, LocalDateTime canceledDate, Date paidDate, LocalDateTime failedDate) {
+    public OrderDetailPaymentResponse(String status, String impUid, String cancelReason, LocalDateTime canceledRequestDate, LocalDateTime canceledDate, Date paidDate, LocalDateTime failedDate,
+                                      String cardCompany, String payMethod) {
         this.status = status;
         this.impUid = impUid;
         this.cancelReason = cancelReason;
@@ -30,5 +33,7 @@ public class OrderDetailPaymentResponse {
         if(canceledDate != null) this.canceledDate = canceledDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         if(failedDate != null) this.failedDate = failedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         if(paidDate != null) this.paidDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(paidDate);
+        this.cardCompany = cardCompany;
+        this.payMethod = payMethod;
     }
 }

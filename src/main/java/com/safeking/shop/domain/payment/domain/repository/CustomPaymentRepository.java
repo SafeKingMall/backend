@@ -1,21 +1,19 @@
 package com.safeking.shop.domain.payment.domain.repository;
 
-import com.safeking.shop.domain.payment.domain.entity.CustomCardCodeConstant;
-import com.siot.IamportRestClient.constant.CardConstant;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.safeking.shop.domain.payment.domain.entity.CustomCardCodeConstant.*;
-import static com.safeking.shop.domain.payment.domain.entity.CustomCardCodeConstant.KR_CODE_LOTTE;
+import static com.safeking.shop.domain.payment.domain.entity.CustomPayMethodConstant.*;
 import static com.siot.IamportRestClient.constant.CardConstant.*;
 
-@Repository
-public class CustomCardCodeRepository {
+@Component
+public class CustomPaymentRepository {
     private final static Map<String, String> cardCodeMap = new ConcurrentHashMap<>();
+    private final static Map<String, String> payMethodMap = new ConcurrentHashMap<>();
 
     @PostConstruct
     public static void init() {
@@ -40,9 +38,30 @@ public class CustomCardCodeRepository {
         cardCodeMap.put(CODE_AMEX, KR_CODE_AMEX);
         cardCodeMap.put(CODE_JCB, KR_CODE_JCB);
         cardCodeMap.put(CODE_UNION, KR_CODE_UNION);
+
+        payMethodMap.put(SAMSUNG, KR_SAMSUNG);
+        payMethodMap.put(CARD, KR_CARD);
+        payMethodMap.put(TRANS, KR_TRANS);
+        payMethodMap.put(VBANK, KR_VBANK);
+        payMethodMap.put(PHONE, KR_SAMSUNG);
+        payMethodMap.put(CULTURELAND, KR_CULTURELAND);
+        payMethodMap.put(SMARTCULTURE, KR_SMARTCULTURE);
+        payMethodMap.put(BOOKLIFE, KR_BOOKLIFE);
+        payMethodMap.put(HAPPYMONEY, KR_HAPPYMONEY);
+        payMethodMap.put(POINT, KR_POINT);
+        payMethodMap.put(SSGPAY, KR_SSGPAY);
+        payMethodMap.put(LPAY, KR_LPAY);
+        payMethodMap.put(PAYCO, KR_PAYCO);
+        payMethodMap.put(KAKAOPAY, KR_KAKAOPAY);
+        payMethodMap.put(TOSSPAY, KR_TOSSPAY);
+        payMethodMap.put(NAVERPAY, KR_NAVERPAY);
     }
 
-    public static String getElement(String key) {
+    public static String getCardCodeElement(String key) {
         return cardCodeMap.get(key);
+    }
+
+    public static String getPayMethodElement(String key) {
+        return payMethodMap.get(key);
     }
 }

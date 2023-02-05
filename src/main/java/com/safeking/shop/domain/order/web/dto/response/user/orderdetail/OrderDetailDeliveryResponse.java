@@ -15,9 +15,12 @@ public class OrderDetailDeliveryResponse {
     private String address;
     private String memo;
     private Integer cost;
+    private String company;
+    private String invoiceNumber;
 
     @Builder
-    public OrderDetailDeliveryResponse(Long id, String status, String receiver, String phoneNumber, String address, String memo, Integer cost) {
+    public OrderDetailDeliveryResponse(Long id, String status, String receiver, String phoneNumber, String address, String memo, Integer cost,
+                                       String company, String invoiceNumber) {
         this.id = id;
         this.status = status;
         this.receiver = receiver;
@@ -25,5 +28,7 @@ public class OrderDetailDeliveryResponse {
         this.address = address;
         this.memo = memo;
         this.cost = cost;
+        this.company = company;
+        this.invoiceNumber = invoiceNumber;
     }
 }

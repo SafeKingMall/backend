@@ -10,10 +10,12 @@ import lombok.Data;
 public class OrderDetailResponse {
     private String message;
     private OrderDetailOrderResponse order;
+    private OrderDetailMember member;
 
     @Builder
-    public OrderDetailResponse(String message, OrderDetailOrderResponse order) {
+    public OrderDetailResponse(String message, OrderDetailOrderResponse order, OrderDetailMember member) {
         this.message = message;
         this.order = order;
+        this.member = member;
     }
 }

@@ -2,28 +2,21 @@ package com.safeking.shop.domain.payment.domain.entity;
 
 import com.safeking.shop.domain.common.BaseTimeEntity;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
-import com.safeking.shop.domain.payment.domain.repository.CustomCardCodeRepository;
-import com.siot.IamportRestClient.constant.CardConstant;
+import com.safeking.shop.domain.payment.domain.repository.CustomPaymentRepository;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
 import static com.safeking.shop.domain.order.constant.OrderConst.DeliveryCost;
 import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.*;
-import static com.siot.IamportRestClient.constant.CardConstant.*;
-import static org.junit.rules.Timeout.millis;
 
 /**
  * 금액은 Integer로 선언(21억까지 가능)
@@ -133,7 +126,7 @@ public class SafekingPayment extends BaseTimeEntity {
         this.status = status;
         this.impUid = response.getImpUid();
         this.merchantUid = response.getMerchantUid();
-        this.payMethod = response.getPayMethod();
+        this.payMethod = convertPayMethod2KRPayMethod(response.getPayMethod());
         this.channel = response.getChannel();
         this.pgProvider = response.getPgProvider();
         this.pgTid = response.getPgTid();
@@ -142,7 +135,7 @@ public class SafekingPayment extends BaseTimeEntity {
         this.applyNum = response.getApplyNum();
         this.bankCode = response.getBankCode();
         this.bankName = response.getBankName();
-        this.cardCode = convertCardCode2CardName(response.getCardCode());
+        this.cardCode = convertCardCode2KRCardName(response.getCardCode());
         this.cardQuota = response.getCardQuota();
         this.cardNumber = response.getCardNumber();
         this.cardType = response.getCardType();
@@ -186,8 +179,12 @@ public class SafekingPayment extends BaseTimeEntity {
         return localDateTime;
     }
 
-    private String convertCardCode2CardName(String cardCode) {
-        return CustomCardCodeRepository.getElement(cardCode);
+    private String convertCardCode2KRCardName(String cardCode) {
+        return CustomPaymentRepository.getCardCodeElement(cardCode);
+    }
+
+    private String convertPayMethod2KRPayMethod(String payMethod) {
+        return CustomPaymentRepository.getPayMethodElement(payMethod);
     }
 
     public void changeCanceledRequestDate(LocalDateTime now) {

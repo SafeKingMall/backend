@@ -138,6 +138,8 @@ public class OrderServiceImpl implements OrderService {
                 .address(findOrderDetail.getDelivery().getAddress())
                 .memo(findOrderDetail.getDelivery().getMemo())
                 .cost(findOrderDetail.getDelivery().getCost())
+                .invoiceNumber(findOrderDetail.getDelivery().getInvoiceNumber())
+                .company(findOrderDetail.getDelivery().getCompany())
                 .build();
 
         OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
@@ -148,6 +150,8 @@ public class OrderServiceImpl implements OrderService {
                 .canceledDate(findOrderDetail.getSafeKingPayment().getCancelledAt())
                 .paidDate(findOrderDetail.getSafeKingPayment().getPaidAt())
                 .failedDate(findOrderDetail.getSafeKingPayment().getFailedAt())
+                .cardCompany(findOrderDetail.getSafeKingPayment().getCardCode())
+                .payMethod(findOrderDetail.getSafeKingPayment().getPayMethod())
                 .build();
 
         OrderDetailOrderResponse order = OrderDetailOrderResponse.builder()
@@ -163,9 +167,15 @@ public class OrderServiceImpl implements OrderService {
                 .cancelReason(findOrderDetail.getCancelReason())
                 .build();
 
+        OrderDetailMember member = OrderDetailMember.builder()
+                .name(findOrderDetail.getMember().getName())
+                .phoneNumber(findOrderDetail.getMember().getPhoneNumber())
+                .build();
+
         return OrderDetailResponse.builder()
                 .message(ORDER_DETAIL_FIND_SUCCESS)
                 .order(order)
+                .member(member)
                 .build();
     }
 
