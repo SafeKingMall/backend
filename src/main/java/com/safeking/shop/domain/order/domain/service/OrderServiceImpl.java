@@ -8,6 +8,8 @@ import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.web.dto.response.admin.orderdetail.*;
+import com.safeking.shop.domain.order.web.dto.response.user.order.OrderOrderResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
@@ -28,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -53,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
      * 주문은 결제가 완료되어야 진행함
      */
     @Override
-    public Long order(Member member, OrderRequest orderRequest) {
+    public OrderResponse order(Member member, OrderRequest orderRequest) {
 
         // 상품 조회
         List<Item> items = orderServiceSubMethod.findItems(orderRequest.getOrderItemRequests());
@@ -64,15 +67,31 @@ public class OrderServiceImpl implements OrderService {
         // 주문상품 생성 및 저장
         List<OrderItem> orderItems = orderServiceSubMethod.createOrderItems(orderRequest, items);
 
+        // 주문 번호 생성
+        String merchantUid = createMerchantUid();
+
         // 결제 내역 임시 저장(실제 결제가 발생했을때 결제 완료로 변경)
-        SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems, orderRequest.getMerchantUid());
+        SafekingPayment safeKingPayment = orderServiceSubMethod.createPayment(orderItems, merchantUid);
 
         // 주문 생성
-        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), orderRequest.getMerchantUid(), safeKingPayment, orderItems);
+        Order order = Order.createOrder(member, delivery, orderRequest.getMemo(), merchantUid, safeKingPayment, orderItems);
         orderRepository.save(order);
 
-        return order.getId();
+        return getOrderResponse(merchantUid);
     }
+
+    public OrderResponse getOrderResponse(String merchantUid) {
+
+        OrderOrderResponse order = OrderOrderResponse.builder()
+                .merchantUid(merchantUid)
+                .build();
+
+        return OrderResponse.builder()
+                .message(ORDER_SUCCESS)
+                .order(order)
+                .build();
+    }
+
 
     /**
      * 주문(배송) 정보 조회
@@ -124,6 +143,7 @@ public class OrderServiceImpl implements OrderService {
         OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
                 .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
                 .impUid(findOrderDetail.getSafeKingPayment().getImpUid())
+                .cancelReason(findOrderDetail.getSafeKingPayment().getCancelReason())
                 .build();
 
         OrderDetailOrderResponse order = OrderDetailOrderResponse.builder()
@@ -136,6 +156,7 @@ public class OrderServiceImpl implements OrderService {
                 .orderItems(orderItems)
                 .payment(payment)
                 .delivery(delivery)
+                .cancelReason(findOrderDetail.getCancelReason())
                 .build();
 
         return OrderDetailResponse.builder()
@@ -337,5 +358,23 @@ public class OrderServiceImpl implements OrderService {
         deliveryRepository.deleteByOrderBatch(deliveryList);
         // payments delete
         paymentRepository.deleteByOrderBatch(safekingPaymentList);
+    }
+
+    /**
+     * 주문 번호 생성 함수
+     */
+    private String createMerchantUid() {
+        String uuid = UUID.randomUUID().toString().substring(0, 8);
+        LocalDateTime localDateTime = LocalDateTime.now(); //2023-02-05T00:52:30.229273
+
+        String time = localDateTime.toString()
+                .substring(2, 19)
+                .replaceAll("T", "")
+                .replaceAll("-", "")
+                .replaceAll(":", "")
+                ;
+
+        // e.g) SFK-2302050056-bb1b88c9
+        return "SFK-"+time+"-"+uuid;
     }
 }

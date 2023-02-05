@@ -27,7 +27,8 @@ public class HomeController {
                 "01012341234",
                 "서울시 여의도",
                 DeliveryStatus.PREPARATION,
-                "문앞에 놓아주세요.");
+                "문앞에 놓아주세요.",
+                "dlwlrma@kakao.com");
         Delivery saveDelivery = deliveryRepository.save(delivery);
 
         return saveDelivery.getId();

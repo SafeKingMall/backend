@@ -33,13 +33,16 @@ public class OrderServiceSubMethod {
     private final ItemRepository itemRepository;
     private final SafekingPaymentRepository safekingPaymentRepository;
 
+    // 재고부족이 발생한 상품 이름을 담기 위한 list - 동기화, 동시성 이슈 우려
+    private ThreadLocal<List<String>> itemNameByStockIssueHolder = ThreadLocal.withInitial(ArrayList::new);
+
     /**
      * 배송 정보 생성 및 저장
      */
     public Delivery createDelivery(OrderRequest orderRequest) {
         //배송 정보 생성
         Delivery delivery = Delivery.createDelivery(orderRequest.getReceiver(), orderRequest.getPhoneNumber(),
-                orderRequest.getAddress(), DeliveryStatus.PREPARATION, orderRequest.getDeliveryMemo());
+                orderRequest.getAddress(), DeliveryStatus.PREPARATION, orderRequest.getDeliveryMemo(), orderRequest.getEmail());
         //배송 정보 저장
         deliveryRepository.save(delivery);
 
@@ -52,7 +55,7 @@ public class OrderServiceSubMethod {
     public List<OrderItem> createOrderItems(OrderRequest orderRequest, List<Item> items) {
 
         List<OrderItem> orderItems = new ArrayList<>();
-        List<String> itemName = new ArrayList<>(); // 재고부족이 발생한 상품 이름을 담기 위한 list
+        List<String> itemName = itemNameByStockIssueHolder.get();
 
         //Client에서 받은 items(orderRequest.getItemDtos())와 DB에서 조회한 items의 크기가 일치한지 확인
         if(items.size() != orderRequest.getOrderItemRequests().size()) {
@@ -77,6 +80,7 @@ public class OrderServiceSubMethod {
                 name.append(str);
                 name.append(", ");
             }
+            itemNameByStockIssueHolder.remove();
             throw new ItemException(name.substring(0, name.length()-2)+"의 상품 재고가 부족합니다.");
         }
 

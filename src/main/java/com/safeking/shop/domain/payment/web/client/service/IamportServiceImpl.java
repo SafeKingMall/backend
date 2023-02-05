@@ -116,10 +116,10 @@ public class IamportServiceImpl implements IamportService {
             }
 
         } catch (IamportResponseException e) {
-            log.error("[IamportResponseException] ", e.getMessage());
+            log.error("[IamportResponseException] {}", e.getMessage());
             throw new PaymentException(IAMPORT_PAYMENT_ERROR+", "+e.getMessage());
         } catch (IOException e) {
-            log.error("[IOException] ", e.getMessage());
+            log.error("[IOException] {}", e.getMessage());
             throw new PaymentException(e.getMessage());
         }
 
@@ -183,10 +183,10 @@ public class IamportServiceImpl implements IamportService {
             }
 
         } catch (IamportResponseException e) {
-            log.error("[IamportResponseException] ", e.getMessage());
+            log.error("[IamportResponseException] {}", e.getMessage());
             throw new PaymentException(IAMPORT_PAYMENT_ERROR+", "+e.getMessage());
         } catch (IOException e) {
-            log.error("[IOException] ", e.getMessage());
+            log.error("[IOException] {}", e.getMessage());
             throw new PaymentException(e.getMessage());
         }
     }
@@ -209,10 +209,10 @@ public class IamportServiceImpl implements IamportService {
             return cancelPaymentResponse;
 
         } catch (IamportResponseException e) {
-            log.error("[IamportResponseException] ", e.getMessage());
+            log.error("[IamportResponseException] {}", e.getMessage());
             throw new PaymentException(e.getMessage());
         } catch (IOException e) {
-            log.error("[IOException] ", e.getMessage());
+            log.error("[IOException] {}", e.getMessage());
             throw new PaymentException(e.getMessage());
         }
     }

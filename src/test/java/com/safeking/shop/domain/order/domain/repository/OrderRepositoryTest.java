@@ -96,7 +96,8 @@ class OrderRepositoryTest {
                 , "phoneNumber"
                 , "address"
                 , DeliveryStatus.COMPLETE
-                , "memo");
+                , "memo"
+                , "dlwlrma@kakao.com");
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         ArrayList<OrderItem> orderItems = new ArrayList<>();

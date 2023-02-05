@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.PAYMENT_AMOUNT_DIFFERENT_CALLBACK;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static org.springframework.http.HttpStatus.*;
 

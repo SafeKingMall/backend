@@ -34,17 +34,17 @@ public class Delivery extends BaseTimeEntity {
 
     public static Delivery createDelivery(String receiver, String phoneNumber,
                                           String address, DeliveryStatus status,
-                                          String memo) {
+                                          String memo, String email) {
         Delivery delivery = new Delivery();
-        delivery.changeDelivery(receiver, phoneNumber, address, status, memo, LocalDateTime.now());
+        delivery.changeDelivery(receiver, phoneNumber, address, status, memo, LocalDateTime.now(), email);
 
         return delivery;
     }
 
     public void changeDelivery(String receiver, String phoneNumber,
                                String address, DeliveryStatus status,
-                               String memo,
-                               LocalDateTime shippingStartDate) {
+                               String memo, LocalDateTime shippingStartDate,
+                               String email) {
         this.receiver = receiver;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -52,6 +52,7 @@ public class Delivery extends BaseTimeEntity {
         this.memo = memo;
         this.shippingStartDate = shippingStartDate;
         this.cost = DeliveryCost;
+        this.email = email;
     }
 
     public void changeDeliveryStatus(DeliveryStatus status) {
