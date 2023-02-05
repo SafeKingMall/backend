@@ -7,6 +7,7 @@ import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.order.web.dto.response.admin.orderdetail.AdminOrderDetailResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.OrderDetailResponse;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.siot.IamportRestClient.exception.IamportResponseException;
@@ -22,7 +23,7 @@ public interface OrderService {
     AdminOrderDetailResponse searchOrderDetailByAdmin(Long id); //주문 상세 조회(어드민)
     Page<Order> searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId); //주문 다건 조회
     void cancel(CancelRequest cancelRequest); //주문 취소
-    Long order(Member member, OrderRequest orderRequest); //주문
+    OrderResponse order(Member member, OrderRequest orderRequest); //주문
     Long modifyOrder(ModifyInfoRequest modifyInfoRequest); //사용자 주문 정보 수정
     Long modifyOrderByAdmin(AdminModifyInfoRequest modifyInfoRequest, Long orderId); //관리자 주문 정보 수정
     Page<Order> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition);

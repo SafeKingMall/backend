@@ -8,8 +8,9 @@ import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoRequ
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.order.web.dto.response.OrderBasicResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
-import com.safeking.shop.domain.order.web.dto.response.user.order.OrderDeliveryResponse;
-import com.safeking.shop.domain.order.web.dto.response.user.order.OrderOrderResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoDeliveryResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoOrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
 import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListOrderItemResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListOrdersResponse;
@@ -29,7 +30,6 @@ import javax.validation.Valid;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
@@ -47,15 +47,15 @@ public class OrderController {
      * 주문
      */
     @PostMapping("/order")
-    public ResponseEntity<OrderBasicResponse> order(@Valid @RequestBody OrderRequest orderRequest, HttpServletRequest request) {
+    public ResponseEntity<OrderResponse> order(@Valid @RequestBody OrderRequest orderRequest, HttpServletRequest request) {
 
         //회원 검증
         Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         //주문
-        orderService.order(member, orderRequest);
+        OrderResponse orderResponse = orderService.order(member, orderRequest);
 
-        return new ResponseEntity<>(new OrderBasicResponse(ORDER_SUCCESS), OK);
+        return new ResponseEntity<>(orderResponse, OK);
     }
 
     /**
@@ -92,7 +92,7 @@ public class OrderController {
      * 주문(배송) 정보 조회
      */
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<OrderResponse> searchOrder(@PathVariable Long orderId, HttpServletRequest request) {
+    public ResponseEntity<OrderInfoResponse> searchOrder(@PathVariable Long orderId, HttpServletRequest request) {
 
         //회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
@@ -103,29 +103,29 @@ public class OrderController {
         return new ResponseEntity<>(getOrderResponse(findOrder), OK);
     }
 
-    private OrderResponse getOrderResponse(Order findOrder) {
+    private OrderInfoResponse getOrderResponse(Order findOrder) {
 
         //주문(배송) 조회 응답 데이터
-        OrderDeliveryResponse delivery = OrderDeliveryResponse.builder()
+        OrderInfoDeliveryResponse delivery = OrderInfoDeliveryResponse.builder()
                 .receiver(findOrder.getDelivery().getReceiver())
                 .address(findOrder.getDelivery().getAddress())
                 .phoneNumber(findOrder.getDelivery().getPhoneNumber())
                 .memo(findOrder.getDelivery().getMemo())
                 .build();
 
-        OrderOrderResponse order = OrderOrderResponse.builder()
+        OrderInfoOrderResponse order = OrderInfoOrderResponse.builder()
                 .id(findOrder.getId())
                 .memo(findOrder.getMemo())
                 .merchantUid(findOrder.getMerchantUid())
                 .build();
 
-        OrderResponse orderResponse = OrderResponse.builder()
+        OrderInfoResponse orderInfoResponse = OrderInfoResponse.builder()
                 .message(ORDER_FIND_SUCCESS)
                 .order(order)
                 .delivery(delivery)
                 .build();
 
-        return orderResponse;
+        return orderInfoResponse;
     }
 
     /**
