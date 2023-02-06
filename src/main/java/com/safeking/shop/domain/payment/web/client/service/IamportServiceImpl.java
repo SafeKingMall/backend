@@ -94,7 +94,7 @@ public class IamportServiceImpl implements IamportService {
             // 결제 금액 비교(결제 금액이 다르다면)
             if(findSafekingPayment.getAmount() != response.getAmount().intValue()) {
                 // 결제, 주문 취소 로직
-                cancel(request.getImpUid(), response.getMerchantUid(), PAYMENT_AMOUNT_DIFFERENT_CALLBACK, findSafekingPayment);
+                cancel(request.getImpUid(), response.getMerchantUid(), PAYMENT_AMOUNT_DIFFERENT_CALLBACK, 0d, findSafekingPayment);
                 log.debug("[결제검증 위조] {}", PAYMENT_AMOUNT_DIFFERENT_CALLBACK);
 
                 // 응답 생성
@@ -200,7 +200,7 @@ public class IamportServiceImpl implements IamportService {
     public IamportResponse<Payment> cancel(String impUid, String merchantUid, String cancelReason, Double returnFee, SafekingPayment findSafekingPayment) {
         try {
             // 결제 취소
-            IamportResponse<Payment> cancelPaymentResponse = iamportServiceSubMethod.cancelPayment(impUid, returnFee, findSafekingPayment);
+            IamportResponse<Payment> cancelPaymentResponse = iamportServiceSubMethod.cancelPayment(impUid, returnFee, cancelReason, findSafekingPayment);
 
             // 주문 취소
             Order findOrder = iamportServiceSubMethod.cancelOrder(merchantUid, cancelReason);

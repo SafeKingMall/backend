@@ -42,7 +42,7 @@ public class IamportServiceSubMethod {
      * 결제 취소
      */
     @NotNull
-    public IamportResponse<Payment> cancelPayment(String impUid, Double returnFee, SafekingPayment findSafekingPayment) throws IamportResponseException, IOException {
+    public IamportResponse<Payment> cancelPayment(String impUid, Double returnFee, String cancelReason, SafekingPayment findSafekingPayment) throws IamportResponseException, IOException {
 
         double paid = findSafekingPayment.getAmount().doubleValue(); // 결제금액
         Double refundFee = paid - returnFee; // 환불 금액 = 결제금액 - 반품비용
@@ -53,7 +53,7 @@ public class IamportServiceSubMethod {
         }
 
         CancelData cancelData = new CancelData(impUid, true, new BigDecimal(returnFee));
-        cancelData.setReason(findSafekingPayment.getCancelReason());
+        cancelData.setReason(cancelReason);
         IamportResponse<Payment> cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData); //imp_uid를 통한 전액취소
         findSafekingPayment.changeSafekingPayment(CANCEL, cancelPaymentResponse.getResponse()); // 결제 취소 내용으로 갱신
 
