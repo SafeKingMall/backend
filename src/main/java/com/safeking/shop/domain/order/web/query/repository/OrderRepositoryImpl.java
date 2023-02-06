@@ -3,22 +3,30 @@ package com.safeking.shop.domain.order.web.query.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
+import com.sun.xml.bind.v2.runtime.output.Encoded;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.safeking.shop.domain.cart.domain.entity.QCartItem.cartItem;
 import static com.safeking.shop.domain.item.domain.entity.QItem.item;
+import static com.safeking.shop.domain.order.constant.OrderConst.ORDER_LIST_FIND_FAIL_DELIVERY_STATUS;
+import static com.safeking.shop.domain.order.constant.OrderConst.ORDER_LIST_FIND_FAIL_PAYMENT_STATUS;
 import static com.safeking.shop.domain.order.domain.entity.QDelivery.delivery;
 import static com.safeking.shop.domain.order.domain.entity.QOrder.order;
 import static com.safeking.shop.domain.order.domain.entity.QOrderItem.orderItem;
@@ -48,6 +56,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         deliveryStatusEq(condition.getDeliveryStatus()),
                         paymentStatusEq(condition.getPaymentStatus())
                 )
+                .orderBy(order.createDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -55,6 +64,11 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .leftJoin(order.orderItems, orderItem)
+                .leftJoin(order.safeKingPayment, safekingPayment)
+                .leftJoin(order.delivery, delivery)
+                .leftJoin(order.member, member)
+                .leftJoin(orderItem.item, item)
                 .where(
                         order.member.id.eq(memberId),
                         betweenDate(condition.getFromDate(), condition.getToDate()),
@@ -82,6 +96,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         deliveryStatusEq(condition.getDeliveryStatus()),
                         paymentStatusEq(condition.getPaymentStatus())
                 )
+                .orderBy(order.createDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -89,6 +104,11 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
+                .leftJoin(order.orderItems, orderItem)
+                .leftJoin(order.safeKingPayment, safekingPayment)
+                .leftJoin(order.delivery, delivery)
+                .leftJoin(order.member, member)
+                .leftJoin(orderItem.item, item)
                 .where(
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
@@ -100,53 +120,51 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     private BooleanExpression paymentStatusEq(String paymentStats) {
-        return hasText(paymentStats) ? order.safeKingPayment.status.eq(PaymentStatus.valueOf(paymentStats)) : null;
+        try {
+            return hasText(paymentStats) ? order.safeKingPayment.status.eq(PaymentStatus.valueOf(paymentStats)) : null;
+        } catch (IllegalArgumentException e) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL_PAYMENT_STATUS);
+        }
     }
 
     private BooleanExpression deliveryStatusEq(String deliveryStatus) {
-        return hasText(deliveryStatus) ? order.delivery.status.eq(DeliveryStatus.valueOf(deliveryStatus)) : null;
+        try {
+            return hasText(deliveryStatus) ? order.delivery.status.eq(DeliveryStatus.valueOf(deliveryStatus)) : null;
+        } catch (IllegalArgumentException e) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL_DELIVERY_STATUS);
+        }
     }
 
     private BooleanExpression keywordContains(String keyword) {
-        return hasText(keyword) ? orderItem.item.name.containsIgnoreCase(keyword) : null;
+        return hasText(keyword) ? item.name.containsIgnoreCase(keyword) : null;
     }
 
     private BooleanExpression betweenDate(String fromDate, String toDate) {
 
-        //종료 주문일시만 있을 경우
-        LocalDateTime from = null;
-        LocalDateTime to = null;
-
         //검색 시작, 종료 주문일시 둘다 있을 경우
         if(hasText(fromDate) && hasText(toDate)) {
-            from = LocalDate.parse(fromDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
-            to = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
+            LocalDateTime from = LocalDate.parse(fromDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
+            LocalDateTime to = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
 
             return order.createDate.between(from, to);
         }
 
         //시작 주문일시만 있을 경우
         else if (hasText(fromDate)) {
-
-            from = LocalDate.parse(fromDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
-            to = LocalDate.parse(fromDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
+            LocalDateTime from = LocalDate.parse(fromDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
+            LocalDateTime to = LocalDateTime.now();
 
             return order.createDate.between(from, to);
         }
 
         //종료 주문일시만 있을 경우
         else if(hasText(toDate)) {
-
-            from = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(0, 0, 0);
-            to = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
+            LocalDateTime from = LocalDateTime.now();
+            LocalDateTime to = LocalDate.parse(toDate, ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
 
             return order.createDate.between(from, to);
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        from = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 0, 0, 0);
-        to = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 23, 59, 59);
-
-        return order.createDate.between(from, to);
+        return order.createDate.between(null, LocalDateTime.now());
     }
 }
