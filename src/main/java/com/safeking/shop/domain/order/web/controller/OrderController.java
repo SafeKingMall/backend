@@ -12,10 +12,7 @@ import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoR
 import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoDeliveryResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoOrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
-import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListOrderItemResponse;
-import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListOrdersResponse;
-import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListPaymentResponse;
-import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.search.*;
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.RequiredArgsConstructor;
@@ -172,6 +169,10 @@ public class OrderController {
                     .name(o.getOrderItems().get(0).getItem().getName())
                     .build();
 
+            OrderListDeliveryResponse delivery = OrderListDeliveryResponse.builder()
+                    .status(o.getDelivery().getStatus().getDescription())
+                    .build();
+
             OrderListOrdersResponse order = OrderListOrdersResponse.builder()
                     .id(o.getId())
                     .merchantUid(o.getMerchantUid())
@@ -181,6 +182,7 @@ public class OrderController {
                     .count(o.getOrderItems().size())
                     .orderItem(orderItem)
                     .payment(payment)
+                    .delivery(delivery)
                     .build();
 
             orders.add(order);

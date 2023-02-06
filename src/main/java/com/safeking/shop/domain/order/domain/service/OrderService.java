@@ -7,6 +7,7 @@ import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.modify.ModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.order.web.dto.response.admin.orderdetail.AdminOrderDetailResponse;
+import com.safeking.shop.domain.order.web.dto.response.admin.search.AdminOrderListResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.OrderDetailResponse;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
@@ -26,7 +27,7 @@ public interface OrderService {
     OrderResponse order(Member member, OrderRequest orderRequest); //주문
     Long modifyOrder(ModifyInfoRequest modifyInfoRequest); //사용자 주문 정보 수정
     Long modifyOrderByAdmin(AdminModifyInfoRequest modifyInfoRequest, Long orderId); //관리자 주문 정보 수정
-    Page<Order> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition);
+    AdminOrderListResponse searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition);
     void delete(Member member);
     void deleteByMemberBatch(Member member);
 }

@@ -17,17 +17,21 @@ import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.safeking.shop.domain.order.constant.OrderConst.ORDER_NONE;
+import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.REFUND_FEE_CHECK;
 import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.SAFEKING_PAYMENT_NONE;
 import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.CANCEL;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class IamportServiceSubMethod {
 
     private final IamportClient client;
@@ -40,8 +44,18 @@ public class IamportServiceSubMethod {
      * 결제 취소
      */
     @NotNull
-    public IamportResponse<Payment> cancelPayment(String impUid, SafekingPayment findSafekingPayment) throws IamportResponseException, IOException {
-        CancelData cancelData = new CancelData(impUid, true);
+    public IamportResponse<Payment> cancelPayment(String impUid, Double returnFee, String cancelReason, SafekingPayment findSafekingPayment) throws IamportResponseException, IOException {
+
+        double paid = findSafekingPayment.getAmount().doubleValue(); // 결제금액
+        Double refundFee = paid - returnFee; // 환불 금액 = 결제금액 - 반품비용
+
+        // 환불금액이 음수인 경우
+        if(refundFee < 0) {
+            throw new PaymentException(REFUND_FEE_CHECK);
+        }
+
+        CancelData cancelData = new CancelData(impUid, true, new BigDecimal(returnFee));
+        cancelData.setReason(cancelReason);
         IamportResponse<Payment> cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData); //imp_uid를 통한 전액취소
         findSafekingPayment.changeSafekingPayment(CANCEL, cancelPaymentResponse.getResponse()); // 결제 취소 내용으로 갱신
 
