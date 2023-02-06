@@ -81,6 +81,7 @@ public class PaymentController {
                 paymentCancelRequest.getImpUid(),
                 paymentCancelRequest.getMerchantUid(),
                 paymentCancelRequest.getReason(),
+                paymentCancelRequest.getReturnFee(),
                 iamportService.getSafekingPayment(paymentCancelRequest.getMerchantUid())
         );
 

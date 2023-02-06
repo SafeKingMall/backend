@@ -9,4 +9,5 @@ public class SafeKingPaymentConst {
     public static final String IAMPORT_PAYMENT_ERROR = "아임포트 에러 발생";
     public static final String PAYMENT_REQUEST_CANCEL = "결제 인증 취소요청";
     public static final String PAYMENT_REQUEST_CANCEL_FAIL = "결제 인증 취소요청 실패";
+    public static final String REFUND_FEE_CHECK = "반품비가 결제금액 보다 큽니다.";
 }
