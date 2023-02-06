@@ -13,6 +13,8 @@ import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentReposit
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentAuthCancelRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCallbackRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentWebhookRequest;
+import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCancelPaymentResponse;
+import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCancelResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCallbackResponse;
 import com.siot.IamportRestClient.IamportClient;
@@ -78,7 +80,7 @@ public class IamportServiceImpl implements IamportService {
                     .errorMsg(request.getErrorMsg())
                     .build();
 
-            return new PaymentResponse<>(PAYMENT_PAID_CANCEL, paymentCallbackResponse);
+            return new PaymentResponse<>(PAYMENT_PAID_FAIL, paymentCallbackResponse);
         }
 
         PaymentCallbackResponse paymentCallbackResponse = null;
@@ -197,7 +199,7 @@ public class IamportServiceImpl implements IamportService {
      */
     @Transactional
     @Override
-    public IamportResponse<Payment> cancel(String impUid, String merchantUid, String cancelReason, Double returnFee, SafekingPayment findSafekingPayment) {
+    public PaymentCancelResponse cancel(String impUid, String merchantUid, String cancelReason, Double returnFee, SafekingPayment findSafekingPayment) {
         try {
             // 결제 취소
             IamportResponse<Payment> cancelPaymentResponse = iamportServiceSubMethod.cancelPayment(impUid, returnFee, cancelReason, findSafekingPayment);
@@ -206,7 +208,7 @@ public class IamportServiceImpl implements IamportService {
             Order findOrder = iamportServiceSubMethod.cancelOrder(merchantUid, cancelReason);
             findOrder.changeSafekingPayment(findSafekingPayment); // 연관관계 적용
 
-            return cancelPaymentResponse;
+            return getPaymentCancelResponse(cancelPaymentResponse, findSafekingPayment.getBuyerName());
 
         } catch (IamportResponseException e) {
             log.error("[IamportResponseException] {}", e.getMessage());
@@ -215,6 +217,18 @@ public class IamportServiceImpl implements IamportService {
             log.error("[IOException] {}", e.getMessage());
             throw new PaymentException(e.getMessage());
         }
+    }
+
+    private PaymentCancelResponse getPaymentCancelResponse(IamportResponse<Payment> cancelPaymentResponse, String buyerName) {
+        PaymentCancelPaymentResponse payment = PaymentCancelPaymentResponse.builder()
+                .amount(cancelPaymentResponse.getResponse().getCancelAmount().doubleValue())
+                .buyerName(buyerName)
+                .build();
+
+        return PaymentCancelResponse.builder()
+                .message(PAYMENT_PAID_CANCEL_SUCCESS)
+                .payment(payment)
+                .build();
     }
 
     /**

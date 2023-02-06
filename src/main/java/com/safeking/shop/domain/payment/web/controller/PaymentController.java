@@ -6,6 +6,7 @@ import com.safeking.shop.domain.payment.web.client.dto.request.PaymentAuthCancel
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCallbackRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCancelRequest;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentWebhookRequest;
+import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCancelResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCallbackResponse;
 import com.safeking.shop.domain.payment.web.client.service.IamportService;
@@ -71,13 +72,13 @@ public class PaymentController {
      * 결제 취소
      */
     @PostMapping("/payment/cancel")
-    public ResponseEntity<IamportResponse<Payment>> cancelPayment(@Valid @RequestBody PaymentCancelRequest paymentCancelRequest, HttpServletRequest request) {
+    public ResponseEntity<PaymentCancelResponse> cancelPayment(@Valid @RequestBody PaymentCancelRequest paymentCancelRequest, HttpServletRequest request) {
 
         // 회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 결제 취소
-        IamportResponse<Payment> response = iamportService.cancel(
+        PaymentCancelResponse response = iamportService.cancel(
                 paymentCancelRequest.getImpUid(),
                 paymentCancelRequest.getMerchantUid(),
                 paymentCancelRequest.getReason(),

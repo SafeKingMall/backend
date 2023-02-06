@@ -13,13 +13,15 @@ public class AdminOrderDetailPaymentResponse {
     private String means;
     private int price;
     private String impUid;
+    private String buyerName;
 
     @Builder
-    public AdminOrderDetailPaymentResponse(String status, String company, String means, int price, String impUid) {
+    public AdminOrderDetailPaymentResponse(String status, String company, String means, int price, String impUid, String buyerName) {
         this.status = status;
         this.company = company;
         this.means = means;
         this.price = price;
         this.impUid = impUid;
+        this.buyerName = buyerName;
     }
 }

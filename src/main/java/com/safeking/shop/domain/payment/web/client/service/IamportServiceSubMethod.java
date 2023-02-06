@@ -17,6 +17,7 @@ import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,6 +31,7 @@ import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.CANCE
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class IamportServiceSubMethod {
 
     private final IamportClient client;

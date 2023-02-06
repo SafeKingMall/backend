@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -35,14 +36,14 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping("admin/item")
-    public Long save(@RequestBody ItemSaveRequest itemSaveRequest, HttpServletRequest request){
+    public Long save(@Valid @RequestBody ItemSaveRequest itemSaveRequest, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         itemSaveRequest.setAdminId(username);
         return itemService.save(itemSaveRequest);
     }
 
     @PutMapping("admin/item/{itemId}")
-    public void update(@PathVariable Long itemId, @RequestBody ItemUpdateRequest itemUpdateRequest, HttpServletRequest request){
+    public void update(@PathVariable Long itemId, @Valid @RequestBody ItemUpdateRequest itemUpdateRequest, HttpServletRequest request){
         String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
         itemUpdateRequest.setAdminId(username);
         itemUpdateRequest.setId(itemId);

@@ -78,60 +78,7 @@ public class OrderAdminController {
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 주문관리 목록 조회
-        Page<Order> ordersPage = orderService.searchOrdersByAdmin(pageable, condition);
-
-        AdminOrderListResponse adminOrderListResponse = getAdminOrderListResponse(ordersPage);
-
-        return new ResponseEntity<>(adminOrderListResponse, OK);
-    }
-
-    private static AdminOrderListResponse getAdminOrderListResponse(Page<Order> ordersPage) {
-
-        List<AdminOrderListOrderResponse> orders = new ArrayList<>();
-        List<Order> findOrders = ordersPage.getContent();
-
-        for(Order o : findOrders) {
-            AdminOrderListOrderItemResponse orderItem = AdminOrderListOrderItemResponse.builder()
-                    .id(o.getOrderItems().get(0).getItem().getId())
-                    .name(o.getOrderItems().get(0).getItem().getName())
-                    .build();
-
-            AdminOrderListPaymentResponse payment = AdminOrderListPaymentResponse.builder()
-                    .status(o.getSafeKingPayment().getStatus().getDescription())
-                    .build();
-
-            AdminOrderListMemberResponse member = AdminOrderListMemberResponse.builder()
-                    .name(o.getMember().getName())
-                    .build();
-
-            AdminOrderListDeliveryResponse delivery = AdminOrderListDeliveryResponse.builder()
-                    .receiver(o.getDelivery().getReceiver())
-                    .status(o.getDelivery().getStatus().getDescription())
-                    .build();
-
-            AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
-                    .id(o.getId())
-                    .merchantUid(o.getMerchantUid())
-                    .status(o.getStatus().getDescription())
-                    .price(o.getSafeKingPayment().getAmount())
-                    .date(o.getCreateDate())
-                    .orderItemCount(o.getOrderItems().size())
-                    .orderItem(orderItem)
-                    .payment(payment)
-                    .member(member)
-                    .delivery(delivery)
-                    .build();
-
-            orders.add(order);
-        }
-
-        return AdminOrderListResponse.builder()
-                .message(ADMIN_ORDER_LIST_FIND_SUCCESS)
-                .orders(orders)
-                .totalElements(ordersPage.getTotalElements())
-                .totalPages(ordersPage.getTotalPages())
-                .size(ordersPage.getSize())
-                .build();
+        return new ResponseEntity<>(orderService.searchOrdersByAdmin(pageable, condition), OK);
     }
 
 }

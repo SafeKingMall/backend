@@ -8,6 +8,7 @@ import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.web.dto.response.admin.orderdetail.*;
+import com.safeking.shop.domain.order.web.dto.response.admin.search.*;
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderOrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -200,6 +202,7 @@ public class OrderServiceImpl implements OrderService {
                         .name(oi.getItem().getName())
                         .count(oi.getCount())
                         .price(oi.getOrderPrice())
+                        .thumbnail(oi.getItem().getItemPhotos().get(0).getFileName())
                         .build())
                 .collect(Collectors.toList());
 
@@ -218,15 +221,13 @@ public class OrderServiceImpl implements OrderService {
                 .company(findOrderDetail.getDelivery().getCompany())
                 .build();
 
-        /**
-         * 추후, 결제 API에서 데이터 수집해야함.
-         */
         AdminOrderDetailPaymentResponse payment = AdminOrderDetailPaymentResponse.builder()
                 .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
                 .company(findOrderDetail.getSafeKingPayment().getCardCode())
                 .means(findOrderDetail.getSafeKingPayment().getPayMethod())
                 .price(findOrderDetail.getSafeKingPayment().getAmount())
                 .impUid(findOrderDetail.getSafeKingPayment().getImpUid())
+                .buyerName(findOrderDetail.getMember().getUsername()) // 가맹점 유저의 이름
                 .build();
 
         AdminOrderDetailOrderResponse order = AdminOrderDetailOrderResponse.builder()
@@ -336,8 +337,59 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<Order> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
-        return orderRepository.findOrdersByAdmin(pageable, condition);
+    public AdminOrderListResponse searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
+        Page<Order> orderPage = orderRepository.findOrdersByAdmin(pageable, condition);
+
+        return getAdminOrderListResponse(orderPage);
+    }
+
+    private static AdminOrderListResponse getAdminOrderListResponse(Page<Order> ordersPage) {
+
+        List<AdminOrderListOrderResponse> orders = new ArrayList<>();
+        List<Order> findOrders = ordersPage.getContent();
+
+        for(Order o : findOrders) {
+            AdminOrderListOrderItemResponse orderItem = AdminOrderListOrderItemResponse.builder()
+                    .id(o.getOrderItems().get(0).getItem().getId())
+                    .name(o.getOrderItems().get(0).getItem().getName())
+                    .build();
+
+            AdminOrderListPaymentResponse payment = AdminOrderListPaymentResponse.builder()
+                    .status(o.getSafeKingPayment().getStatus().getDescription())
+                    .build();
+
+            AdminOrderListMemberResponse member = AdminOrderListMemberResponse.builder()
+                    .name(o.getMember().getName())
+                    .build();
+
+            AdminOrderListDeliveryResponse delivery = AdminOrderListDeliveryResponse.builder()
+                    .receiver(o.getDelivery().getReceiver())
+                    .status(o.getDelivery().getStatus().getDescription())
+                    .build();
+
+            AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
+                    .id(o.getId())
+                    .merchantUid(o.getMerchantUid())
+                    .status(o.getStatus().getDescription())
+                    .price(o.getSafeKingPayment().getAmount())
+                    .date(o.getCreateDate())
+                    .orderItemCount(o.getOrderItems().size())
+                    .orderItem(orderItem)
+                    .payment(payment)
+                    .member(member)
+                    .delivery(delivery)
+                    .build();
+
+            orders.add(order);
+        }
+
+        return AdminOrderListResponse.builder()
+                .message(ADMIN_ORDER_LIST_FIND_SUCCESS)
+                .orders(orders)
+                .totalElements(ordersPage.getTotalElements())
+                .totalPages(ordersPage.getTotalPages())
+                .size(ordersPage.getSize())
+                .build();
     }
 
     @Override

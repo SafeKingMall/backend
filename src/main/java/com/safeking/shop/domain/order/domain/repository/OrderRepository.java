@@ -20,6 +20,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " where o.id = :id")
     Optional<Order> findOrder(@Param("id") Long id);
     @Query("select o from Order o" +
+            " join fetch o.member m" +
             " join fetch o.delivery d" +
             " join fetch o.orderItems oi" +
             " join fetch o.safeKingPayment sp" +
