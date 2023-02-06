@@ -30,3 +30,7 @@ spring:
     port: 6379
   upload:
     path: /home/ec2-user/www
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
