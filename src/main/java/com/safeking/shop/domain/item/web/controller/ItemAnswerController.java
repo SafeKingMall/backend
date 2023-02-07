@@ -48,7 +48,9 @@ public class ItemAnswerController {
     }
 
     @PostMapping("user/itemAnswer")
-    public Long save(@RequestBody ItemAnswerSaveRequest itemAnswerSaveRequest) throws Exception {
+    public Long save(@RequestBody ItemAnswerSaveRequest itemAnswerSaveRequest, HttpServletRequest request) throws Exception {
+        String username = TokenUtils.verify(request.getHeader(AUTH_HEADER).replace(BEARER, ""));
+        itemAnswerSaveRequest.setMemberId(username);
         Long id = itemAnswerService.save(itemAnswerSaveRequest);
         return id;
     }
