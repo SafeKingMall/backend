@@ -26,13 +26,13 @@ public class SMSService {
     public String sendCodeToClient(String clientPhoneNumber) throws CoolsmsException {
         String code = createCode(clientPhoneNumber).getCode();
 
-        //sendInformation(clientPhoneNumber, code, "code");
+        sendInformation(clientPhoneNumber, code, "code");
         return code;
     }
 
     public void sendErrorMessage(String clientPhoneNumber) throws CoolsmsException {
 
-        //sendInformation(clientPhoneNumber, "ERROR", "error");
+        sendInformation(clientPhoneNumber, "ERROR", "error");
     }
 
     public boolean checkCode(String clientCode, String clientPhoneNumber) {
@@ -49,7 +49,7 @@ public class SMSService {
             coolSmsRepository.delete(coolSMS.getId());
             return true;
         } else {
-//            coolSmsRepository.delete(coolSMS.getId());
+            coolSmsRepository.delete(coolSMS.getId());
             return false;
         }
     }
