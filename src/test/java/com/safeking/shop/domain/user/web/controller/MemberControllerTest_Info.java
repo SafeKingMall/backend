@@ -539,6 +539,8 @@ class MemberControllerTest_Info extends MvcTest {
         ResultActions resultActions = mockMvc.perform(get("/api/v1/refresh")
                         .header(REFRESH_HEADER,refreshToken))
                 .andExpect(status().isOk());
+//        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+//        System.out.println("contentAsString = " + contentAsString);
         //docs
         resultActions.andDo(
                 document("refreshToken"
@@ -549,6 +551,9 @@ class MemberControllerTest_Info extends MvcTest {
                                 headerWithName(AUTH_HEADER).attributes(JwtTokenValidation()).description("jwtToken")
                                 ,headerWithName(REFRESH_HEADER).attributes(RefreshTokenValidation()).description("refreshToken")
                         )
+//                        , responseFields(
+//                                fieldWithPath("role").description("회원의 역할을 응답")
+//                        )
                 )
         );
     }

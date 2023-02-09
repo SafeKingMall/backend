@@ -47,13 +47,6 @@ operation::idFind_error2[snippets='http-request,request-fields,http-response,res
 
 
 [[Member-8]]
-=== 8. refreshToken 발급
-|===
-| 설명 | 토큰이 만료가 되서 error code 812 가 나온다면 refresh Token api 에 jwtToken과 refreshToken을 요청
-|===
-operation::refreshToken[snippets='http-request,request-headers,http-response,response-headers']
-
-[[Member-9]]
-=== 9. 회원 탈퇴
+=== 8. 회원 탈퇴
 operation::withdrawal[snippets='http-request,request-headers,request-fields,http-response']
 
