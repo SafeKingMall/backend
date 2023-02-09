@@ -72,17 +72,18 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
-                .leftJoin(order.orderItems, orderItem)
+                //.leftJoin(order.orderItems, orderItem)
                 .leftJoin(order.safeKingPayment, safekingPayment)
                 .leftJoin(order.delivery, delivery)
                 .leftJoin(order.member, member)
-                .leftJoin(orderItem.item, item)
+                //.leftJoin(orderItem.item, item)
                 .where(
                         order.member.id.eq(memberId),
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStatus())
+                        paymentStatusEq(condition.getPaymentStatus()),
+                        orderStatusEq(condition.getOrderStatus())
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
