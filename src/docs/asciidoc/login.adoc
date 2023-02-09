@@ -34,3 +34,7 @@ operation::bad_login[snippets='http-request,request-fields,http-response,respons
 === 2. 로그 아웃
 operation::logout[snippets='http-request,request-headers,http-response']
 
+[[Login_4]]
+=== 3. refresh Token 발급
+operation::refreshToken[snippets='http-request,request-headers,http-response,response-body']
+
