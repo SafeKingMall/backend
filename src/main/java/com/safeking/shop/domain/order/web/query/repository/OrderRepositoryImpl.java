@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
+import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.sun.xml.bind.v2.runtime.output.Encoded;
@@ -25,8 +26,7 @@ import java.util.List;
 
 import static com.safeking.shop.domain.cart.domain.entity.QCartItem.cartItem;
 import static com.safeking.shop.domain.item.domain.entity.QItem.item;
-import static com.safeking.shop.domain.order.constant.OrderConst.ORDER_LIST_FIND_FAIL_DELIVERY_STATUS;
-import static com.safeking.shop.domain.order.constant.OrderConst.ORDER_LIST_FIND_FAIL_PAYMENT_STATUS;
+import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static com.safeking.shop.domain.order.domain.entity.QDelivery.delivery;
 import static com.safeking.shop.domain.order.domain.entity.QOrder.order;
 import static com.safeking.shop.domain.order.domain.entity.QOrderItem.orderItem;
@@ -41,20 +41,28 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * 컬렉션을 페치 조인하면 페이징 불가...
+     *
+     * ToOne관계를 페치 조인
+     * 지연 로딩 성능 최적화를 위해 hibernate.default_batch_fetch_size , @BatchSize 를 적용
+     *  -> 이 옵션을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size 만큼 IN 쿼리로 조회
+     */
     @Override
     public Page<Order> findOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
         List<Order> content = queryFactory
                 .selectFrom(order)
-                .leftJoin(order.orderItems, orderItem).fetchJoin()
+                //.leftJoin(order.orderItems, orderItem).fetchJoin()
                 .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()
                 .leftJoin(order.delivery, delivery).fetchJoin()
-                .leftJoin(orderItem.item, item).fetchJoin()
+                //.leftJoin(orderItem.item, item).fetchJoin()
                 .where(
                         order.member.id.eq(memberId),
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStatus())
+                        paymentStatusEq(condition.getPaymentStatus()),
+                        orderStatusEq(condition.getOrderStatus())
                 )
                 .orderBy(order.createDate.desc())
                 .offset(pageable.getOffset())
@@ -80,16 +88,23 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    /**
+     * 컬렉션을 페치 조인하면 페이징 불가...
+     *
+     * ToOne관계를 페치 조인
+     * 지연 로딩 성능 최적화를 위해 hibernate.default_batch_fetch_size , @BatchSize 를 적용
+     *  -> 이 옵션을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size 만큼 IN 쿼리로 조회
+     */
     @Override
     public Page<Order> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
 
         List<Order> content = queryFactory
                 .selectFrom(order)
-                .leftJoin(order.orderItems, orderItem).fetchJoin()
+                //.leftJoin(order.orderItems, orderItem).fetchJoin()
                 .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()
                 .leftJoin(order.delivery, delivery).fetchJoin()
                 .leftJoin(order.member, member).fetchJoin()
-                .leftJoin(orderItem.item, item).fetchJoin()
+                //.leftJoin(orderItem.item, item).fetchJoin()
                 .where(
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
@@ -104,11 +119,11 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
-                .leftJoin(order.orderItems, orderItem)
+                //.leftJoin(order.orderItems, orderItem)
                 .leftJoin(order.safeKingPayment, safekingPayment)
                 .leftJoin(order.delivery, delivery)
                 .leftJoin(order.member, member)
-                .leftJoin(orderItem.item, item)
+                //.leftJoin(orderItem.item, item)
                 .where(
                         betweenDate(condition.getFromDate(), condition.getToDate()),
                         keywordContains(condition.getKeyword()),
@@ -132,6 +147,14 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             return hasText(deliveryStatus) ? order.delivery.status.eq(DeliveryStatus.valueOf(deliveryStatus)) : null;
         } catch (IllegalArgumentException e) {
             throw new OrderException(ORDER_LIST_FIND_FAIL_DELIVERY_STATUS);
+        }
+    }
+
+    private BooleanExpression orderStatusEq(String orderStatus) {
+        try {
+            return hasText(orderStatus) ? order.status.eq(OrderStatus.valueOf(orderStatus)) : null;
+        } catch (IllegalArgumentException e) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL_ORDER_STATUS);
         }
     }
 
