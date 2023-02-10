@@ -17,8 +17,9 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long>, OrderRepositoryCustom {
     @Query("select o from Order o" +
             " join fetch o.delivery d" +
-            " where o.id = :id")
-    Optional<Order> findOrder(@Param("id") Long id);
+            " where o.id = :orderId" +
+            " and o.member.id = :memberId")
+    Optional<Order> findOrder(@Param("orderId") Long orderId, @Param("memberId") Long memberId);
     @Query("select o from Order o" +
             " join fetch o.member m" +
             " join fetch o.delivery d" +
@@ -26,8 +27,19 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " join fetch o.safeKingPayment sp" +
             " join fetch oi.item i" +
             " join fetch ItemPhoto ip on ip.item = i" +
-            " where o.id = :id")
-    Optional<Order> findOrderDetail(@Param("id") Long id);
+            " where o.id = :orderId" +
+            " and m.id = :memberId")
+    Optional<Order> findOrderDetailByUser(@Param("orderId") Long orderId, @Param("memberId") Long memberId);
+
+    @Query("select o from Order o" +
+            " join fetch o.member m" +
+            " join fetch o.delivery d" +
+            " join fetch o.orderItems oi" +
+            " join fetch o.safeKingPayment sp" +
+            " join fetch oi.item i" +
+            " join fetch ItemPhoto ip on ip.item = i" +
+            " where o.id = :orderId")
+    Optional<Order> findOrderDetailByAdmin(@Param("orderId") Long orderId);
 //    @Query("select o from Order o" +
 //            " join fetch o.safeKingPayment sp" +
 //            " where o.merchantUid = :merchantUid")
@@ -38,4 +50,24 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
     @Modifying
     @Query("delete from Order o where o in :orderList")
     void deleteAllByMemberBatch(@Param("orderList") List<Order> orderList);
+
+    @Query("select o from Order o" +
+            " join fetch o.delivery d" +
+            " join fetch o.safeKingPayment sf" +
+            " join fetch o.orderItems oi" +
+            " join fetch oi.item i" +
+            " join fetch ItemPhoto ip on ip.item = i" +
+            " where o.id = :orderId" +
+            " and o.member.id = :memberId")
+    Optional<Order> findOrderAskPaymentCancel(@Param("orderId") Long orderId, @Param("memberId") Long memberId); // 환불신청 단건 조회
+
+    @Query("select o from Order o" +
+            " join fetch o.delivery d" +
+            " join fetch o.orderItems oi" +
+            " join fetch o.safeKingPayment sp" +
+            " join fetch oi.item i" +
+            " join fetch ItemPhoto ip on ip.item = i" +
+            " where o.id = :orderId" +
+            " and o.member.id = :memberId")
+    Optional<Order> findOrderPaymentCancelDetailByUser(Long orderId, Long memberId); // 환불 상세 내역
 }

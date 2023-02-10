@@ -55,8 +55,8 @@ public class Item extends BaseTimeEntity {
     /**
      * 양방향 관계로 설정
      */
-    @OneToMany(mappedBy = "item")
-    private List<ItemPhoto> itemPhotos = new ArrayList<>();
+    @OneToOne(mappedBy = "item")
+    private ItemPhoto itemPhoto;
 
     public static Item createItem(String name, int quantity, String description,int price, String adminId, Category category, int viewPrice, String viewYn){
 
@@ -127,7 +127,7 @@ public class Item extends BaseTimeEntity {
 
     // 연관관계 편의 메소드
     private void changeItemPhoto(ItemPhoto itemPhoto) {
-        this.itemPhotos.add(itemPhoto);
+        this.itemPhoto = itemPhoto;
         itemPhoto.changeItem(this);
     }
 

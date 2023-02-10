@@ -9,6 +9,7 @@ import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
+import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
 import com.sun.xml.bind.v2.runtime.output.Encoded;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -143,16 +144,15 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
      *  -> 이 옵션을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size 만큼 IN 쿼리로 조회
      */
     @Override
-    public Page<Order> findOrdersByCancel(Pageable pageable, OrderSearchCondition condition, Long memberId) {
+    public Page<Order> findOrdersByCancel(Pageable pageable, PaymentSearchCondition condition, Long memberId) {
         List<Order> content = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()
-                .leftJoin(order.delivery, delivery).fetchJoin()
                 .leftJoin(order.member, member).fetchJoin()
                 .where(
                         order.member.id.eq(memberId),
                         paymentBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        orderStatusEq(condition.getOrderStatus())
+                        paymentStatusEq(condition.getPaymentStatus())
                 )
                 .orderBy(order.safeKingPayment.cancelledAt.desc())
                 .offset(pageable.getOffset())
@@ -163,12 +163,11 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .select(order.count())
                 .from(order)
                 .leftJoin(order.safeKingPayment, safekingPayment)
-                .leftJoin(order.delivery, delivery)
                 .leftJoin(order.member, member)
                 .where(
                         order.member.id.eq(memberId),
                         paymentBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        orderStatusEq(condition.getOrderStatus())
+                        paymentStatusEq(condition.getPaymentStatus())
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);

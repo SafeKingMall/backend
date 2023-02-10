@@ -20,9 +20,17 @@ public class OrderConst {
     public static final String ORDER_DETAIL_FIND_FAIL = "주문 상세 조회 실패";
     public static final String ORDER_LIST_FIND_SUCCESS = "주문 다건 조회 성공";
     public static final String ORDER_LIST_FIND_FAIL = "주문 다건 조회 실패";
-    public static final String ORDER_LIST_FIND_FAIL_PAYMENT_STATUS = "주문 다건 조회 실패(결제 상태가 올바르지 않습니다.)";
-    public static final String ORDER_LIST_FIND_FAIL_DELIVERY_STATUS = "주문 다건 조회 실패(배송 상태가 올바르지 않습니다.)";
-    public static final String ORDER_LIST_FIND_FAIL_ORDER_STATUS = "주문 다건 조회 실패(배송 상태가 올바르지 않습니다.)";
+    public static final String ORDER_LIST_FIND_FAIL_PAYMENT_STATUS = "결제 상태가 올바르지 않습니다.";
+    public static final String ORDER_LIST_FIND_FAIL_DELIVERY_STATUS = "배송 상태가 올바르지 않습니다.";
+    public static final String ORDER_LIST_FIND_FAIL_ORDER_STATUS = "주문 상태가 올바르지 않습니다.";
+    public static final String PAYMENT_CANCEL_LIST_FIND_SUCCESS = "환불 내역 조회 성공";
+    public static final String PAYMENT_CANCEL_LIST_FIND_FAIL = "환불 내역 조회 실패";
+    public static final String PAYMENT_CANCEL_FIND_SUCCESS = "환불신청 단건 조회 성공";
+    public static final String PAYMENT_CANCEL_FIND_FAIL = "환불신청 단건 조회 실패";
+    public static final String PAYMENT_CANCEL_DETAIL_FIND_SUCCESS = "환불 상세내역 조회 성공";
+
+    public static final String PAYMENT_CANCEL_DETAIL_FIND_FAIL = "환불 상세내역 조회 실패";
+
 
     /* 관리자 */
     public static final String ADMIN_ORDER_DETAIL_FIND_SUCCESS = "관리자용 주문 상세 조회 완료";
