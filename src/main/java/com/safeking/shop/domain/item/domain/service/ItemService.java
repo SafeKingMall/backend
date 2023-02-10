@@ -89,6 +89,7 @@ public class ItemService {
         for(ItemPhoto i : list){
             java.io.File sfile = new java.io.File(uploadPath+i.getFileName());
             boolean result = sfile.delete();
+            itemPhotoRepository.delete(i);
         }
 
     }
@@ -169,5 +170,14 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow();
         ItemPhoto itemPhoto = ItemPhoto.create(urlPath, item);
         itemPhotoRepository.save(itemPhoto);
+    }
+
+    public void photoDelete(Long id){
+        List<ItemPhoto> list = itemPhotoRepository.findByItemId(id);
+        for(ItemPhoto i : list){
+            java.io.File sfile = new java.io.File(uploadPath+i.getFileName());
+            boolean result = sfile.delete();
+            itemPhotoRepository.delete(i);
+        }
     }
 }
