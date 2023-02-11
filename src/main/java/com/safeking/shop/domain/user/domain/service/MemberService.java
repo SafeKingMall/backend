@@ -4,6 +4,7 @@ import com.safeking.shop.domain.cart.domain.entity.Cart;
 import com.safeking.shop.domain.cart.domain.repository.CartItemRepository;
 import com.safeking.shop.domain.cart.domain.repository.CartRepository;
 import com.safeking.shop.domain.cart.domain.service.CartService;
+import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.file.domain.service.FileService;
 import com.safeking.shop.domain.file.web.response.FileListResponse;
 import com.safeking.shop.domain.item.domain.entity.ItemQuestion;
@@ -28,6 +29,7 @@ import com.safeking.shop.global.oauth.provider.KakaoUserInfo;
 import com.safeking.shop.global.oauth.provider.Oauth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +57,7 @@ public class MemberService {
     private final OrderService orderService;
     private final MemberRedisRepository redisRepository;
     private final FileService fileService;
+    private final SMSService smsService;
 
 
     public Long addCriticalItems(CriticalItemsDto criticalItemsDto){
@@ -327,15 +330,12 @@ public class MemberService {
         redisRepository.delete(redisMember);
     }
 
-    public String sendTemporaryPassword(String username, String email){
-        Member member = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new MemberNotFoundException("아이디와 일치하는 회원이 없습니다."));
-
-        if (!member.getEmail().equals(email)) throw new IllegalArgumentException("회원님이 입력하신 이메일과 작성하신 이메일이 일치하지 않습니다");
-
+    public String sendTemporaryPassword(Member member) throws CoolsmsException {
         String temporaryPassword = createCode();
 
         member.changePassword(encoder.encode(temporaryPassword));
+
+        smsService.sendTemporaryPW(member.getPhoneNumber(), temporaryPassword);
         return temporaryPassword;
     }
 

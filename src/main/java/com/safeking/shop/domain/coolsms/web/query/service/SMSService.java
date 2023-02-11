@@ -35,6 +35,17 @@ public class SMSService {
         sendInformation(clientPhoneNumber, "ERROR", "error");
     }
 
+    public void sendTemporaryPW(String clientPhoneNumber, String temporaryPW) throws CoolsmsException {
+        String text = "회원님의 임시비밀번호는 ";
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("to", clientPhoneNumber);
+        params.put("from", "01082460887");
+        params.put("type", "sms");
+        params.put("text", text + "[" + temporaryPW + "] 입니다.");
+        COOLSMS.send(params);
+    }
+
     public boolean checkCode(String clientCode, String clientPhoneNumber) {
         CoolSMS coolSMS = coolSmsRepository
                 .findByClientPhoneNumber(clientPhoneNumber);
