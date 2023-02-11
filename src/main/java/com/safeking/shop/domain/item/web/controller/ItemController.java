@@ -123,4 +123,9 @@ public class ItemController {
     public void savePhoto(@RequestParam(name = "file") MultipartFile file, @PathVariable Long itemId) throws IOException {
         itemService.photoUpload(file, itemId);
     }
+
+    @DeleteMapping("admin/itemPhoto/{itemId}")
+    public void deletePhoto(@PathVariable Long itemId) throws IOException {
+        itemService.photoDelete(itemId);
+    }
 }
