@@ -15,11 +15,15 @@ public class PaymentCancelDetailOrderResponse {
     private String merchantUid; // 주문 번호
     private String date; // 주문 일시
     private List<PaymentCancelDetailOrderItemResponse> orderItems;
+    private PaymentCancelDetailPaymentResponse payment;
+    private PaymentCancelDetailDeliveryResponse delivery;
 
     @Builder
-    public PaymentCancelDetailOrderResponse(String merchantUid, LocalDateTime date, List<PaymentCancelDetailOrderItemResponse> orderItems) {
+    public PaymentCancelDetailOrderResponse(String merchantUid, LocalDateTime date, List<PaymentCancelDetailOrderItemResponse> orderItems, PaymentCancelDetailPaymentResponse payment, PaymentCancelDetailDeliveryResponse delivery) {
         this.merchantUid = merchantUid;
         this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         this.orderItems = orderItems;
+        this.payment = payment;
+        this.delivery = delivery;
     }
 }

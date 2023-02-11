@@ -2,6 +2,7 @@ package com.safeking.shop.domain.payment.web.client.service;
 
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.exception.PaymentException;
+import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
@@ -207,6 +208,10 @@ public class IamportServiceImpl implements IamportService {
             // 주문 취소
             Order findOrder = iamportServiceSubMethod.cancelOrder(merchantUid, cancelReason);
             findOrder.changeSafekingPayment(findSafekingPayment); // 연관관계 적용
+
+            // 배송 취소
+            Delivery findDelivery = iamportServiceSubMethod.cancelDelivery(findOrder.getDelivery().getId());
+            findOrder.changeDelivery(findDelivery); // 연관관계 적용
 
             return getPaymentCancelResponse(cancelPaymentResponse, findSafekingPayment.getBuyerName());
 

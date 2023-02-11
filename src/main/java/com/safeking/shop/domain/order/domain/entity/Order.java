@@ -109,6 +109,9 @@ public class Order extends BaseTimeEntity {
     public void changeSafekingPayment(SafekingPayment safeKingPayment) {
         this.safeKingPayment = safeKingPayment;
     }
+    public void changeDelivery(Delivery delivery) {
+        this.delivery = delivery;
+    }
 
     public void changeAdminMemoByAdmin(String adminMemo) {
         this.adminMemo = adminMemo;

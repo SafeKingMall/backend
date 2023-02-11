@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface OrderRepositoryCustom {
-    Page<Order> findOrders(Pageable pageable, OrderSearchCondition condition, Long memberId); // 주문 목록(유저)
+    Page<Order> findOrdersByUser(Pageable pageable, OrderSearchCondition condition, Long memberId); // 주문 목록(유저)
     Page<Order> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition); // 주문 목록(어드민)
-    Page<Order> findOrdersByCancel(Pageable pageable, PaymentSearchCondition condition, Long memberId); // 환불 내역
+    Page<Order> findOrdersCancelByUser(Pageable pageable, PaymentSearchCondition condition, Long memberId); // 환불 내역
 }

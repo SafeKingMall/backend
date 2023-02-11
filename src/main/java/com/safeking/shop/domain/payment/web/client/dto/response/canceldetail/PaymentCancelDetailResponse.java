@@ -10,14 +10,10 @@ import lombok.Data;
 public class PaymentCancelDetailResponse {
     private String message;
     private PaymentCancelDetailOrderResponse order;
-    private PaymentCancelDetailDeliveryResponse delivery;
-    private PaymentCancelDetailPaymentResponse payment;
 
     @Builder
-    public PaymentCancelDetailResponse(String message, PaymentCancelDetailOrderResponse order, PaymentCancelDetailDeliveryResponse delivery, PaymentCancelDetailPaymentResponse payment) {
+    public PaymentCancelDetailResponse(String message, PaymentCancelDetailOrderResponse order) {
         this.message = message;
         this.order = order;
-        this.delivery = delivery;
-        this.payment = payment;
     }
 }

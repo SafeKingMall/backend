@@ -41,7 +41,7 @@ public class Delivery extends BaseTimeEntity {
         return delivery;
     }
 
-    public void changeDelivery(String receiver, String phoneNumber,
+    private void changeDelivery(String receiver, String phoneNumber,
                                String address, DeliveryStatus status,
                                String memo, LocalDateTime shippingStartDate,
                                String email) {

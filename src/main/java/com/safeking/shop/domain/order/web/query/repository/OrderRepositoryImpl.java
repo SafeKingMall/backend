@@ -50,7 +50,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
      *  -> 이 옵션을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size 만큼 IN 쿼리로 조회
      */
     @Override
-    public Page<Order> findOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
+    public Page<Order> findOrdersByUser(Pageable pageable, OrderSearchCondition condition, Long memberId) {
         List<Order> content = queryFactory
                 .selectFrom(order)
                 //.leftJoin(order.orderItems, orderItem).fetchJoin()
@@ -144,7 +144,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
      *  -> 이 옵션을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size 만큼 IN 쿼리로 조회
      */
     @Override
-    public Page<Order> findOrdersByCancel(Pageable pageable, PaymentSearchCondition condition, Long memberId) {
+    public Page<Order> findOrdersCancelByUser(Pageable pageable, PaymentSearchCondition condition, Long memberId) {
         List<Order> content = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()

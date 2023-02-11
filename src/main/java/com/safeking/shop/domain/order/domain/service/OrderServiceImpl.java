@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.COMPLETE;
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.IN_DELIVERY;
 import static com.safeking.shop.domain.order.constant.OrderConst.*;
+import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.*;
 
 @Service
 @RequiredArgsConstructor
@@ -108,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public Order searchOrder(Long orderId, Long memberId) {
-        Optional<Order> orderOptional = orderRepository.findOrder(orderId, memberId);
+        Optional<Order> orderOptional = orderRepository.findOrderByUser(orderId, memberId);
         Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_FIND_FAIL));
 
         return findOrder;
@@ -131,7 +132,6 @@ public class OrderServiceImpl implements OrderService {
         // 주문 상세 조회 응답 데이터
         List<OrderDetailOrderItemResponse> orderItems = findOrderDetail.getOrderItems().stream()
                 .map(oi -> OrderDetailOrderItemResponse.builder()
-                        .id(oi.getId())
                         .name(oi.getItem().getName())
                         .count(oi.getCount())
                         .price(oi.getOrderPrice())
@@ -140,7 +140,6 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
         OrderDetailDeliveryResponse delivery = OrderDetailDeliveryResponse.builder()
-                .id(findOrderDetail.getDelivery().getId())
                 .status(findOrderDetail.getDelivery().getStatus().getDescription())
                 .receiver(findOrderDetail.getDelivery().getReceiver())
                 .phoneNumber(findOrderDetail.getDelivery().getPhoneNumber())
@@ -153,38 +152,28 @@ public class OrderServiceImpl implements OrderService {
 
         OrderDetailPaymentResponse payment = OrderDetailPaymentResponse.builder()
                 .status(findOrderDetail.getSafeKingPayment().getStatus().getDescription())
-                .impUid(findOrderDetail.getSafeKingPayment().getImpUid())
-                .cancelReason(findOrderDetail.getSafeKingPayment().getCancelReason())
-                .canceledRequestDate(findOrderDetail.getSafeKingPayment().getCanceledRequestDate())
-                .canceledDate(findOrderDetail.getSafeKingPayment().getCancelledAt())
-                .paidDate(findOrderDetail.getSafeKingPayment().getPaidAt())
-                .failedDate(findOrderDetail.getSafeKingPayment().getFailedAt())
                 .cardCompany(findOrderDetail.getSafeKingPayment().getCardCode())
                 .payMethod(findOrderDetail.getSafeKingPayment().getPayMethod())
+                .amount(findOrderDetail.getSafeKingPayment().getAmount())
+                .buyerAddr(findOrderDetail.getSafeKingPayment().getBuyerAddr())
+                .buyerName(findOrderDetail.getSafeKingPayment().getBuyerName())
+                .buyerTel(findOrderDetail.getSafeKingPayment().getBuyerTel())
+                .cashReceiptMethod("미제공")
+                .businessLicenseNumber("미제공")
                 .build();
 
         OrderDetailOrderResponse order = OrderDetailOrderResponse.builder()
-                .id(findOrderDetail.getId())
                 .merchantUid(findOrderDetail.getMerchantUid())
-                .status(findOrderDetail.getStatus().getDescription())
-                .price(findOrderDetail.getSafeKingPayment().getAmount())
                 .memo(findOrderDetail.getMemo())
                 .date(findOrderDetail.getCreateDate())
                 .orderItems(orderItems)
                 .payment(payment)
                 .delivery(delivery)
-                .cancelReason(findOrderDetail.getCancelReason())
-                .build();
-
-        OrderDetailMember member = OrderDetailMember.builder()
-                .name(findOrderDetail.getMember().getName())
-                .phoneNumber(findOrderDetail.getMember().getPhoneNumber())
                 .build();
 
         return OrderDetailResponse.builder()
                 .message(ORDER_DETAIL_FIND_SUCCESS)
                 .order(order)
-                .member(member)
                 .build();
     }
 
@@ -264,7 +253,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public OrderListResponse searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
-        Page<Order> findOrdersPage = orderRepository.findOrders(pageable, condition, memberId);
+        Page<Order> findOrdersPage = orderRepository.findOrdersByUser(pageable, condition, memberId);
 //        if(!findOrdersPage.hasContent()) {
 //            throw new OrderException(ORDER_LIST_FIND_FAIL);
 //        }
@@ -449,7 +438,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public PaymentCancelListResponse searchPaymentsByCancel(Pageable pageable, PaymentSearchCondition condition, Long memberId) {
-        Page<Order> ordersPage = orderRepository.findOrdersByCancel(pageable, condition, memberId);
+        Page<Order> ordersPage = orderRepository.findOrdersCancelByUser(pageable, condition, memberId);
 //        if(!ordersPage.hasContent()) {
 //            throw new PaymentException(PAYMENT_CANCEL_LIST_FIND_FAIL);
 //        }
@@ -537,7 +526,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public PaymentAskCancelResponse searchPaymentByCancel(Long orderId, Long memberId) {
-        Optional<Order> orderOptional = orderRepository.findOrderAskPaymentCancel(orderId, memberId);
+        Optional<Order> orderOptional = orderRepository.findOrderAskPaymentCancelByUser(orderId, memberId);
         Order findOrder = orderOptional.orElseThrow(() -> new OrderException(PAYMENT_CANCEL_FIND_FAIL));
 
         return getPaymentAskCancelResponse(findOrder);
@@ -618,12 +607,6 @@ public class OrderServiceImpl implements OrderService {
                 .invoiceNumber(findOrder.getDelivery().getInvoiceNumber())
                 .build();
 
-        PaymentCancelDetailOrderResponse order = PaymentCancelDetailOrderResponse.builder()
-                .orderItems(orderItems)
-                .date(findOrder.getCreateDate())
-                .merchantUid(findOrder.getMerchantUid())
-                .build();
-
         PaymentCancelDetailPaymentResponse payment = PaymentCancelDetailPaymentResponse.builder()
                 .cancelAmount(findOrder.getSafeKingPayment().getCancelAmount())
                 .buyerAddr(findOrder.getSafeKingPayment().getBuyerAddr())
@@ -638,11 +621,17 @@ public class OrderServiceImpl implements OrderService {
                 .refundFee(Integer.valueOf(amount - cancelAmount)) // 반품비 = 결제금액 - 환불금액
                 .build();
 
+        PaymentCancelDetailOrderResponse order = PaymentCancelDetailOrderResponse.builder()
+                .orderItems(orderItems)
+                .payment(payment)
+                .delivery(delivery)
+                .date(findOrder.getCreateDate())
+                .merchantUid(findOrder.getMerchantUid())
+                .build();
+
         return PaymentCancelDetailResponse.builder()
                 .message(PAYMENT_CANCEL_DETAIL_FIND_SUCCESS)
-                .delivery(delivery)
                 .order(order)
-                .payment(payment)
                 .build();
     }
 

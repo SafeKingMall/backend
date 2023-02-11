@@ -13,27 +13,26 @@ import java.util.Date;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderDetailPaymentResponse {
-    private String status;
-    private String impUid;
-    private String cancelReason;
-    private String canceledRequestDate; // 결제 취소 접수 일시
-    private String canceledDate; // 결제 취소 일시
-    private String paidDate;
-    private String failedDate;
-    private String cardCompany;
-    private String payMethod;
+    private String status; // 결제 상태
+    private String cardCompany; // 카드사
+    private String payMethod; // 결제 방식
+    private String buyerName; // 입금자명
+    private String buyerTel; // 입금자명 연락처
+    private String buyerAddr; // 입금자명 주소
+    private Integer amount; // 결제금액
+    private String cashReceiptMethod; // 현금영수증 방식
+    private String businessLicenseNumber;  // 사업자번호
 
     @Builder
-    public OrderDetailPaymentResponse(String status, String impUid, String cancelReason, LocalDateTime canceledRequestDate, LocalDateTime canceledDate, Date paidDate, LocalDateTime failedDate,
-                                      String cardCompany, String payMethod) {
+    public OrderDetailPaymentResponse(String status, String cardCompany, String payMethod, String buyerName, String buyerTel, String buyerAddr, Integer amount, String cashReceiptMethod, String businessLicenseNumber) {
         this.status = status;
-        this.impUid = impUid;
-        this.cancelReason = cancelReason;
-        if(canceledRequestDate != null) this.canceledRequestDate = canceledRequestDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
-        if(canceledDate != null) this.canceledDate = canceledDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
-        if(failedDate != null) this.failedDate = failedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
-        if(paidDate != null) this.paidDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(paidDate);
         this.cardCompany = cardCompany;
         this.payMethod = payMethod;
+        this.buyerName = buyerName;
+        this.buyerTel = buyerTel;
+        this.buyerAddr = buyerAddr;
+        this.amount = amount;
+        this.cashReceiptMethod = cashReceiptMethod;
+        this.businessLicenseNumber = businessLicenseNumber;
     }
 }

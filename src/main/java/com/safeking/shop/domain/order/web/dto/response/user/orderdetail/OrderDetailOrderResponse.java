@@ -12,28 +12,20 @@ import java.util.List;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderDetailOrderResponse {
-    private Long id;
-    private String status;
-    private int price;
-    private String memo;
-    private String date;
+    private String memo; // 주문 요청사항
+    private String date; // 주문일시
+    private String merchantUid; // 주문 번호
     private List<OrderDetailOrderItemResponse> orderItems;
     private OrderDetailPaymentResponse payment;
     private OrderDetailDeliveryResponse delivery;
-    private String merchantUid;
-    private String cancelReason;
 
     @Builder
-    public OrderDetailOrderResponse(Long id, String status, int price, String memo, LocalDateTime date, List<OrderDetailOrderItemResponse> orderItems, OrderDetailPaymentResponse payment, OrderDetailDeliveryResponse delivery, String merchantUid, String cancelReason) {
-        this.id = id;
-        this.status = status;
-        this.price = price;
+    public OrderDetailOrderResponse(String memo, LocalDateTime date, List<OrderDetailOrderItemResponse> orderItems, OrderDetailPaymentResponse payment, OrderDetailDeliveryResponse delivery, String merchantUid) {
         this.memo = memo;
         this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));;
         this.orderItems = orderItems;
         this.payment = payment;
         this.delivery = delivery;
         this.merchantUid = merchantUid;
-        this.cancelReason = cancelReason;
     }
 }

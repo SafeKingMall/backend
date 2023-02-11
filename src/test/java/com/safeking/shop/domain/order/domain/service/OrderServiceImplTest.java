@@ -105,10 +105,10 @@
 //
 //        //when
 //        Long orderId = orderService.order(generalMember, orderRequest);
-//        Optional<Order> findOrder = orderRepository.findById(orderId);
+//        Optional<Order> findOrderByUser = orderRepository.findById(orderId);
 //
 //        //then
-//        assertThat(findOrder.get().getMember().getName()).isEqualTo("아이유");
+//        assertThat(findOrderByUser.get().getMember().getName()).isEqualTo("아이유");
 //    }
 //
 //    @Test
@@ -144,10 +144,10 @@
 //
 //        //when
 //        orderService.cancel(cancelRequest);
-//        Optional<Order> findOrder = orderRepository.findById(order.getId());
+//        Optional<Order> findOrderByUser = orderRepository.findById(order.getId());
 //
 //        //then
-//        assertThat(findOrder.get().getStatus()).isEqualTo(OrderStatus.CANCEL);
+//        assertThat(findOrderByUser.get().getStatus()).isEqualTo(OrderStatus.CANCEL);
 //    }
 //
 //    @Test
@@ -355,22 +355,22 @@
 //        orderRepository.save(order);
 //
 //        //when
-//        Order findOrder = orderService.searchOrder(order.getId());
+//        Order findOrderByUser = orderService.searchOrder(order.getId());
 //
 //        //then
-//        assertThat(findOrder.getId()).isEqualTo(order.getId());
-//        assertThat(findOrder.getDelivery().getReceiver()).isEqualTo(delivery.getReceiver());
-//        assertThat(findOrder.getDelivery().getPhoneNumber()).isEqualTo(delivery.getPhoneNumber());
-//        assertThat(findOrder.getDelivery().getAddress()).isEqualTo(delivery.getAddress());
-//        assertThat(findOrder.getDelivery().getMemo()).isEqualTo(delivery.getMemo());
+//        assertThat(findOrderByUser.getId()).isEqualTo(order.getId());
+//        assertThat(findOrderByUser.getDelivery().getReceiver()).isEqualTo(delivery.getReceiver());
+//        assertThat(findOrderByUser.getDelivery().getPhoneNumber()).isEqualTo(delivery.getPhoneNumber());
+//        assertThat(findOrderByUser.getDelivery().getAddress()).isEqualTo(delivery.getAddress());
+//        assertThat(findOrderByUser.getDelivery().getMemo()).isEqualTo(delivery.getMemo());
 //
 //
-//        FindOrderDto findOrderDto = new FindOrderDto(findOrder.getId(),
-//                findOrder.getMemo(),
-//                findOrder.getDelivery().getReceiver(),
-//                findOrder.getDelivery().getPhoneNumber(),
-//                findOrder.getDelivery().getAddress(),
-//                findOrder.getDelivery().getMemo());
+//        FindOrderDto findOrderDto = new FindOrderDto(findOrderByUser.getId(),
+//                findOrderByUser.getMemo(),
+//                findOrderByUser.getDelivery().getReceiver(),
+//                findOrderByUser.getDelivery().getPhoneNumber(),
+//                findOrderByUser.getDelivery().getAddress(),
+//                findOrderByUser.getDelivery().getMemo());
 //        System.out.println(findOrderDto);
 //
 //    }
