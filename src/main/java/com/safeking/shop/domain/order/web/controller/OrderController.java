@@ -58,17 +58,17 @@ public class OrderController {
     /**
      * 주문 취소
      */
-    @PatchMapping("/order")
-    public ResponseEntity<OrderBasicResponse> cancel(@Valid @RequestBody CancelRequest cancelRequest, HttpServletRequest request) {
-
-        //회원 검증
-        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
-
-        //주문 취소
-        orderService.cancel(cancelRequest);
-
-        return new ResponseEntity<>(new OrderBasicResponse(ORDER_CANCEL_SUCCESS), OK);
-    }
+//    @PatchMapping("/order")
+//    public ResponseEntity<OrderBasicResponse> cancel(@Valid @RequestBody CancelRequest cancelRequest, HttpServletRequest request) {
+//
+//        //회원 검증
+//        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+//
+//        //주문 취소
+//        orderService.cancel(cancelRequest);
+//
+//        return new ResponseEntity<>(new OrderBasicResponse(ORDER_CANCEL_SUCCESS), OK);
+//    }
 
     /**
      * 주문(배송) 정보 수정

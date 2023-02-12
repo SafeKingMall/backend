@@ -90,8 +90,8 @@ public class Order extends BaseTimeEntity {
      * 주문 취소
      */
     public void cancel(String cancelReason) {
-        if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)
-                || delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
+        // 배송중이면 주문취소 불가
+        if(delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
             throw new OrderException(OrderConst.ORDER_CANCEL_DELIVERY_DONE);
         }
 
