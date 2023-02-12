@@ -13,6 +13,8 @@ import com.safeking.shop.domain.order.web.dto.response.user.order.OrderOrderResp
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
 import com.safeking.shop.domain.order.web.dto.response.user.search.*;
+import com.safeking.shop.domain.order.web.query.repository.querydto.AdminOrderListOrderItemQueryDto;
+import com.safeking.shop.domain.order.web.query.repository.querydto.AdminOrderListQueryDto;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
@@ -379,24 +381,20 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public AdminOrderListResponse searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
-        Page<Order> orderPage = orderRepository.findOrdersByAdmin(pageable, condition);
+        Page<AdminOrderListQueryDto> ordersPage = orderRepository.findOrdersByAdmin(pageable, condition);
 
-        return getAdminOrderListResponse(orderPage);
+        return getAdminOrderListResponse(ordersPage);
     }
 
-    private static AdminOrderListResponse getAdminOrderListResponse(Page<Order> ordersPage) {
+    private AdminOrderListResponse getAdminOrderListResponse(Page<AdminOrderListQueryDto> ordersPage) {
 
         List<AdminOrderListOrderResponse> orders = new ArrayList<>();
-        List<Order> findOrders = ordersPage.getContent();
+        List<AdminOrderListQueryDto> findOrders = ordersPage.getContent();
 
-        for(Order o : findOrders) {
-            AdminOrderListOrderItemResponse orderItem = AdminOrderListOrderItemResponse.builder()
-                    .id(o.getOrderItems().get(0).getItem().getId())
-                    .name(o.getOrderItems().get(0).getItem().getName())
-                    .build();
+        for(AdminOrderListQueryDto o : findOrders) {
 
             AdminOrderListPaymentResponse payment = AdminOrderListPaymentResponse.builder()
-                    .status(o.getSafeKingPayment().getStatus().getDescription())
+                    .status(o.getPayment().getStatus())
                     .build();
 
             AdminOrderListMemberResponse member = AdminOrderListMemberResponse.builder()
@@ -405,23 +403,30 @@ public class OrderServiceImpl implements OrderService {
 
             AdminOrderListDeliveryResponse delivery = AdminOrderListDeliveryResponse.builder()
                     .receiver(o.getDelivery().getReceiver())
-                    .status(o.getDelivery().getStatus().getDescription())
+                    .status(o.getDelivery().getStatus())
                     .build();
 
             AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
                     .id(o.getId())
                     .merchantUid(o.getMerchantUid())
-                    .status(o.getStatus().getDescription())
-                    .price(o.getSafeKingPayment().getAmount())
-                    .date(o.getCreateDate())
+                    .status(o.getStatus())
+                    .price(o.getPrice())
+                    .date(o.getDate())
                     .orderItemCount(o.getOrderItems().size())
-                    .orderItem(orderItem)
                     .payment(payment)
                     .member(member)
                     .delivery(delivery)
+                    .orderItems(o.getOrderItems().stream()
+                            .map(oi -> AdminOrderListOrderItemResponse.builder()
+                                    .id(oi.getId())
+                                    .name(oi.getName())
+                                    .build()).collect(Collectors.toList()
+                            ))
                     .build();
 
-            orders.add(order);
+            if(!order.getOrderItems().isEmpty()) {
+                orders.add(order);
+            }
         }
 
         return AdminOrderListResponse.builder()

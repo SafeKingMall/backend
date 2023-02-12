@@ -7,25 +7,20 @@ import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
+import com.safeking.shop.domain.order.web.query.repository.querydto.*;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
-import com.sun.xml.bind.v2.runtime.output.Encoded;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityManager;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.safeking.shop.domain.cart.domain.entity.QCartItem.cartItem;
 import static com.safeking.shop.domain.item.domain.entity.QItem.item;
 import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static com.safeking.shop.domain.order.domain.entity.QDelivery.delivery;
@@ -76,7 +71,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 //.leftJoin(order.orderItems, orderItem)
                 .leftJoin(order.safeKingPayment, safekingPayment)
                 .leftJoin(order.delivery, delivery)
-                .leftJoin(order.member, member)
                 //.leftJoin(orderItem.item, item)
                 .where(
                         order.member.id.eq(memberId),
@@ -98,28 +92,18 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
      *  -> 이 옵션을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size 만큼 IN 쿼리로 조회
      */
     @Override
-    public Page<Order> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
+    public Page<AdminOrderListQueryDto> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
 
-        List<Order> content = queryFactory
-                .selectFrom(order)
-                //.leftJoin(order.orderItems, orderItem).fetchJoin()
-                .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()
-                .leftJoin(order.delivery, delivery).fetchJoin()
-                .leftJoin(order.member, member).fetchJoin()
-                //.leftJoin(orderItem.item, item).fetchJoin()
-                .where(
-                        orderBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        keywordContains(condition.getKeyword()),
-                        deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStatus())
+        List<AdminOrderListQueryDto> content = queryFactory
+                .select(new QAdminOrderListQueryDto(order.id,
+                        order.status.stringValue(),
+                        order.safeKingPayment.amount,
+                        order.createDate,
+                        order.merchantUid,
+                        new QAdminOrderListPaymentQueryDto(order.safeKingPayment.status.stringValue()),
+                        new QAdminOrderListMemberQueryDto(order.member.name),
+                        new QAdminOrderListDeliveryQueryDto(order.delivery.receiver, order.delivery.status.stringValue()))
                 )
-                .orderBy(order.createDate.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        JPAQuery<Long> countQuery = queryFactory
-                .select(order.count())
                 .from(order)
                 //.leftJoin(order.orderItems, orderItem)
                 .leftJoin(order.safeKingPayment, safekingPayment)
@@ -128,12 +112,59 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 //.leftJoin(orderItem.item, item)
                 .where(
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        keywordContains(condition.getKeyword()),
+                        deliveryStatusEq(condition.getDeliveryStatus()),
+                        paymentStatusEq(condition.getPaymentStatus())
+                )
+                .orderBy(order.createDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        content.forEach(order -> {
+            List<AdminOrderListOrderItemQueryDto> orderItems = findOrderItemsByAdmin(order.getId(), condition.getKeyword());
+            order.setOrderItems(orderItems);
+        });
+
+        JPAQuery<Long> countQuery = getFindOrdersByAdminCountQuery(condition);
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    private JPAQuery<Long> getFindOrdersByAdminCountQuery(OrderSearchCondition condition) {
+        if(hasText(condition.getKeyword())) {
+            return queryFactory
+                    .select(order.count())
+                    .from(order)
+                    .leftJoin(order.orderItems, orderItem)
+                    .leftJoin(orderItem.item, item)
+                    .where(
+                            keywordContains(condition.getKeyword())
+                    );
+        }
+
+        return queryFactory
+                .select(order.count())
+                .from(order)
+                .leftJoin(order.safeKingPayment, safekingPayment)
+                .leftJoin(order.delivery, delivery)
+                .leftJoin(order.member, member)
+                .where(
+                        orderBetweenDate(condition.getFromDate(), condition.getToDate()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
                         paymentStatusEq(condition.getPaymentStatus())
                 );
+    }
 
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    @Override
+    public List<AdminOrderListOrderItemQueryDto> findOrderItemsByAdmin(Long orderId, String keyword) {
+        return queryFactory.select(new QAdminOrderListOrderItemQueryDto(orderItem.id, orderItem.item.name))
+                .from(orderItem)
+                .leftJoin(orderItem.item, item)
+                .where(
+                        orderItem.order.id.eq(orderId),
+                        keywordContains(keyword)
+                )
+                .fetch();
     }
 
     /**
@@ -202,7 +233,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     // 아이템이름 포함 조건
     private BooleanExpression keywordContains(String keyword) {
-        return hasText(keyword) ? item.name.containsIgnoreCase(keyword) : null;
+        return hasText(keyword) ? item.name.contains(keyword) : null;
     }
 
     // 주문 일시 조건

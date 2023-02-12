@@ -1,21 +1,18 @@
-package com.safeking.shop.domain.order.web.dto.response.admin.search;
+package com.safeking.shop.domain.order.web.query.repository.querydto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.Builder;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class AdminOrderListOrderItemResponse {
+public class AdminOrderListOrderItemQueryDto {
     private Long id;
     private String name;
 
-    public AdminOrderListOrderItemResponse() {
-    }
-
-    @Builder
-    public AdminOrderListOrderItemResponse(Long id, String name) {
+    @QueryProjection
+    public AdminOrderListOrderItemQueryDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }
