@@ -1,26 +1,26 @@
 package com.safeking.shop.domain.payment.web.controller;
 
+import com.safeking.shop.domain.order.domain.service.OrderService;
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
-import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
-import com.safeking.shop.domain.payment.web.client.dto.request.PaymentAuthCancelRequest;
-import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCallbackRequest;
-import com.safeking.shop.domain.payment.web.client.dto.request.PaymentCancelRequest;
-import com.safeking.shop.domain.payment.web.client.dto.request.PaymentWebhookRequest;
+import com.safeking.shop.domain.payment.web.client.dto.request.*;
+import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCancelPaymentResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCancelResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.PaymentCallbackResponse;
+import com.safeking.shop.domain.payment.web.client.dto.response.askcancel.PaymentAskCancelResponse;
+import com.safeking.shop.domain.payment.web.client.dto.response.canceldetail.PaymentCancelDetailResponse;
+import com.safeking.shop.domain.payment.web.client.dto.response.cancellist.PaymentCancelListResponse;
 import com.safeking.shop.domain.payment.web.client.service.IamportService;
-import com.siot.IamportRestClient.response.IamportResponse;
-import com.siot.IamportRestClient.response.Payment;
+import com.safeking.shop.domain.user.domain.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.PAYMENT_AMOUNT_DIFFERENT_CALLBACK;
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static org.springframework.http.HttpStatus.*;
 
@@ -30,6 +30,7 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public class PaymentController {
     private final IamportService iamportService;
+    private final OrderService orderService;
     private final ValidationOrderService validationOrderService;
 
     /**
@@ -85,6 +86,50 @@ public class PaymentController {
                 paymentCancelRequest.getReturnFee(),
                 iamportService.getSafekingPayment(paymentCancelRequest.getMerchantUid())
         );
+
+        return new ResponseEntity<>(response, OK);
+    }
+
+    /**
+     * 환불 목록 조회
+     */
+    @GetMapping("/payment/cancel/list")
+    public ResponseEntity<PaymentCancelListResponse> cancelPaymentList(PaymentSearchCondition condition, Pageable pageable, HttpServletRequest request) {
+
+        // 회원 검증
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+
+        // 환불 내역 조회
+        PaymentCancelListResponse response = orderService.searchPaymentsByCancel(pageable, condition, member.getId());
+
+        return new ResponseEntity<>(response, OK);
+    }
+
+    /**
+     * 환불신청 단건 조회
+     */
+    @GetMapping("/payment/cancel/ask/{orderId}")
+    public ResponseEntity<PaymentAskCancelResponse> askCancelPayment(@PathVariable Long orderId, HttpServletRequest request) {
+        // 회원 검증
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+
+        // 환불신청 단건 조회
+        PaymentAskCancelResponse response = orderService.searchPaymentByCancel(orderId, member.getId());
+
+        return new ResponseEntity<>(response, OK);
+    }
+
+    /**
+     * 환불 상세 내역
+     */
+    @GetMapping("/payment/cancel/detail/{orderId}")
+    public ResponseEntity<PaymentCancelDetailResponse> cancelPaymentDetail(@PathVariable Long orderId, HttpServletRequest request) {
+
+        // 회원 검증
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+
+        // 환불 상세 내역 조회
+        PaymentCancelDetailResponse response = orderService.searchPaymentCancelDetailByUser(orderId, member.getId());
 
         return new ResponseEntity<>(response, OK);
     }

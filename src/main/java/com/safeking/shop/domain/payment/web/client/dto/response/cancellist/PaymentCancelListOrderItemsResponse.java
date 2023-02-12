@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.dto.response.user.orderdetail;
+package com.safeking.shop.domain.payment.web.client.dto.response.cancellist;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -7,13 +7,13 @@ import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class OrderDetailMember {
+public class PaymentCancelListOrderItemsResponse {
+    private Long id;
     private String name;
-    private String phoneNumber;
 
     @Builder
-    public OrderDetailMember(String name, String phoneNumber) {
+    public PaymentCancelListOrderItemsResponse(Long id, String name) {
+        this.id = id;
         this.name = name;
-        this.phoneNumber = phoneNumber;
     }
 }

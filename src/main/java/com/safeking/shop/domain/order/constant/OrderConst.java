@@ -15,19 +15,21 @@ public class OrderConst {
     public static final String ORDER_MODIFY_SUCCESS = "주문(배송) 정보 수정 성공";
     public static final String ORDER_MODIFY_FAIL = "주문(배송) 정보 수정 실패";
     public static final String ORDER_FIND_SUCCESS = "주문(배송) 정보 조회 성공";
-    public static final String ORDER_FIND_FAIL = "주문(배송) 정보 조회 실패";
-    public static final String ORDER_DETAIL_FIND_SUCCESS = "주문 상세 조회 완료";
-    public static final String ORDER_DETAIL_FIND_FAIL = "주문 상세 조회 실패";
+    public static final String ORDER_FIND_FAIL = "주문(배송) 정보가 존재하지 않습니다.";
+    public static final String ORDER_DETAIL_FIND_SUCCESS = "주문 상세 정보 조회 성공";
+    public static final String ORDER_DETAIL_FIND_FAIL = "주문 상세 정보가 존재하지 않습니다.";
     public static final String ORDER_LIST_FIND_SUCCESS = "주문 다건 조회 성공";
-    public static final String ORDER_LIST_FIND_FAIL = "주문 다건 조회 실패";
-    public static final String ORDER_LIST_FIND_FAIL_PAYMENT_STATUS = "주문 다건 조회 실패(결제 상태가 올바르지 않습니다.)";
-    public static final String ORDER_LIST_FIND_FAIL_DELIVERY_STATUS = "주문 다건 조회 실패(배송 상태가 올바르지 않습니다.)";
+    public static final String ORDER_LIST_FIND_FAIL = "주문 다건 정보가 존재하지 않습니다.";
+    public static final String ORDER_LIST_FIND_FAIL_PAYMENT_STATUS = "결제 상태가 올바르지 않습니다.";
+    public static final String ORDER_LIST_FIND_FAIL_DELIVERY_STATUS = "배송 상태가 올바르지 않습니다.";
+    public static final String ORDER_LIST_FIND_FAIL_ORDER_STATUS = "주문 상태가 올바르지 않습니다.";
+
 
     /* 관리자 */
     public static final String ADMIN_ORDER_DETAIL_FIND_SUCCESS = "관리자용 주문 상세 조회 완료";
-    public static final String ADMIN_ORDER_DETAIL_FIND_FAIL = "관리자용 주문 상세 조회 실패";
+    public static final String ADMIN_ORDER_DETAIL_FIND_FAIL = "관리자용 주문 상세 정보가 존재하지 않습니다.";
     public static final String ADMIN_ORDER_DETAIL_MODIFY_SUCCESS = "관리자용 주문 상세 수정 성공";
     public static final String ADMIN_ORDER_DETAIL_MODIFY_FAIL = "관리자용 주문 상세 수정 실패";
     public static final String ADMIN_ORDER_LIST_FIND_SUCCESS = "관리자용 주문 다건 조회 성공";
-    public static final String ADMIN_ORDER_LIST_FIND_FAIL = "관리자용 주문 상세 조회 실패";
+    public static final String ADMIN_ORDER_LIST_FIND_FAIL = "관리자용 주문 상세 정보가 존재하지 않습니다.";
 }

@@ -58,17 +58,17 @@ public class OrderController {
     /**
      * 주문 취소
      */
-    @PatchMapping("/order")
-    public ResponseEntity<OrderBasicResponse> cancel(@Valid @RequestBody CancelRequest cancelRequest, HttpServletRequest request) {
-
-        //회원 검증
-        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
-
-        //주문 취소
-        orderService.cancel(cancelRequest);
-
-        return new ResponseEntity<>(new OrderBasicResponse(ORDER_CANCEL_SUCCESS), OK);
-    }
+//    @PatchMapping("/order")
+//    public ResponseEntity<OrderBasicResponse> cancel(@Valid @RequestBody CancelRequest cancelRequest, HttpServletRequest request) {
+//
+//        //회원 검증
+//        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+//
+//        //주문 취소
+//        orderService.cancel(cancelRequest);
+//
+//        return new ResponseEntity<>(new OrderBasicResponse(ORDER_CANCEL_SUCCESS), OK);
+//    }
 
     /**
      * 주문(배송) 정보 수정
@@ -92,10 +92,10 @@ public class OrderController {
     public ResponseEntity<OrderInfoResponse> searchOrder(@PathVariable Long orderId, HttpServletRequest request) {
 
         //회원 검증
-        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         //주문(배송) 정보 조회(단건)
-        Order findOrder = orderService.searchOrder(orderId);
+        Order findOrder = orderService.searchOrder(orderId, member.getId());
 
         return new ResponseEntity<>(getOrderResponse(findOrder), OK);
     }
@@ -131,10 +131,10 @@ public class OrderController {
     @GetMapping("/order/detail/{orderId}")
     public ResponseEntity<OrderDetailResponse> searchOrderDetail(@PathVariable Long orderId, HttpServletRequest request) {
         // 회원 검증
-        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         // 주문 상세 조회
-        return new ResponseEntity<>(orderService.searchOrderDetailByUser(orderId), OK);
+        return new ResponseEntity<>(orderService.searchOrderDetailByUser(orderId, member.getId()), OK);
     }
 
     /**
@@ -145,55 +145,6 @@ public class OrderController {
         Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         //주문 다건 조회
-        Page<Order> ordersPage = orderService.searchOrders(pageable, condition, member.getId());
-
-        OrderListResponse orderListResponse = getOrderListResponse(ordersPage);
-
-        return new ResponseEntity<>(orderListResponse, OK);
-    }
-
-    private static OrderListResponse getOrderListResponse(Page<Order> ordersPage) {
-
-        List<Order> findOrders = ordersPage.getContent();
-        List<OrderListOrdersResponse> orders = new ArrayList<>();
-
-        for(Order o : findOrders) {
-            OrderListPaymentResponse payment = OrderListPaymentResponse.builder()
-                    .status(o.getSafeKingPayment().getStatus().getDescription())
-                    .canceledDate(o.getSafeKingPayment().getCancelledAt())
-                    .paidDate(o.getSafeKingPayment().getPaidAt())
-                    .build();
-
-            OrderListOrderItemResponse orderItem = OrderListOrderItemResponse.builder()
-                    .id(o.getOrderItems().get(0).getItem().getId())
-                    .name(o.getOrderItems().get(0).getItem().getName())
-                    .build();
-
-            OrderListDeliveryResponse delivery = OrderListDeliveryResponse.builder()
-                    .status(o.getDelivery().getStatus().getDescription())
-                    .build();
-
-            OrderListOrdersResponse order = OrderListOrdersResponse.builder()
-                    .id(o.getId())
-                    .merchantUid(o.getMerchantUid())
-                    .status(o.getStatus().getDescription())
-                    .price(o.getSafeKingPayment().getAmount())
-                    .date(o.getCreateDate())
-                    .count(o.getOrderItems().size())
-                    .orderItem(orderItem)
-                    .payment(payment)
-                    .delivery(delivery)
-                    .build();
-
-            orders.add(order);
-        }
-
-        return OrderListResponse.builder()
-                .message(ORDER_LIST_FIND_SUCCESS)
-                .orders(orders)
-                .totalElements(ordersPage.getTotalElements())
-                .totalPages(ordersPage.getTotalPages())
-                .size(ordersPage.getSize())
-                .build();
+        return new ResponseEntity<>(orderService.searchOrders(pageable, condition, member.getId()), OK);
     }
 }

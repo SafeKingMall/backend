@@ -10,10 +10,12 @@ import lombok.Data;
 public class OrderListOrderItemResponse {
     private Long id;
     private String name;
+    private String thumbnail;
 
     @Builder
-    public OrderListOrderItemResponse(Long id, String name) {
+    public OrderListOrderItemResponse(Long id, String name, String thumbnail) {
         this.id = id;
         this.name = name;
+        this.thumbnail = thumbnail;
     }
 }

@@ -12,13 +12,15 @@ public class OrderSearchCondition {
     private String keyword;
     private String deliveryStatus;
     private String paymentStatus;
+    private String orderStatus;
 
     @Builder
-    public OrderSearchCondition(String fromDate, String toDate, String keyword, String deliveryStatus, String paymentStats) {
+    public OrderSearchCondition(String fromDate, String toDate, String keyword, String deliveryStatus, String paymentStats, String orderStatus) {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.keyword = keyword;
         this.deliveryStatus = deliveryStatus;
         this.paymentStatus = paymentStats;
+        this.orderStatus = orderStatus;
     }
 }

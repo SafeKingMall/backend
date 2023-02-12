@@ -55,8 +55,8 @@ public class Order extends BaseTimeEntity {
     @OneToOne
     @JoinColumn(name = "safeking_payment_id")
     private SafekingPayment safeKingPayment;
-
-    private String merchantUid; // 가맹점에서 전달한 고유 번호
+    @Column(unique = true)
+    private String merchantUid; // 주문 번호
     @Lob
     private String cancelReason; // 주문 취소 사유
 
@@ -90,8 +90,8 @@ public class Order extends BaseTimeEntity {
      * 주문 취소
      */
     public void cancel(String cancelReason) {
-        if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)
-                || delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
+        // 배송중이면 주문취소 불가
+        if(delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
             throw new OrderException(OrderConst.ORDER_CANCEL_DELIVERY_DONE);
         }
 
@@ -108,6 +108,9 @@ public class Order extends BaseTimeEntity {
 
     public void changeSafekingPayment(SafekingPayment safeKingPayment) {
         this.safeKingPayment = safeKingPayment;
+    }
+    public void changeDelivery(Delivery delivery) {
+        this.delivery = delivery;
     }
 
     public void changeAdminMemoByAdmin(String adminMemo) {

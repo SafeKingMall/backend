@@ -1,12 +1,16 @@
 package com.safeking.shop.domain.payment.web.client.service;
 
+import com.safeking.shop.domain.exception.DeliveryException;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.exception.PaymentException;
+import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.OrderItem;
+import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
+import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
 import com.siot.IamportRestClient.IamportClient;
@@ -24,7 +28,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static com.safeking.shop.domain.order.constant.DeliveryConst.DELIVERY_FIND_FAIL;
 import static com.safeking.shop.domain.order.constant.OrderConst.ORDER_NONE;
+import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.*;
 import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.REFUND_FEE_CHECK;
 import static com.safeking.shop.domain.payment.constant.SafeKingPaymentConst.SAFEKING_PAYMENT_NONE;
 import static com.safeking.shop.domain.payment.domain.entity.PaymentStatus.CANCEL;
@@ -57,7 +63,7 @@ public class IamportServiceSubMethod {
         CancelData cancelData = new CancelData(impUid, true, new BigDecimal(returnFee));
         cancelData.setReason(cancelReason);
         IamportResponse<Payment> cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData); //imp_uid를 통한 전액취소
-        findSafekingPayment.changeSafekingPayment(CANCEL, cancelPaymentResponse.getResponse()); // 결제 취소 내용으로 갱신
+        findSafekingPayment.changeSafekingPayment(PaymentStatus.CANCEL, cancelPaymentResponse.getResponse()); // 결제 취소 내용으로 갱신
 
         // 접수일이 없는 경우에만 삽입
         if(findSafekingPayment.getCanceledRequestDate() == null) {
@@ -76,6 +82,17 @@ public class IamportServiceSubMethod {
         findOrder.cancel(cancelReason);
 
         return findOrder;
+    }
+
+    /**
+     * 배송 취소(배송 상태 변경)
+     */
+    public Delivery cancelDelivery(Long deliveryId) {
+        Optional<Delivery> deliveryOptional = deliveryRepository.findById(deliveryId);
+        Delivery findDelivery = deliveryOptional.orElseThrow(() -> new DeliveryException(DELIVERY_FIND_FAIL));
+        findDelivery.changeDeliveryStatus(DeliveryStatus.CANCEL);
+
+        return findDelivery;
     }
 
     /**

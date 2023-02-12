@@ -9,14 +9,14 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AdminOrderDetailDeliveryResponse {
     private Long id;
-    private String status;
-    private String receiver;
-    private String phoneNumber;
-    private String address;
-    private String memo;
-    private String invoiceNumber;
-    private int cost;
-    private String company;
+    private String status; // 배송 상태
+    private String receiver; // 수령인
+    private String phoneNumber; // 수령인 연락처
+    private String address; // 수령인 주소
+    private String memo; // 배송 요청사항
+    private String invoiceNumber; // 송장번호
+    private int cost; // 배송료
+    private String company; // 택배사
 
     @Builder
     public AdminOrderDetailDeliveryResponse(Long id, String status, String receiver, String phoneNumber, String address, String memo, String invoiceNumber, int cost, String company) {
