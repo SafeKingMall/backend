@@ -330,7 +330,11 @@ public class MemberService {
         redisRepository.delete(redisMember);
     }
 
-    public String sendTemporaryPassword(Member member) throws CoolsmsException {
+    public String sendTemporaryPassword(String username) throws CoolsmsException {
+        Member member = memberRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new MemberNotFoundException("아이디와 일치하는 회원이 없습니다."));
+
         String temporaryPassword = createCode();
 
         member.changePassword(encoder.encode(temporaryPassword));
