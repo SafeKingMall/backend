@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity @Getter
-@Table(name = "orders")
+@Table(name = "orders", uniqueConstraints = {
+        @UniqueConstraint(name = "merchant_uid_unique", columnNames = {"merchantUid"})
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseTimeEntity {
 
@@ -55,7 +57,6 @@ public class Order extends BaseTimeEntity {
     @OneToOne
     @JoinColumn(name = "safeking_payment_id")
     private SafekingPayment safeKingPayment;
-    @Column(unique = true)
     private String merchantUid; // 주문 번호
     @Lob
     private String cancelReason; // 주문 취소 사유
