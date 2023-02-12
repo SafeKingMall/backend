@@ -326,7 +326,7 @@ class MemberServiceTest {
                 savedMember
                 , savedDelivery1
                 , "memo"
-                ,"1"
+                , payment.getMerchantUid()
                 , payment
                 , orderItems1);
     }

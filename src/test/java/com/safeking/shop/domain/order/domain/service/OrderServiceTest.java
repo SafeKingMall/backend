@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -186,7 +187,7 @@ class OrderServiceTest {
                 savedMember
                 , savedDelivery1
                 , "memo"
-                ,"1"
+                , payment.getMerchantUid()
                 , payment
                 , orderItems1);
     }
