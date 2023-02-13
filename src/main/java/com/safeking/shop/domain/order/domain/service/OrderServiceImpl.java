@@ -550,6 +550,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 결제
         PaymentAskCancelPaymentResponse payment = PaymentAskCancelPaymentResponse.builder()
+                .impUid(findOrder.getSafeKingPayment().getImpUid())
                 .price(findOrder.getSafeKingPayment().getAmount())
                 .buyerName(findOrder.getSafeKingPayment().getBuyerName())
                 .status(findOrder.getSafeKingPayment().getStatus().getDescription())
