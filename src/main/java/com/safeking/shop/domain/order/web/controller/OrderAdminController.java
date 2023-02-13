@@ -71,7 +71,7 @@ public class OrderAdminController {
      * 주문관리 목록 조회
      */
     @GetMapping("/order/list")
-    public ResponseEntity<AdminOrderListResponse> search(OrderSearchCondition condition,
+    public ResponseEntity<?> search(OrderSearchCondition condition,
                                                          Pageable pageable,
                                                          HttpServletRequest request) {
         // 회원 검증

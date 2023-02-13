@@ -13,6 +13,7 @@ import java.util.List;
 public interface OrderRepositoryCustom {
     Page<Order> findOrdersByUser(Pageable pageable, OrderSearchCondition condition, Long memberId); // 주문 목록(유저)
     Page<AdminOrderListQueryDto> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition); // 주문 목록(어드민)
+    Page<Order> findOrdersByAdmin2(Pageable pageable, OrderSearchCondition condition); // 주문 목록(어드민)
     Page<Order> findOrdersCancelByUser(Pageable pageable, PaymentSearchCondition condition, Long memberId); // 환불 내역
     List<AdminOrderListOrderItemQueryDto> findOrderItemsByAdmin(Long orderId, String keyword);
 }

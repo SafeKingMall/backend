@@ -380,10 +380,11 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional(readOnly = true)
     @Override
-    public AdminOrderListResponse searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
+    public Page<AdminOrderListQueryDto> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
         Page<AdminOrderListQueryDto> ordersPage = orderRepository.findOrdersByAdmin(pageable, condition);
 
-        return getAdminOrderListResponse(ordersPage);
+        return ordersPage;
+        // return getAdminOrderListResponse(ordersPage);
     }
 
     private AdminOrderListResponse getAdminOrderListResponse(Page<AdminOrderListQueryDto> ordersPage) {
@@ -555,6 +556,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 결제
         PaymentAskCancelPaymentResponse payment = PaymentAskCancelPaymentResponse.builder()
+                .impUid(findOrder.getSafeKingPayment().getImpUid())
                 .price(findOrder.getSafeKingPayment().getAmount())
                 .buyerName(findOrder.getSafeKingPayment().getBuyerName())
                 .status(findOrder.getSafeKingPayment().getStatus().getDescription())
