@@ -383,7 +383,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public AdminOrderListResponse searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
         Page<AdminOrderListQueryDto> ordersPage = orderRepository.findOrdersByAdmin(pageable, condition);
-        //List<AdminOrderListQueryDto> findOrders = orderRepository.findOrdersByAdmin(pageable, condition);
 
         return getAdminOrderListResponse(ordersPage);
     }
@@ -408,6 +407,30 @@ public class OrderServiceImpl implements OrderService {
                     .status(o.getDelivery().getStatus())
                     .build();
 
+            // 추후 orderItem 배열로 수정 가능
+//            AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
+//                    .id(o.getId())
+//                    .merchantUid(o.getMerchantUid())
+//                    .status(o.getStatus())
+//                    .price(o.getPrice())
+//                    .date(o.getDate())
+//                    .orderItemCount(o.getOrderItems().size())
+//                    .payment(payment)
+//                    .member(member)
+//                    .delivery(delivery)
+//                    .orderItems(o.getOrderItems().stream()
+//                            .map(oi -> AdminOrderListOrderItemResponse.builder()
+//                                    .id(oi.getId())
+//                                    .name(oi.getName())
+//                                    .build()).collect(Collectors.toList()
+//                            ))
+//                    .build();
+
+            AdminOrderListOrderItemResponse orderItem = AdminOrderListOrderItemResponse.builder()
+                    .id(o.getOrderItems().get(0).getId())
+                    .name(o.getOrderItems().get(0).getName())
+                    .build();
+
             AdminOrderListOrderResponse order = AdminOrderListOrderResponse.builder()
                     .id(o.getId())
                     .merchantUid(o.getMerchantUid())
@@ -418,12 +441,7 @@ public class OrderServiceImpl implements OrderService {
                     .payment(payment)
                     .member(member)
                     .delivery(delivery)
-                    .orderItems(o.getOrderItems().stream()
-                            .map(oi -> AdminOrderListOrderItemResponse.builder()
-                                    .id(oi.getId())
-                                    .name(oi.getName())
-                                    .build()).collect(Collectors.toList()
-                            ))
+                    .orderItem(orderItem)
                     .build();
 
                 orders.add(order);

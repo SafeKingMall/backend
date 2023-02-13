@@ -62,8 +62,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         order.member.id.eq(memberId),
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStatus()),
-                        orderStatusEq(condition.getOrderStatus())
+                        safekingPayment.status.ne(PaymentStatus.CANCEL),
+                        order.status.ne(OrderStatus.CANCEL)
                 )
                 .orderBy(order.createDate.desc())
                 .offset(pageable.getOffset())
@@ -79,8 +79,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         order.member.id.eq(memberId),
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEqByOrders(condition.getPaymentStatus()),
-                        orderStatusEqByOrders(condition.getOrderStatus())
+                        safekingPayment.status.ne(PaymentStatus.CANCEL),
+                        order.status.ne(OrderStatus.CANCEL)
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
@@ -225,16 +225,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         }
     }
 
-    // 주문목록 결제 상태 조건
-    private BooleanExpression paymentStatusEqByOrders(String paymentStatus) {
-        try {
-            return hasText(paymentStatus) && !paymentStatus.equals(PaymentStatus.CANCEL.getDescription())
-                    ? order.safeKingPayment.status.eq(PaymentStatus.valueOf(paymentStatus)) : null;
-        } catch (IllegalArgumentException e) {
-            throw new OrderException(ORDER_LIST_FIND_FAIL_PAYMENT_STATUS);
-        }
-    }
-
     // 배송 상태 조건
     private BooleanExpression deliveryStatusEq(String deliveryStatus) {
         try {
@@ -253,15 +243,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         }
     }
 
-    // 주묵목록 주문 상태 조건
-    private BooleanExpression orderStatusEqByOrders(String orderStatus) {
-        try {
-            return hasText(orderStatus) && !orderStatus.equals(OrderStatus.CANCEL.getDescription())
-                    ? order.status.eq(OrderStatus.valueOf(orderStatus)) : null;
-        } catch (IllegalArgumentException e) {
-            throw new OrderException(ORDER_LIST_FIND_FAIL_ORDER_STATUS);
-        }
-    }
 
     // 아이템이름 포함 조건
     private BooleanExpression keywordContains(String keyword) {
