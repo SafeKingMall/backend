@@ -15,6 +15,7 @@ import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCond
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -85,8 +87,22 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    /**
+     * 주문에서 회원, 결제, 배송, 주문상품을 조회해야함.
+     * 주문상품은 일대다 관계이기 때문에 페이징이 불가하다.
+     * where 절에 item.name 으로 검색하는 조건이 없으면 hibernate.default_batch_fetch_size를 이용하여 조회할수 있음
+     * where 절에 item.name 검색 조건이 들어가야하기때문에
+     * order조회와 orderItem조회를 분리함.
+     *
+     * 1. Order(ToOne 관계) 조회
+     * 2. 1에서 조회한 결과를 orderIds로 저장
+     * 3. orderItem을 orderId IN 절을(2번의 orderIds 사용) 통해 한번에 조회(where 조건 포함)
+     * 4. 3에서 조회한 결과(orderItem)를 1에 삽입
+     * 5. 4의 결과에서 orderItem이 null인 경우 제외
+     * 6. 5의 결과를 Page로 변환하고 반환
+     */
     @Override
-    public List<AdminOrderListQueryDto> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
+    public Page<AdminOrderListQueryDto> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
 
         // 주문 전체 조회
         List<AdminOrderListQueryDto> content = queryFactory
@@ -109,8 +125,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         paymentStatusEq(condition.getPaymentStatus())
                 )
                 .orderBy(order.createDate.desc())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
                 .fetch();
 
         // 주문 아이디 저장
@@ -124,62 +138,21 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         // 주문객체에 주문 상품컬렉션 저장
         content.forEach(o -> o.setOrderItems(orderItemMap.get(o.getId())));
 
+        // 주문상품이 null이 아닌 컬렌션으로 구성
         List<AdminOrderListQueryDto> resultContent = content.stream()
                 .filter(o -> o.getOrderItems() != null)
                 .collect(Collectors.toList());
 
-        //JPAQuery<Long> countQuery = getFindOrdersByAdminCountQuery(condition, content);
+        // List를 Page로 변환
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min(start + pageRequest.getPageSize(), resultContent.size());
 
-//        return new PageImpl<>(resultContent, pageable, resultContent.size());
-        //return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
-
-        return resultContent;
-    }
-
-    @Override
-    public Page<Order> findOrdersByAdmin2(Pageable pageable, OrderSearchCondition condition) {
-        return null;
-    }
-
-    private JPAQuery<Long> getFindOrdersByAdminCountQuery(OrderSearchCondition condition, List<AdminOrderListQueryDto> content) {
-        if(hasText(condition.getKeyword())) {
-
-            return queryFactory
-                    .select(order.countDistinct())
-                    .from(order)
-                    .leftJoin(order.orderItems, orderItem)
-                    .leftJoin(orderItem.item, item)
-                    .where(
-                            orderBetweenDate(condition.getFromDate(), condition.getToDate()),
-                            deliveryStatusEq(condition.getDeliveryStatus()),
-                            paymentStatusEq(condition.getPaymentStatus()),
-                            keywordContains(condition.getKeyword())
-                    );
+        if(start > end) {
+            throw new OrderException("데이터가 없습니다. 관리자에게 문의하세요.");
         }
 
-        return queryFactory
-                .select(order.count())
-                .from(order)
-                .leftJoin(order.safeKingPayment, safekingPayment)
-                .leftJoin(order.delivery, delivery)
-                .leftJoin(order.member, member)
-                .where(
-                        orderBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStatus())
-                );
-    }
-
-    @Override
-    public List<AdminOrderListOrderItemQueryDto> findOrderItemsByAdmin(Long orderId, String keyword) {
-        return queryFactory.select(new QAdminOrderListOrderItemQueryDto(orderItem.order.id, orderItem.id, orderItem.item.name))
-                .from(orderItem)
-                .leftJoin(orderItem.item, item)
-                .where(
-                        orderItem.order.id.eq(orderId),
-                        keywordContains(keyword)
-                )
-                .fetch();
+        return new PageImpl<>(resultContent.subList(start, end), pageRequest, resultContent.size());
     }
 
     private Map<Long, List<AdminOrderListOrderItemQueryDto>> findOrderItemMap(List<Long> orderIds, String keyword, Pageable pageable) {
@@ -190,8 +163,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.order.id.in(orderIds),
                         keywordContains(keyword)
                 )
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
                 .fetch();
 
         // Map 으로 변환
@@ -328,5 +299,28 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         }
 
         return order.safeKingPayment.cancelledAt.between(null, LocalDateTime.now());
+    }
+
+    /**
+     * returns a view (not a new list) of the sourceList for the
+     * range based on page and pageSize
+     * @param sourceList
+     * @param page, page number should start from 1
+     * @param pageSize
+     * @return
+     * custom error can be given instead of returning emptyList
+     */
+    private static <T> List<T> getPage(List<T> sourceList, int page, int pageSize) {
+        if(pageSize <= 0 || page <= 0) {
+            throw new IllegalArgumentException("invalid page size: " + pageSize);
+        }
+
+        int fromIndex = (page - 1) * pageSize;
+        if(sourceList == null || sourceList.size() <= fromIndex){
+            return Collections.emptyList();
+        }
+
+        // toIndex exclusive
+        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
     }
 }

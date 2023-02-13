@@ -26,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static com.safeking.shop.domain.order.constant.DeliveryConst.DELIVERY_FIND_FAIL;
@@ -60,7 +62,7 @@ public class IamportServiceSubMethod {
             throw new PaymentException(REFUND_FEE_CHECK);
         }
 
-        CancelData cancelData = new CancelData(impUid, true, new BigDecimal(returnFee));
+        CancelData cancelData = new CancelData(impUid, true, new BigDecimal(refundFee));
         cancelData.setReason(cancelReason);
         IamportResponse<Payment> cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData); //imp_uid를 통한 전액취소
         findSafekingPayment.changeSafekingPayment(PaymentStatus.CANCEL, cancelPaymentResponse.getResponse()); // 결제 취소 내용으로 갱신

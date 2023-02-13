@@ -381,17 +381,16 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public AdminOrderListResponse searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
-        //Page<AdminOrderListQueryDto> ordersPage = orderRepository.findOrdersByAdmin(pageable, condition);
-        List<AdminOrderListQueryDto> ordersByAdmin = orderRepository.findOrdersByAdmin(pageable, condition);
+        Page<AdminOrderListQueryDto> ordersPage = orderRepository.findOrdersByAdmin(pageable, condition);
+        //List<AdminOrderListQueryDto> findOrders = orderRepository.findOrdersByAdmin(pageable, condition);
 
-        return null;
-        //return getAdminOrderListResponse(ordersPage);
+        return getAdminOrderListResponse(ordersPage);
     }
 
-    private AdminOrderListResponse getAdminOrderListResponse(Page<AdminOrderListQueryDto> ordersPage) {
+    private AdminOrderListResponse getAdminOrderListResponse(Page<AdminOrderListQueryDto> findOrders) {
 
         List<AdminOrderListOrderResponse> orders = new ArrayList<>();
-        List<AdminOrderListQueryDto> findOrders = ordersPage.getContent();
+        //List<AdminOrderListQueryDto> findOrders = ordersPage.getContent();
 
         for(AdminOrderListQueryDto o : findOrders) {
 
@@ -432,9 +431,9 @@ public class OrderServiceImpl implements OrderService {
         return AdminOrderListResponse.builder()
                 .message(ADMIN_ORDER_LIST_FIND_SUCCESS)
                 .orders(orders)
-                .totalElements(ordersPage.getTotalElements())
-                .totalPages(ordersPage.getTotalPages())
-                .size(ordersPage.getSize())
+                .totalElements(findOrders.getTotalElements())
+                .totalPages(findOrders.getTotalPages())
+                .size(findOrders.getSize())
                 .build();
     }
 

@@ -79,10 +79,10 @@ public class OrderAdminController {
         // 회원 검증
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
-        return new ResponseEntity<>(orderRepository.findOrdersByAdmin(pageable, condition), OK);
+        //return new ResponseEntity<>(orderRepository.findOrdersByAdmin(pageable, condition), OK);
 
         // 주문관리 목록 조회
-        //return new ResponseEntity<>(orderService.searchOrdersByAdmin(pageable, condition), OK);
+        return new ResponseEntity<>(orderService.searchOrdersByAdmin(pageable, condition), OK);
     }
 
 }
