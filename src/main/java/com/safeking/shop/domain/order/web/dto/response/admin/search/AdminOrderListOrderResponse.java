@@ -17,20 +17,20 @@ public class AdminOrderListOrderResponse {
     private int price;
     private String date;
     private int orderItemCount;
-    private List<AdminOrderListOrderItemResponse> orderItems;
+    private AdminOrderListOrderItemResponse orderItem;
     private AdminOrderListPaymentResponse payment;
     private AdminOrderListMemberResponse member;
     private AdminOrderListDeliveryResponse delivery;
     private String merchantUid;
 
     @Builder
-    public AdminOrderListOrderResponse(Long id, String status, int price, LocalDateTime date, int orderItemCount, List<AdminOrderListOrderItemResponse> orderItems, AdminOrderListPaymentResponse payment, AdminOrderListMemberResponse member, AdminOrderListDeliveryResponse delivery, String merchantUid) {
+    public AdminOrderListOrderResponse(Long id, String status, int price, LocalDateTime date, int orderItemCount, AdminOrderListOrderItemResponse orderItem, AdminOrderListPaymentResponse payment, AdminOrderListMemberResponse member, AdminOrderListDeliveryResponse delivery, String merchantUid) {
         this.id = id;
         this.status = status;
         this.price = price;
         this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         this.orderItemCount = orderItemCount;
-        this.orderItems = orderItems;
+        this.orderItem = orderItem;
         this.payment = payment;
         this.member = member;
         this.delivery = delivery;
