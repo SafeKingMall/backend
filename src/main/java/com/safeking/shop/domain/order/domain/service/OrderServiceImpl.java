@@ -278,6 +278,7 @@ public class OrderServiceImpl implements OrderService {
             OrderListOrderItemResponse orderItem = OrderListOrderItemResponse.builder()
                     .id(o.getOrderItems().get(0).getItem().getId())
                     .name(o.getOrderItems().get(0).getItem().getName())
+                    .thumbnail(o.getOrderItems().get(0).getItem().getItemPhoto().getFileName())
                     .build();
 
             OrderListDeliveryResponse delivery = OrderListDeliveryResponse.builder()

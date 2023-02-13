@@ -61,7 +61,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .where(
                         order.member.id.eq(memberId),
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
                         paymentStatusEq(condition.getPaymentStatus()),
                         orderStatusEq(condition.getOrderStatus())
@@ -79,10 +78,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .where(
                         order.member.id.eq(memberId),
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStatus()),
-                        orderStatusEq(condition.getOrderStatus())
+                        paymentStatusEqByOrders(condition.getPaymentStatus()),
+                        orderStatusEqByOrders(condition.getOrderStatus())
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
@@ -219,15 +217,19 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     // 결제 상태 조건
-    private BooleanExpression paymentStatusEq(String paymentStats) {
-
-        // 결제 상태 취소인 항목은 조회하면 안됨
-        if(paymentStats.equals(PaymentStatus.CANCEL.getDescription())) {
-            throw new OrderException(ORDER_LIST_FIND_FAIL_PAYMENT_STATUS_IS_CANCEL);
-        }
-
+    private BooleanExpression paymentStatusEq(String paymentStatus) {
         try {
-            return hasText(paymentStats) ? order.safeKingPayment.status.eq(PaymentStatus.valueOf(paymentStats)) : null;
+            return hasText(paymentStatus) ? order.safeKingPayment.status.eq(PaymentStatus.valueOf(paymentStatus)) : null;
+        } catch (IllegalArgumentException e) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL_PAYMENT_STATUS);
+        }
+    }
+
+    // 주문목록 결제 상태 조건
+    private BooleanExpression paymentStatusEqByOrders(String paymentStatus) {
+        try {
+            return hasText(paymentStatus) && !paymentStatus.equals(PaymentStatus.CANCEL.getDescription())
+                    ? order.safeKingPayment.status.eq(PaymentStatus.valueOf(paymentStatus)) : null;
         } catch (IllegalArgumentException e) {
             throw new OrderException(ORDER_LIST_FIND_FAIL_PAYMENT_STATUS);
         }
@@ -244,14 +246,18 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     // 주문 상태 조건
     private BooleanExpression orderStatusEq(String orderStatus) {
-
-        // 주문 상태가 취소인 항목은 조회하면 안됨
-        if(orderStatus.equals(OrderStatus.CANCEL.getDescription())) {
-            throw new OrderException(ORDER_LIST_FIND_FAIL_ORDER_STATUS_IS_CANCEL);
-        }
-
         try {
             return hasText(orderStatus) ? order.status.eq(OrderStatus.valueOf(orderStatus)) : null;
+        } catch (IllegalArgumentException e) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL_ORDER_STATUS);
+        }
+    }
+
+    // 주묵목록 주문 상태 조건
+    private BooleanExpression orderStatusEqByOrders(String orderStatus) {
+        try {
+            return hasText(orderStatus) && !orderStatus.equals(OrderStatus.CANCEL.getDescription())
+                    ? order.status.eq(OrderStatus.valueOf(orderStatus)) : null;
         } catch (IllegalArgumentException e) {
             throw new OrderException(ORDER_LIST_FIND_FAIL_ORDER_STATUS);
         }
