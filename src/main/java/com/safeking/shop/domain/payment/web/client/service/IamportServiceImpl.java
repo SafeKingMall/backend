@@ -202,15 +202,16 @@ public class IamportServiceImpl implements IamportService {
     @Override
     public PaymentCancelResponse cancel(String impUid, String merchantUid, String cancelReason, Double returnFee, SafekingPayment findSafekingPayment) {
         try {
-            // 결제 취소
-            IamportResponse<Payment> cancelPaymentResponse = iamportServiceSubMethod.cancelPayment(impUid, returnFee, cancelReason, findSafekingPayment);
-
             // 주문 취소
             Order findOrder = iamportServiceSubMethod.cancelOrder(merchantUid, cancelReason);
-            findOrder.changeSafekingPayment(findSafekingPayment); // 연관관계 적용
 
             // 배송 취소
             Delivery findDelivery = iamportServiceSubMethod.cancelDelivery(findOrder.getDelivery().getId());
+
+            // 결제 취소
+            IamportResponse<Payment> cancelPaymentResponse = iamportServiceSubMethod.cancelPayment(impUid, returnFee, cancelReason, findSafekingPayment);
+
+            findOrder.changeSafekingPayment(findSafekingPayment); // 연관관계 적용
             findOrder.changeDelivery(findDelivery); // 연관관계 적용
 
             return getPaymentCancelResponse(cancelPaymentResponse, findSafekingPayment.getBuyerName());

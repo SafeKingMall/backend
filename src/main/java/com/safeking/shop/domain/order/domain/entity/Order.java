@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.safeking.shop.domain.order.constant.OrderConst.ORDER_CANCEL_IN_DELIVERY;
+
 @Entity @Getter
 @Table(name = "orders", uniqueConstraints = {
         @UniqueConstraint(name = "merchant_uid_unique", columnNames = {"merchantUid"})
@@ -94,6 +96,10 @@ public class Order extends BaseTimeEntity {
         // 배송중이면 주문취소 불가
         if(delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
             throw new OrderException(OrderConst.ORDER_CANCEL_DELIVERY_DONE);
+        }
+        // 배송 완료면 주문취소 불가 (현재 반품 비지니스가 없어서 배송완료되면 환불 불가함)
+        else if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)) {
+            throw new OrderException(OrderConst.ORDER_CANCEL_IN_DELIVERY);
         }
 
         this.status = OrderStatus.CANCEL;

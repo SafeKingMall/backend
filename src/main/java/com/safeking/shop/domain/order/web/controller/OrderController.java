@@ -138,7 +138,7 @@ public class OrderController {
     }
 
     /**
-     * 주문 다건 조회
+     * 주문 목록 조회
      */
     @GetMapping("/order/list")
     public ResponseEntity<OrderListResponse> searchOrderList(OrderSearchCondition condition, Pageable pageable, HttpServletRequest request) {
