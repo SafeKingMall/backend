@@ -216,11 +216,7 @@ public class MemberController {
 
     @PostMapping("/temporaryPassword")
     public String sendTemporaryPassword(@RequestBody @Validated PWFindRequest pwFindRequest) throws CoolsmsException {
-        Member member = memberRepository
-                .findByUsername(pwFindRequest.getUsername())
-                .orElseThrow(() -> new MemberNotFoundException("아이디와 일치하는 회원이 없습니다."));
-
-        return memberService.sendTemporaryPassword(member);
+        return memberService.sendTemporaryPassword(pwFindRequest.getUsername());
     }
 
     @GetMapping("/admin/member/list")
