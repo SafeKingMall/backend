@@ -60,7 +60,7 @@ public class IamportServiceSubMethod {
             throw new PaymentException(REFUND_FEE_CHECK);
         }
 
-        CancelData cancelData = new CancelData(impUid, true, new BigDecimal(returnFee));
+        CancelData cancelData = new CancelData(impUid, true, new BigDecimal(refundFee));
         cancelData.setReason(cancelReason);
         IamportResponse<Payment> cancelPaymentResponse = client.cancelPaymentByImpUid(cancelData); //imp_uid를 통한 전액취소
         findSafekingPayment.changeSafekingPayment(PaymentStatus.CANCEL, cancelPaymentResponse.getResponse()); // 결제 취소 내용으로 갱신
