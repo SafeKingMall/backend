@@ -563,6 +563,7 @@ public class OrderServiceImpl implements OrderService {
                 .id(findOrder.getId())
                 .orderItem(orderItem)
                 .date(findOrder.getCreateDate())
+                .merchantUid(findOrder.getMerchantUid())
                 .build();
 
         return PaymentAskCancelResponse.builder()
