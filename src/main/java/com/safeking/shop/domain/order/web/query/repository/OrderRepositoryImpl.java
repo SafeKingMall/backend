@@ -13,6 +13,7 @@ import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -133,17 +134,24 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .collect(Collectors.toList());
 
         // 상품명으로 검색 조건
-        Map<Long, List<AdminOrderListOrderItemQueryDto>> orderItemMap = findOrderItemMap(orderIds, condition.getKeyword(), pageable);
+        Map<Long, List<AdminOrderListOrderItemQueryDto>> orderItemMap = findOrderItemMap(orderIds, condition.getKeyword());
 
         // 주문객체에 주문 상품컬렉션 저장
         content.forEach(o -> o.setOrderItems(orderItemMap.get(o.getId())));
 
-        // 주문상품이 null이 아닌 컬렌션으로 구성
+        // 주문상품이 null이 아닌 컬렉션으로 구성
         List<AdminOrderListQueryDto> resultContent = content.stream()
                 .filter(o -> o.getOrderItems() != null)
                 .collect(Collectors.toList());
 
         // List를 Page로 변환
+        return getCutomPageImpl(pageable, resultContent);
+    }
+
+    // List를 Page로 변환
+    @NotNull
+    private PageImpl<AdminOrderListQueryDto> getCutomPageImpl(Pageable pageable, List<AdminOrderListQueryDto> resultContent) {
+
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
         int start = (int) pageRequest.getOffset();
         int end = Math.min(start + pageRequest.getPageSize(), resultContent.size());
@@ -155,7 +163,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return new PageImpl<>(resultContent.subList(start, end), pageRequest, resultContent.size());
     }
 
-    private Map<Long, List<AdminOrderListOrderItemQueryDto>> findOrderItemMap(List<Long> orderIds, String keyword, Pageable pageable) {
+    private Map<Long, List<AdminOrderListOrderItemQueryDto>> findOrderItemMap(List<Long> orderIds, String keyword) {
+        // 주문 상품 검색(item.name 조건 포함)
         List<AdminOrderListOrderItemQueryDto> orderItems = queryFactory.select(new QAdminOrderListOrderItemQueryDto(orderItem.order.id, orderItem.id, orderItem.item.name))
                 .from(orderItem)
                 .leftJoin(orderItem.item, item)
@@ -211,6 +220,12 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     // 결제 상태 조건
     private BooleanExpression paymentStatusEq(String paymentStats) {
+
+        // 결제 상태 취소인 항목은 조회하면 안됨
+        if(paymentStats.equals(PaymentStatus.CANCEL.getDescription())) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL_PAYMENT_STATUS_IS_CANCEL);
+        }
+
         try {
             return hasText(paymentStats) ? order.safeKingPayment.status.eq(PaymentStatus.valueOf(paymentStats)) : null;
         } catch (IllegalArgumentException e) {
@@ -229,6 +244,12 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     // 주문 상태 조건
     private BooleanExpression orderStatusEq(String orderStatus) {
+
+        // 주문 상태가 취소인 항목은 조회하면 안됨
+        if(orderStatus.equals(OrderStatus.CANCEL.getDescription())) {
+            throw new OrderException(ORDER_LIST_FIND_FAIL_ORDER_STATUS_IS_CANCEL);
+        }
+
         try {
             return hasText(orderStatus) ? order.status.eq(OrderStatus.valueOf(orderStatus)) : null;
         } catch (IllegalArgumentException e) {
