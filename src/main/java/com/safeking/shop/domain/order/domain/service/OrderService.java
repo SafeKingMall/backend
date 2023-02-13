@@ -34,7 +34,7 @@ public interface OrderService {
     OrderResponse order(Member member, OrderRequest orderRequest); //주문
     Long modifyOrder(ModifyInfoRequest modifyInfoRequest); //사용자 주문 정보 수정
     Long modifyOrderByAdmin(AdminModifyInfoRequest modifyInfoRequest, Long orderId); //관리자 주문 정보 수정
-    Page<AdminOrderListQueryDto> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition); // 주문관리 목록
+    AdminOrderListResponse searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition); // 주문관리 목록
     PaymentCancelListResponse searchPaymentsByCancel(Pageable pageable, PaymentSearchCondition condition, Long memberId); // 환불내역
     void delete(Member member);
     void deleteByMemberBatch(Member member);

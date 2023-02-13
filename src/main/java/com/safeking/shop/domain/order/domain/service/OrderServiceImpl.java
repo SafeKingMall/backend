@@ -380,11 +380,12 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminOrderListQueryDto> searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
-        Page<AdminOrderListQueryDto> ordersPage = orderRepository.findOrdersByAdmin(pageable, condition);
+    public AdminOrderListResponse searchOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
+        //Page<AdminOrderListQueryDto> ordersPage = orderRepository.findOrdersByAdmin(pageable, condition);
+        List<AdminOrderListQueryDto> ordersByAdmin = orderRepository.findOrdersByAdmin(pageable, condition);
 
-        return ordersPage;
-        // return getAdminOrderListResponse(ordersPage);
+        return null;
+        //return getAdminOrderListResponse(ordersPage);
     }
 
     private AdminOrderListResponse getAdminOrderListResponse(Page<AdminOrderListQueryDto> ordersPage) {
@@ -425,9 +426,7 @@ public class OrderServiceImpl implements OrderService {
                             ))
                     .build();
 
-            if(!order.getOrderItems().isEmpty()) {
                 orders.add(order);
-            }
         }
 
         return AdminOrderListResponse.builder()
@@ -569,6 +568,7 @@ public class OrderServiceImpl implements OrderService {
                 .id(findOrder.getId())
                 .orderItem(orderItem)
                 .date(findOrder.getCreateDate())
+                .merchantUid(findOrder.getMerchantUid())
                 .build();
 
         return PaymentAskCancelResponse.builder()

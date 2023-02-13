@@ -86,8 +86,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public Page<AdminOrderListQueryDto> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
+    public List<AdminOrderListQueryDto> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
 
+        // 주문 전체 조회
         List<AdminOrderListQueryDto> content = queryFactory
                 .select(new QAdminOrderListQueryDto(order.id,
                         order.status.stringValue(),
@@ -108,16 +109,19 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         paymentStatusEq(condition.getPaymentStatus())
                 )
                 .orderBy(order.createDate.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
                 .fetch();
 
+        // 주문 아이디 저장
         List<Long> orderIds = content.stream()
                 .map(o -> o.getId())
                 .collect(Collectors.toList());
 
-        Map<Long, List<AdminOrderListOrderItemQueryDto>> orderItemMap = findOrderItemMap(orderIds, condition.getKeyword());
+        // 상품명으로 검색 조건
+        Map<Long, List<AdminOrderListOrderItemQueryDto>> orderItemMap = findOrderItemMap(orderIds, condition.getKeyword(), pageable);
 
+        // 주문객체에 주문 상품컬렉션 저장
         content.forEach(o -> o.setOrderItems(orderItemMap.get(o.getId())));
 
         List<AdminOrderListQueryDto> resultContent = content.stream()
@@ -126,8 +130,10 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
         //JPAQuery<Long> countQuery = getFindOrdersByAdminCountQuery(condition, content);
 
-        return new PageImpl<>(resultContent, pageable, resultContent.size());
+//        return new PageImpl<>(resultContent, pageable, resultContent.size());
         //return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+
+        return resultContent;
     }
 
     @Override
@@ -176,7 +182,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .fetch();
     }
 
-    private Map<Long, List<AdminOrderListOrderItemQueryDto>> findOrderItemMap(List<Long> orderIds, String keyword) {
+    private Map<Long, List<AdminOrderListOrderItemQueryDto>> findOrderItemMap(List<Long> orderIds, String keyword, Pageable pageable) {
         List<AdminOrderListOrderItemQueryDto> orderItems = queryFactory.select(new QAdminOrderListOrderItemQueryDto(orderItem.order.id, orderItem.id, orderItem.item.name))
                 .from(orderItem)
                 .leftJoin(orderItem.item, item)
@@ -184,6 +190,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.order.id.in(orderIds),
                         keywordContains(keyword)
                 )
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
                 .fetch();
 
         // Map 으로 변환
