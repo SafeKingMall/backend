@@ -5,27 +5,29 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.domain.exception.OrderException;
 import com.safeking.shop.domain.order.domain.entity.Order;
+import com.safeking.shop.domain.order.domain.entity.OrderItem;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
+import com.safeking.shop.domain.order.web.query.repository.querydto.*;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
-import com.sun.xml.bind.v2.runtime.output.Encoded;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityManager;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.safeking.shop.domain.cart.domain.entity.QCartItem.cartItem;
 import static com.safeking.shop.domain.item.domain.entity.QItem.item;
 import static com.safeking.shop.domain.order.constant.OrderConst.*;
 import static com.safeking.shop.domain.order.domain.entity.QDelivery.delivery;
@@ -53,10 +55,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     public Page<Order> findOrdersByUser(Pageable pageable, OrderSearchCondition condition, Long memberId) {
         List<Order> content = queryFactory
                 .selectFrom(order)
-                //.leftJoin(order.orderItems, orderItem).fetchJoin()
                 .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()
                 .leftJoin(order.delivery, delivery).fetchJoin()
-                //.leftJoin(orderItem.item, item).fetchJoin()
                 .where(
                         order.member.id.eq(memberId),
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
@@ -73,11 +73,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(order.count())
                 .from(order)
-                //.leftJoin(order.orderItems, orderItem)
                 .leftJoin(order.safeKingPayment, safekingPayment)
                 .leftJoin(order.delivery, delivery)
-                .leftJoin(order.member, member)
-                //.leftJoin(orderItem.item, item)
                 .where(
                         order.member.id.eq(memberId),
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
@@ -91,49 +88,88 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     /**
-     * 컬렉션을 페치 조인하면 페이징 불가...
+     * 주문에서 회원, 결제, 배송, 주문상품을 조회해야함.
+     * 주문상품은 일대다 관계이기 때문에 페이징이 불가하다.
+     * where 절에 item.name 으로 검색하는 조건이 없으면 hibernate.default_batch_fetch_size를 이용하여 조회할수 있음
+     * where 절에 item.name 검색 조건이 들어가야하기때문에
+     * order조회와 orderItem조회를 분리함.
      *
-     * ToOne관계를 페치 조인
-     * 지연 로딩 성능 최적화를 위해 hibernate.default_batch_fetch_size , @BatchSize 를 적용
-     *  -> 이 옵션을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size 만큼 IN 쿼리로 조회
+     * 1. Order(ToOne 관계) 조회
+     * 2. 1에서 조회한 결과를 orderIds로 저장
+     * 3. orderItem을 orderId IN 절을(2번의 orderIds 사용) 통해 한번에 조회(where 조건 포함)
+     * 4. 3에서 조회한 결과(orderItem)를 1에 삽입
+     * 5. 4의 결과에서 orderItem이 null인 경우 제외
+     * 6. 5의 결과를 Page로 변환하고 반환
      */
     @Override
-    public Page<Order> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
+    public Page<AdminOrderListQueryDto> findOrdersByAdmin(Pageable pageable, OrderSearchCondition condition) {
 
-        List<Order> content = queryFactory
-                .selectFrom(order)
-                //.leftJoin(order.orderItems, orderItem).fetchJoin()
-                .leftJoin(order.safeKingPayment, safekingPayment).fetchJoin()
-                .leftJoin(order.delivery, delivery).fetchJoin()
-                .leftJoin(order.member, member).fetchJoin()
-                //.leftJoin(orderItem.item, item).fetchJoin()
+        // 주문 전체 조회
+        List<AdminOrderListQueryDto> content = queryFactory
+                .select(new QAdminOrderListQueryDto(order.id,
+                        order.status.stringValue(),
+                        order.safeKingPayment.amount,
+                        order.createDate,
+                        order.merchantUid,
+                        new QAdminOrderListPaymentQueryDto(order.safeKingPayment.status.stringValue()),
+                        new QAdminOrderListMemberQueryDto(order.member.name),
+                        new QAdminOrderListDeliveryQueryDto(order.delivery.receiver, order.delivery.status.stringValue()))
+                )
+                .from(order)
+                .leftJoin(order.safeKingPayment, safekingPayment)
+                .leftJoin(order.delivery, delivery)
+                .leftJoin(order.member, member)
                 .where(
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        keywordContains(condition.getKeyword()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
                         paymentStatusEq(condition.getPaymentStatus())
                 )
                 .orderBy(order.createDate.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<Long> countQuery = queryFactory
-                .select(order.count())
-                .from(order)
-                //.leftJoin(order.orderItems, orderItem)
-                .leftJoin(order.safeKingPayment, safekingPayment)
-                .leftJoin(order.delivery, delivery)
-                .leftJoin(order.member, member)
-                //.leftJoin(orderItem.item, item)
-                .where(
-                        orderBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        keywordContains(condition.getKeyword()),
-                        deliveryStatusEq(condition.getDeliveryStatus()),
-                        paymentStatusEq(condition.getPaymentStatus())
-                );
+        // 주문 아이디 저장
+        List<Long> orderIds = content.stream()
+                .map(o -> o.getId())
+                .collect(Collectors.toList());
 
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+        // 상품명으로 검색 조건
+        Map<Long, List<AdminOrderListOrderItemQueryDto>> orderItemMap = findOrderItemMap(orderIds, condition.getKeyword(), pageable);
+
+        // 주문객체에 주문 상품컬렉션 저장
+        content.forEach(o -> o.setOrderItems(orderItemMap.get(o.getId())));
+
+        // 주문상품이 null이 아닌 컬렌션으로 구성
+        List<AdminOrderListQueryDto> resultContent = content.stream()
+                .filter(o -> o.getOrderItems() != null)
+                .collect(Collectors.toList());
+
+        // List를 Page로 변환
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min(start + pageRequest.getPageSize(), resultContent.size());
+
+        if(start > end) {
+            throw new OrderException("데이터가 없습니다. 관리자에게 문의하세요.");
+        }
+
+        return new PageImpl<>(resultContent.subList(start, end), pageRequest, resultContent.size());
+    }
+
+    private Map<Long, List<AdminOrderListOrderItemQueryDto>> findOrderItemMap(List<Long> orderIds, String keyword, Pageable pageable) {
+        List<AdminOrderListOrderItemQueryDto> orderItems = queryFactory.select(new QAdminOrderListOrderItemQueryDto(orderItem.order.id, orderItem.id, orderItem.item.name))
+                .from(orderItem)
+                .leftJoin(orderItem.item, item)
+                .where(
+                        orderItem.order.id.in(orderIds),
+                        keywordContains(keyword)
+                )
+                .fetch();
+
+        // Map 으로 변환
+        Map<Long, List<AdminOrderListOrderItemQueryDto>> orderItemMap = orderItems.stream()
+                .collect(Collectors.groupingBy(orderItemQueryDto -> orderItemQueryDto.getOrderId()));
+
+        return orderItemMap;
     }
 
     /**
@@ -202,7 +238,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     // 아이템이름 포함 조건
     private BooleanExpression keywordContains(String keyword) {
-        return hasText(keyword) ? item.name.containsIgnoreCase(keyword) : null;
+        return hasText(keyword) ? item.name.contains(keyword) : null;
     }
 
     // 주문 일시 조건
@@ -263,5 +299,28 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         }
 
         return order.safeKingPayment.cancelledAt.between(null, LocalDateTime.now());
+    }
+
+    /**
+     * returns a view (not a new list) of the sourceList for the
+     * range based on page and pageSize
+     * @param sourceList
+     * @param page, page number should start from 1
+     * @param pageSize
+     * @return
+     * custom error can be given instead of returning emptyList
+     */
+    private static <T> List<T> getPage(List<T> sourceList, int page, int pageSize) {
+        if(pageSize <= 0 || page <= 0) {
+            throw new IllegalArgumentException("invalid page size: " + pageSize);
+        }
+
+        int fromIndex = (page - 1) * pageSize;
+        if(sourceList == null || sourceList.size() <= fromIndex){
+            return Collections.emptyList();
+        }
+
+        // toIndex exclusive
+        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
     }
 }

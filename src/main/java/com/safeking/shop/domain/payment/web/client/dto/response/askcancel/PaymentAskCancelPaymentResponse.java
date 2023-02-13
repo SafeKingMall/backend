@@ -8,7 +8,6 @@ import lombok.Data;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PaymentAskCancelPaymentResponse {
-
     private String impUid; // 결제 고유 번호
     private String status; // 결제 상태
     private String payMethod; // 결제 방식

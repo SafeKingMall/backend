@@ -11,6 +11,9 @@ public class AdminOrderListOrderItemResponse {
     private Long id;
     private String name;
 
+    public AdminOrderListOrderItemResponse() {
+    }
+
     @Builder
     public AdminOrderListOrderItemResponse(Long id, String name) {
         this.id = id;

@@ -51,6 +51,7 @@ public class SecurityConfig{
                 .and()
                 .authorizeRequests()
 
+                // 아임포트 웹훅(결제내역 동기화)
                 .antMatchers("/api/v1/user/payment/webhook")
                 .permitAll()
 

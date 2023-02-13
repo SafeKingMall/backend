@@ -13,7 +13,7 @@ public class AdminOrderListResponse {
     private String message;
     private List<AdminOrderListOrderResponse> orders;
     private Long totalElements; // 모든 페이지에 존재하는 총 원소 수
-    private Integer size; //
+    private Integer size; // 페이지 크기
     private Integer totalPages; // 페이지로 제공되는 총 페이지 수
 
     @Builder
