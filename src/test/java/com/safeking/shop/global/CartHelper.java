@@ -7,17 +7,13 @@ import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.cart.web.query.repository.CartQueryRepository;
 import com.safeking.shop.domain.item.domain.entity.Category;
 import com.safeking.shop.domain.item.domain.entity.Item;
-import com.safeking.shop.domain.item.domain.entity.ItemPhoto;
 import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
-import com.safeking.shop.domain.item.domain.repository.ItemPhotoRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
-import com.safeking.shop.domain.user.domain.entity.member.GeneralMember;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
 import com.safeking.shop.domain.user.domain.repository.MemberRepository;
 import com.safeking.shop.global.config.CustomBCryPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.test.annotation.Commit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +40,6 @@ public class CartHelper {
     CategoryRepository categoryRepository;
     @Autowired
     TestUserHelper userHelper;
-    @Autowired
-    ItemPhotoRepository itemPhotoRepository;
 
     public List<Long> createTemporaryCartItem() {
         //1. 카테고리를 생성
@@ -70,8 +64,6 @@ public class CartHelper {
             item.setQuantity(i);
             itemRepository.save(item);
 
-            ItemPhoto fileName = ItemPhoto.create("fileName", item);
-            itemPhotoRepository.save(fileName   );
 
             item.setCategory(i % 2 == 0 ? category1 : category2);
 
