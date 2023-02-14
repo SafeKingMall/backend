@@ -11,6 +11,7 @@ import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.web.query.repository.querydto.*;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
+import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -195,7 +196,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .where(
                         order.member.id.eq(memberId),
                         paymentBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        paymentStatusEq(condition.getPaymentStatus())
+                        safekingPayment.status.eq(PaymentStatus.CANCEL)
                 )
                 .orderBy(order.safeKingPayment.cancelledAt.desc())
                 .offset(pageable.getOffset())
@@ -210,7 +211,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .where(
                         order.member.id.eq(memberId),
                         paymentBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        paymentStatusEq(condition.getPaymentStatus())
+                        safekingPayment.status.eq(PaymentStatus.CANCEL)
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);

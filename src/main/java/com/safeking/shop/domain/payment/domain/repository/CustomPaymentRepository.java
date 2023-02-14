@@ -1,6 +1,7 @@
 package com.safeking.shop.domain.payment.domain.repository;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
@@ -58,10 +59,16 @@ public class CustomPaymentRepository {
     }
 
     public static String getCardCodeElement(String key) {
-        return cardCodeMap.get(key);
+        if(StringUtils.hasText(key)) {
+            return cardCodeMap.get(key);
+        }
+        return key;
     }
 
     public static String getPayMethodElement(String key) {
-        return payMethodMap.get(key);
+        if(StringUtils.hasText(key)) {
+            return payMethodMap.get(key);
+        }
+        return key;
     }
 }
