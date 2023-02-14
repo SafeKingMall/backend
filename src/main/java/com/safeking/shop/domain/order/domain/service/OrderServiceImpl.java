@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
                         .name(oi.getItem().getName())
                         .count(oi.getCount())
                         .price(oi.getOrderPrice())
-                        .thumbnail(oi.getItem().getItemPhoto().getFileName()) // 하나의 사진만
+                        .thumbnail(oi.getItem().getFileName()) // 하나의 사진만
                         .build())
                 .collect(Collectors.toList());
 
@@ -200,7 +200,7 @@ public class OrderServiceImpl implements OrderService {
                         .name(oi.getItem().getName())
                         .count(oi.getCount())
                         .price(oi.getOrderPrice())
-                        .thumbnail(oi.getItem().getItemPhoto().getFileName())
+                        .thumbnail(oi.getItem().getFileName())
                         .build())
                 .collect(Collectors.toList());
 
@@ -278,7 +278,7 @@ public class OrderServiceImpl implements OrderService {
             OrderListOrderItemResponse orderItem = OrderListOrderItemResponse.builder()
                     .id(o.getOrderItems().get(0).getItem().getId())
                     .name(o.getOrderItems().get(0).getItem().getName())
-                    .thumbnail(o.getOrderItems().get(0).getItem().getItemPhoto().getFileName())
+                    .thumbnail(o.getOrderItems().get(0).getItem().getFileName())
                     .build();
 
             OrderListDeliveryResponse delivery = OrderListDeliveryResponse.builder()
@@ -562,7 +562,7 @@ public class OrderServiceImpl implements OrderService {
                         .count(oi.getCount())
                         .price(oi.getItem().getPrice())
                         .name(oi.getItem().getName())
-                        .thumbnail(oi.getItem().getItemPhoto().getFileName())
+                        .thumbnail(oi.getItem().getFileName())
                         .build())
                 .collect(Collectors.toList());
 
@@ -621,7 +621,7 @@ public class OrderServiceImpl implements OrderService {
                         .count(oi.getCount())
                         .price(oi.getOrderPrice())
                         .name(oi.getItem().getName())
-                        .thumbnail(oi.getItem().getItemPhoto().getFileName())
+                        .thumbnail(oi.getItem().getFileName())
                         .build())
                 .collect(Collectors.toList());
 

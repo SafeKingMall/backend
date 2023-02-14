@@ -52,11 +52,7 @@ public class Item extends BaseTimeEntity {
     @Nullable
     private int viewPrice;
 
-    /**
-     * 양방향 관계로 설정
-     */
-    @OneToOne(mappedBy = "item")
-    private ItemPhoto itemPhoto;
+    private String fileName;
 
     public static Item createItem(String name, int quantity, String description,int price, String adminId, Category category, int viewPrice, String viewYn){
 
@@ -100,6 +96,10 @@ public class Item extends BaseTimeEntity {
         this.viewPrice=viewPrice;
     }
 
+    public void updateFile(String fileName){
+        this.fileName=fileName;
+    }
+
     public void updateCategory(Category category){
         this.category = category;
     }
@@ -125,10 +125,6 @@ public class Item extends BaseTimeEntity {
         this.quantity += count;
     }
 
-    // 연관관계 편의 메소드
-    private void changeItemPhoto(ItemPhoto itemPhoto) {
-        this.itemPhoto = itemPhoto;
-        itemPhoto.changeItem(this);
-    }
+
 
 }
