@@ -183,41 +183,12 @@ public class IamportServiceImpl implements IamportService {
              * cancelled: 결제취소,
              * failed: 결제실패 = ['ready', 'paid', 'cancelled', 'failed'],
              */
-            // 결제 완료
-            if(response.getStatus().equals("paid")) {
-                // 결제 상태 변경(결제 완료)
-                findSafekingPayment.changeSafekingPayment(PAID, response);
-
-                // 주문 상태 변경(주문 완료)
-                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
-                findOrder.changeOrderStatus(OrderStatus.COMPLETE);
-                findOrder.changeSafekingPayment(findSafekingPayment);
-            }
+            WebhookResponseType webhookResponseType = WebhookResponseType.valueOf(response.getStatus());
+            webhookResponseType.changePaymentAndOrderByWebhook(request, response, findSafekingPayment, iamportServiceSubMethod);
             // 결제 취소
-            else if(response.getStatus().equals("cancelled")) {
+            if(response.getStatus().equals("cancelled")) {
                 // 결제, 주문 취소 로직
                 cancel(request.getImpUid(), response.getMerchantUid(), response.getCancelReason(), 0d, findSafekingPayment);
-            }
-            // 미결제
-            else if (response.getStatus().equals("ready")) {
-                // 결제 상태 변경(미결제)
-                findSafekingPayment.changeSafekingPayment(READY, response);
-
-                // 주문 상태 변경(주문대기)
-                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
-                findOrder.changeOrderStatus(OrderStatus.READY);
-                findOrder.changeSafekingPayment(findSafekingPayment);
-            }
-            // 결제 실패
-            else if (response.getStatus().equals("failed")) {
-                // 결제 상태 변경(결제 실패)
-                findSafekingPayment.changeSafekingPayment(FAILED, response);
-
-                // 주문 상태 변경(주문 취소)
-                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
-                findOrder.changeOrderStatus(OrderStatus.CANCEL);
-                findOrder.changeOrderCancelReason(response.getCancelReason());
-                findOrder.changeSafekingPayment(findSafekingPayment);
             }
 
         } catch (IamportResponseException e) {
