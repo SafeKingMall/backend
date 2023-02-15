@@ -47,6 +47,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     /**
+     * 주문 목록 조회
+     * 결제취소, 주문취소 상태를 제외함
+     *
      * 컬렉션을 페치 조인하면 페이징 불가...
      *
      * ToOne관계를 페치 조인

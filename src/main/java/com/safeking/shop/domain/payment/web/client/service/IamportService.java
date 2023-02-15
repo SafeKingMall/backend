@@ -16,6 +16,6 @@ public interface IamportService {
     // 결제
     PaymentResponse<PaymentCallbackResponse> paymentByCallback(PaymentCallbackRequest request);
     void paymentByWebhook(PaymentWebhookRequest request);
-    PaymentCancelResponse cancel(String impUid, String merchantUid, String cancelReason, Double returnFee, SafekingPayment findSafekingPayment);
+    PaymentCancelResponse cancel(String impUid, String merchantUid, String cancelReason, Double returnFee);
     SafekingPayment getSafekingPayment(String merchantUid);
 }
