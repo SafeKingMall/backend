@@ -103,8 +103,19 @@ public class ItemService {
     }
 
     public Page<ItemListDto> List(Pageable pageable, String itemName, String categoryName){
+        Page<ItemListDto> posts = null;
+        Page<Item> pItem = null;
+        if(!"".equals(itemName)){
 
-        Page<ItemListDto> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemListDto.builder()
+            pItem = itemRepository.findByNameContaining(pageable, itemName);
+        }else if(!"".equals(categoryName)){
+
+            pItem = itemRepository.findByCategoryNameContaining(pageable, categoryName);
+        }else{
+
+            pItem = itemRepository.findAll(pageable);
+        }
+        posts = pItem.map(m-> ItemListDto.builder()
                 .id(m.getId())
                 .viewPrice(m.getViewPrice())
                 .price(m.getPrice())
@@ -119,7 +130,19 @@ public class ItemService {
     }
 
     public Page<ItemAdminListResponse> adminList(Pageable pageable, String itemName, String categoryName){
-        Page<ItemAdminListResponse> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemAdminListResponse.builder()
+        Page<ItemAdminListResponse> posts = null;
+        Page<Item> pItem = null;
+        if(!"".equals(itemName)){
+
+            pItem = itemRepository.findByNameContaining(pageable, itemName);
+        }else if(!"".equals(categoryName)){
+
+            pItem = itemRepository.findByCategoryNameContaining(pageable, categoryName);
+        }else{
+
+            pItem = itemRepository.findAll(pageable);
+        }
+        posts = pItem.map(m-> ItemAdminListResponse.builder()
                 .id(m.getId())
                 .price(m.getPrice())
                 .name(m.getName())
@@ -129,6 +152,7 @@ public class ItemService {
                 .fileName(m.getFileName())
                 .quantity(m.getQuantity())
                 .build());
+
         return posts;
     }
 
