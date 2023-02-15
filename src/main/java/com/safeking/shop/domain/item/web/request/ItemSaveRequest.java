@@ -28,7 +28,7 @@ public class ItemSaveRequest {
 
     private Long categoryId;
 
-    private String viewYn="Y";
+    private String viewYn;
 
 
 }
