@@ -124,11 +124,12 @@ public class Order extends BaseTimeEntity {
         this.adminMemo = adminMemo;
     }
 
-    public void changeMerchantUid(String merchantUid) {
-        this.merchantUid = merchantUid;
-    }
-
     public void changeOrderStatus(OrderStatus status) {
         this.status = status;
     }
+
+    public void changeOrderCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
 }

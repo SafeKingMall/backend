@@ -16,7 +16,8 @@ public class PaymentCancelRequest {
     private String merchantUid; //주문 번호
     @NotNull(message = "반품비가 빈 값 입니다.")
     private Double returnFee; // 반품비
-    private String reason; // 취소사유
+    private String constantCancelReason; // 취소사유(고정값)
+    private String customCancelReason; // 취소사유(커스텀)
 
 //    private Double amount; // 취소 요청금액(누락시 전액 취소)
 //    private Double taxFree; // 취소요청금액 중 면세금액 (누락되면 0원처리)

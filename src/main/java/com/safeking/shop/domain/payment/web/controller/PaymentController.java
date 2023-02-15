@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,6 +61,13 @@ public class PaymentController {
     /**
      * 아임포트 웹훅 사용
      * curl -H "Content-Type: application/json" -X POST -d '{ "imp_uid": "imp_1234567890", "merchant_uid": "order_id_8237352", "status": "paid" }' { NotificationURL }
+     *
+     * 포트원 웹훅(webhook)은 다음과 같은 경우에 호출됩니다.
+     * 결제가 승인되었을 때(모든 결제 수단) - (status : paid)
+     * 가상계좌가 발급되었을 때 - (status : ready)
+     * 가상계좌에 결제 금액이 입금되었을 때 - (status : paid)
+     * 예약결제가 시도되었을 때 - (status : paid or failed)
+     * 관리자 콘솔에서 결제 취소되었을 때 - (status : cancelled)
      */
     @PostMapping("/payment/webhook")
     public ResponseEntity<?> paymentWebhook(@Valid @RequestBody PaymentWebhookRequest request) {
@@ -82,12 +90,20 @@ public class PaymentController {
         PaymentCancelResponse response = iamportService.cancel(
                 paymentCancelRequest.getImpUid(),
                 paymentCancelRequest.getMerchantUid(),
-                paymentCancelRequest.getReason(),
-                paymentCancelRequest.getReturnFee(),
-                iamportService.getSafekingPayment(paymentCancelRequest.getMerchantUid())
+                getCancelReason(paymentCancelRequest),
+                paymentCancelRequest.getReturnFee()
         );
 
         return new ResponseEntity<>(response, OK);
+    }
+
+    private String getCancelReason(PaymentCancelRequest paymentCancelRequest) {
+        if(StringUtils.hasText(paymentCancelRequest.getCustomCancelReason())) {
+            return paymentCancelRequest.getConstantCancelReason();
+        } else if(StringUtils.hasText(paymentCancelRequest.getConstantCancelReason())) {
+            return paymentCancelRequest.getCustomCancelReason();
+        }
+        return "취소사유 미기재";
     }
 
     /**

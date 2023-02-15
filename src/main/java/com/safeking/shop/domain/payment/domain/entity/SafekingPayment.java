@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -157,8 +158,8 @@ public class SafekingPayment extends BaseTimeEntity {
         this.userAgent = response.getApplyNum();
         this.startedAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
         this.paidAt = response.getPaidAt();
-        this.failedAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
-        this.cancelledAt = convertUNIXTimeStamp2LocalDateTime(response.getStartedAt());
+        this.failedAt = convertDate2LocalDateTime(response.getFailedAt());
+        this.cancelledAt = convertDate2LocalDateTime(response.getCancelledAt());
         this.failReason = response.getFailReason();
         this.cancelReason = response.getCancelReason();
         this.receiptUrl = response.getReceiptUrl();
@@ -177,6 +178,10 @@ public class SafekingPayment extends BaseTimeEntity {
                         TimeZone.getDefault().toZoneId());
 
         return localDateTime;
+    }
+
+    private LocalDateTime convertDate2LocalDateTime(Date timeStamp) {
+        return LocalDateTime.ofInstant(timeStamp.toInstant(), ZoneId.systemDefault());
     }
 
     // 카드사 코드 -> 카드사로 변환

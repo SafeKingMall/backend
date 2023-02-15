@@ -7,6 +7,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @SpringBootTest
 public class ConvertTest {
 
@@ -14,5 +18,10 @@ public class ConvertTest {
     void test() {
         String element = CustomPaymentRepository.getCardCodeElement(CardConstant.CODE_BC);
         Assertions.assertThat(element).isEqualTo(CustomCardCodeConstant.KR_CODE_BC);
+    }
+    @Test
+    void test2() {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault());
+        System.out.println(localDateTime);
     }
 }

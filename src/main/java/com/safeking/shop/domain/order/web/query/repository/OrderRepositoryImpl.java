@@ -11,6 +11,7 @@ import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.web.query.repository.querydto.*;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
+import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +47,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     /**
+     * 주문 목록 조회
+     * 결제취소, 주문취소 상태를 제외함
+     *
      * 컬렉션을 페치 조인하면 페이징 불가...
      *
      * ToOne관계를 페치 조인
@@ -195,7 +199,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .where(
                         order.member.id.eq(memberId),
                         paymentBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        paymentStatusEq(condition.getPaymentStatus())
+                        safekingPayment.status.eq(PaymentStatus.CANCEL)
                 )
                 .orderBy(order.safeKingPayment.cancelledAt.desc())
                 .offset(pageable.getOffset())
@@ -210,7 +214,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .where(
                         order.member.id.eq(memberId),
                         paymentBetweenDate(condition.getFromDate(), condition.getToDate()),
-                        paymentStatusEq(condition.getPaymentStatus())
+                        safekingPayment.status.eq(PaymentStatus.CANCEL)
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);

@@ -9,6 +9,7 @@ import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
+import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentAuthCancelRequest;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.safeking.shop.domain.order.constant.OrderConst.*;
@@ -97,7 +99,7 @@ public class IamportServiceImpl implements IamportService {
             // 결제 금액 비교(결제 금액이 다르다면)
             if(findSafekingPayment.getAmount() != response.getAmount().intValue()) {
                 // 결제, 주문 취소 로직
-                cancel(request.getImpUid(), response.getMerchantUid(), PAYMENT_AMOUNT_DIFFERENT_CALLBACK, 0d, findSafekingPayment);
+                cancel(request.getImpUid(), response.getMerchantUid(), PAYMENT_AMOUNT_DIFFERENT_CALLBACK, 0d);
                 log.debug("[결제검증 위조] {}", PAYMENT_AMOUNT_DIFFERENT_CALLBACK);
 
                 // 응답 생성
@@ -152,6 +154,13 @@ public class IamportServiceImpl implements IamportService {
     /**
      * 결제(웹훅 방식)
      * 웹훅의 목적은 가맹점(DB)과 동기화
+     *
+     * 포트원 웹훅(webhook)은 다음과 같은 경우에 호출됩니다.
+     * 결제가 승인되었을 때(모든 결제 수단) - (status : paid)
+     * 가상계좌가 발급되었을 때 - (status : ready)
+     * 가상계좌에 결제 금액이 입금되었을 때 - (status : paid)
+     * 예약결제가 시도되었을 때 - (status : paid or failed)
+     * 관리자 콘솔에서 결제 취소되었을 때 - (status : cancelled)
      */
     @Transactional
     @Override
@@ -168,21 +177,22 @@ public class IamportServiceImpl implements IamportService {
             // 결제 금액 비교(결제 금액이 다르다면)
             if(findSafekingPayment.getAmount() != response.getAmount().intValue()) {
                 // 결제, 주문 취소 로직
-                cancel(request.getImpUid(), response.getMerchantUid(), response.getCancelReason(), 0d, findSafekingPayment);
+                cancel(request.getImpUid(), response.getMerchantUid(), response.getCancelReason(), 0d);
 
                 log.debug("[결제검증 위조] {}", PAYMENT_AMOUNT_DIFFERENT_WEBHOOK);
                 return;
             }
 
-            // 결제 완료
-            if(response.getStatus().equals("paid")) {
-                // 결제 상태 변경(결제 완료)
-                findSafekingPayment.changeSafekingPayment(PAID, response);
+             /**
+             * enum을 활용하여 if-else 줄이기
+             */
+            WebhookResponseType webhookResponseType = WebhookResponseType.valueOf(response.getStatus());
+            webhookResponseType.changePaymentAndOrderByWebhook(request, response, findSafekingPayment, iamportServiceSubMethod);
 
-                // 주문 상태 변경(주문 완료)
-                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
-                findOrder.changeOrderStatus(COMPLETE);
-                findOrder.changeSafekingPayment(findSafekingPayment);
+            // 관리자 콘솔에서 결제 취소되었을 때 - (status : cancelled)
+            // 아임포트에서 부분취소 금액에 대한 정보를 얻을 수 없음.
+            if(request.getStatus().equals("cancelled")) {
+                cancel(request.getImpUid(), response.getMerchantUid(), PAYMENT_CANCEL_ADMIN_WEBHOOK, 0d);
             }
 
         } catch (IamportResponseException e) {
@@ -200,7 +210,7 @@ public class IamportServiceImpl implements IamportService {
      */
     @Transactional
     @Override
-    public PaymentCancelResponse cancel(String impUid, String merchantUid, String cancelReason, Double returnFee, SafekingPayment findSafekingPayment) {
+    public PaymentCancelResponse cancel(String impUid, String merchantUid, String cancelReason, Double returnFee) {
         try {
             // 주문 취소
             Order findOrder = iamportServiceSubMethod.cancelOrder(merchantUid, cancelReason);
@@ -209,6 +219,7 @@ public class IamportServiceImpl implements IamportService {
             Delivery findDelivery = iamportServiceSubMethod.cancelDelivery(findOrder.getDelivery().getId());
 
             // 결제 취소
+            SafekingPayment findSafekingPayment = iamportServiceSubMethod.getSafekingPayment(merchantUid);
             IamportResponse<Payment> cancelPaymentResponse = iamportServiceSubMethod.cancelPayment(impUid, returnFee, cancelReason, findSafekingPayment);
 
             findOrder.changeSafekingPayment(findSafekingPayment); // 연관관계 적용
