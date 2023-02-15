@@ -24,7 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " join fetch o.orderItems oi" +
             " join fetch o.safeKingPayment sp" +
             " join fetch oi.item i" +
-            " join fetch ItemPhoto ip on ip.item = i" +
             " where o.id = :orderId" +
             " and o.member.id = :memberId")
     Optional<Order> findOrderDetailByUser(@Param("orderId") Long orderId, @Param("memberId") Long memberId); // 주문상세 내역
@@ -35,7 +34,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " join fetch o.orderItems oi" +
             " join fetch o.safeKingPayment sp" +
             " join fetch oi.item i" +
-            " join fetch ItemPhoto ip on ip.item = i" +
             " where o.id = :orderId")
     Optional<Order> findOrderDetailByAdmin(@Param("orderId") Long orderId); // 주문 상세 조회(어드민)
 
@@ -53,7 +51,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " join fetch o.safeKingPayment sf" +
             " join fetch o.orderItems oi" +
             " join fetch oi.item i" +
-            " join fetch ItemPhoto ip on ip.item = i" +
             " where o.id = :orderId" +
             " and o.member.id = :memberId" +
             " and o.safeKingPayment.status <> 'CANCEL'" +
@@ -65,7 +62,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " join fetch o.orderItems oi" +
             " join fetch o.safeKingPayment sp" +
             " join fetch oi.item i" +
-            " join fetch ItemPhoto ip on ip.item = i" +
             " where o.id = :orderId" +
             " and o.member.id = :memberId" +
             " and o.safeKingPayment.status = 'CANCEL'" +

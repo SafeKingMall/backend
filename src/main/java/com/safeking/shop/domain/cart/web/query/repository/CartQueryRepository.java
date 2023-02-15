@@ -4,8 +4,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.safeking.shop.domain.cart.web.response.CartItemResponse;
 import com.safeking.shop.domain.cart.web.response.QCartItemResponse;
-import com.safeking.shop.domain.item.domain.entity.QItem;
-import com.safeking.shop.domain.item.domain.entity.QItemPhoto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +16,7 @@ import static com.safeking.shop.domain.cart.domain.entity.QCart.cart;
 import static com.safeking.shop.domain.cart.domain.entity.QCartItem.cartItem;
 import static com.safeking.shop.domain.item.domain.entity.QCategory.category;
 import static com.safeking.shop.domain.item.domain.entity.QItem.item;
-import static com.safeking.shop.domain.item.domain.entity.QItemPhoto.itemPhoto;
+
 import static com.safeking.shop.domain.user.domain.entity.member.QMember.member;
 
 @Repository
@@ -32,13 +30,12 @@ public class CartQueryRepository {
      **/
     public Page<CartItemResponse> searchAll(String username, Pageable pageable){
         List<CartItemResponse> result = queryFactory
-                .select(new QCartItemResponse(item.id, item.name, item.price, cartItem.count,category.name,itemPhoto.fileName))
+                .select(new QCartItemResponse(item.id, item.name, item.price, cartItem.count,category.name,item.fileName))
                 .from(cartItem)
                 .join(cartItem.item, item)
                 .join(cartItem.cart, cart)
                 .join(cart.member, member)
                 .join(item.category,category)
-                .join(itemPhoto).on(itemPhoto.item.eq(item))
                 .where(member.username.eq(username))
                 .orderBy(cartItem.id.desc())
                 .offset(pageable.getOffset())

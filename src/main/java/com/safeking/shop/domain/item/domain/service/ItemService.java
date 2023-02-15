@@ -2,18 +2,13 @@ package com.safeking.shop.domain.item.domain.service;
 
 import com.safeking.shop.domain.item.domain.entity.Category;
 import com.safeking.shop.domain.item.domain.entity.Item;
-import com.safeking.shop.domain.item.domain.entity.ItemPhoto;
 import com.safeking.shop.domain.item.domain.repository.CategoryRepository;
-import com.safeking.shop.domain.item.domain.repository.ItemPhotoRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemRepository;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemListDto;
-import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemSaveDto;
-import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemUpdateDto;
 import com.safeking.shop.domain.item.domain.service.servicedto.item.ItemViewDto;
 import com.safeking.shop.domain.item.web.request.ItemSaveRequest;
 import com.safeking.shop.domain.item.web.request.ItemUpdateRequest;
 import com.safeking.shop.domain.item.web.response.ItemAdminListResponse;
-import com.safeking.shop.domain.item.web.response.ItemListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -42,7 +36,6 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
-    private final ItemPhotoRepository itemPhotoRepository;
 
     @Value("${spring.upload.path}")
     private String uploadPath;
@@ -83,20 +76,14 @@ public class ItemService {
     public void delete(Long id){
 
         Item item = itemRepository.findById(id).orElseThrow();
-
+        java.io.File sfile = new java.io.File(uploadPath+item.getFileName());
+        boolean result = sfile.delete();
         itemRepository.delete(item);
-        List<ItemPhoto> list = itemPhotoRepository.findByItemId(id);
-        for(ItemPhoto i : list){
-            java.io.File sfile = new java.io.File(uploadPath+i.getFileName());
-            boolean result = sfile.delete();
-            itemPhotoRepository.delete(i);
-        }
 
     }
 
     public ItemViewDto view(Long id){
         Item item = itemRepository.findById(id).orElseThrow();
-        ItemPhoto itemPhoto = itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(item.getId());
         log.info("Item.viewYn : "+ item.getViewYn());
         ItemViewDto itemViewDto = new ItemViewDto(item.getId(),
                 item.getName(),
@@ -109,13 +96,14 @@ public class ItemService {
                 item.getCreateDate().toString(),
                 item.getLastModifiedDate().toString(),
                 item.getViewYn(),
-                (itemPhoto==null?null:itemPhoto.getFileName())
+                (item.getFileName())
                 );
 
         return itemViewDto;
     }
 
     public Page<ItemListDto> List(Pageable pageable, String itemName, String categoryName){
+
         Page<ItemListDto> posts = itemRepository.findByNameContainingAndCategoryNameContaining(pageable, itemName, categoryName).map(m-> ItemListDto.builder()
                 .id(m.getId())
                 .viewPrice(m.getViewPrice())
@@ -124,7 +112,7 @@ public class ItemService {
                 .categoryName((m.getCategory()==null?null:m.getCategory().getName()))
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
-                .fileName((itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId())==null?null:itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId()).getFileName()))
+                .fileName(m.getFileName())
                 .quantity(m.getQuantity())
                 .build());
         return posts;
@@ -138,7 +126,7 @@ public class ItemService {
                 .categoryName((m.getCategory()==null?null:m.getCategory().getName()))
                 .createDate(m.getCreateDate().toString())
                 .lastModifiedDate(m.getLastModifiedDate().toString())
-                .fileName((itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId())==null?null:itemPhotoRepository.findTop1ByItemIdOrderByCreateDateDesc(m.getId()).getFileName()))
+                .fileName(m.getFileName())
                 .quantity(m.getQuantity())
                 .build());
         return posts;
@@ -168,16 +156,15 @@ public class ItemService {
         file.transferTo(new java.io.File(fullPath));
 
         Item item = itemRepository.findById(itemId).orElseThrow();
-        ItemPhoto itemPhoto = ItemPhoto.create(urlPath, item);
-        itemPhotoRepository.save(itemPhoto);
+        item.updateFile(urlPath);
+
     }
 
     public void photoDelete(Long id){
-        List<ItemPhoto> list = itemPhotoRepository.findByItemId(id);
-        for(ItemPhoto i : list){
-            java.io.File sfile = new java.io.File(uploadPath+i.getFileName());
-            boolean result = sfile.delete();
-            itemPhotoRepository.delete(i);
-        }
+        Item item = itemRepository.findById(id).orElseThrow();
+        java.io.File sfile = new java.io.File(uploadPath+item.getFileName());
+        boolean result = sfile.delete();
+        item.updateFile(null);
+
     }
 }
