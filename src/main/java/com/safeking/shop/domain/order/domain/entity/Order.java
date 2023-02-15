@@ -95,11 +95,11 @@ public class Order extends BaseTimeEntity {
     public void cancel(String cancelReason) {
         // 배송중이면 주문취소 불가
         if(delivery.getStatus().equals(DeliveryStatus.IN_DELIVERY)) {
-            throw new OrderException(OrderConst.ORDER_CANCEL_DELIVERY_DONE);
+            throw new OrderException(OrderConst.ORDER_CANCEL_IN_DELIVERY);
         }
         // 배송 완료면 주문취소 불가 (현재 반품 비지니스가 없어서 배송완료되면 환불 불가함)
         else if(delivery.getStatus().equals(DeliveryStatus.COMPLETE)) {
-            throw new OrderException(OrderConst.ORDER_CANCEL_IN_DELIVERY);
+            throw new OrderException(OrderConst.ORDER_CANCEL_DELIVERY_DONE);
         }
 
         this.status = OrderStatus.CANCEL;
