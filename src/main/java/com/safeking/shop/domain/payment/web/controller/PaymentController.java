@@ -99,9 +99,9 @@ public class PaymentController {
 
     private String getCancelReason(PaymentCancelRequest paymentCancelRequest) {
         if(StringUtils.hasText(paymentCancelRequest.getCustomCancelReason())) {
-            return paymentCancelRequest.getConstantCancelReason();
-        } else if(StringUtils.hasText(paymentCancelRequest.getConstantCancelReason())) {
             return paymentCancelRequest.getCustomCancelReason();
+        } else if(StringUtils.hasText(paymentCancelRequest.getConstantCancelReason())) {
+            return paymentCancelRequest.getConstantCancelReason();
         }
         return "취소사유 미기재";
     }
