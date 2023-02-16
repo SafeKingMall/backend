@@ -137,4 +137,14 @@ public class IamportServiceSubMethod {
 
         return findOrder;
     }
+
+    /**
+     * DB에서 배송 내역 조회
+     */
+    public Delivery getDelivery(Long deliveryId) {
+        Optional<Delivery> optionalDelivery = deliveryRepository.findById(deliveryId);
+        Delivery findDelivery = optionalDelivery.orElseThrow(() -> new DeliveryException(DELIVERY_FIND_FAIL));
+
+        return findDelivery;
+    }
 }

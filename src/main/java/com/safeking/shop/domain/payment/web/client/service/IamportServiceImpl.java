@@ -183,18 +183,13 @@ public class IamportServiceImpl implements IamportService {
                 return;
             }
 
-
             // 관리자 콘솔에서 결제 취소되었을 때 - (status : cancelled)
             // 아임포트에서 부분취소 금액에 대한 정보를 얻을 수 없음.
-            if(request.getStatus().equals("cancelled")) {
-                cancel(request.getImpUid(), response.getMerchantUid(), PAYMENT_CANCEL_ADMIN_WEBHOOK, 0d);
-            } else {
-                /**
-                 * enum을 활용하여 if-else 줄이기
-                 */
-                WebhookResponseType webhookResponseType = WebhookResponseType.valueOf(response.getStatus());
-                webhookResponseType.changePaymentAndOrderByWebhook(request, response, findSafekingPayment, iamportServiceSubMethod);
-            }
+            /**
+             * enum을 활용하여 if-else 줄이기
+             */
+            WebhookResponseType webhookResponseType = WebhookResponseType.valueOf(request.getStatus());
+            webhookResponseType.changePaymentAndOrderByWebhook(request, response, findSafekingPayment, iamportServiceSubMethod);
 
         } catch (IamportResponseException e) {
             log.error("[IamportResponseException] {}", e.getMessage());

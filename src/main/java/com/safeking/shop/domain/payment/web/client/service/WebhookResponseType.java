@@ -1,9 +1,13 @@
 package com.safeking.shop.domain.payment.web.client.service;
 
 import com.safeking.shop.domain.exception.PaymentException;
+import com.safeking.shop.domain.order.constant.OrderConst;
 import com.safeking.shop.domain.order.domain.entity.Delivery;
 import com.safeking.shop.domain.order.domain.entity.Order;
+import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
+import com.safeking.shop.domain.payment.constant.SafeKingPaymentConst;
+import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentWebhookRequest;
 import com.siot.IamportRestClient.exception.IamportResponseException;
@@ -40,6 +44,7 @@ public enum WebhookResponseType {
             // 주문 상태 변경(주문대기)
             Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
             findOrder.changeOrderStatus(OrderStatus.READY);
+
             findOrder.changeSafekingPayment(findSafekingPayment);
         }
     },
@@ -52,7 +57,26 @@ public enum WebhookResponseType {
             // 주문 상태 변경(주문 완료)
             Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
             findOrder.changeOrderStatus(OrderStatus.COMPLETE);
+
             findOrder.changeSafekingPayment(findSafekingPayment);
+        }
+    },
+    cancelled {
+        @Override
+        public void changePaymentAndOrderByWebhook(PaymentWebhookRequest request, Payment response, SafekingPayment findSafekingPayment, IamportServiceSubMethod iamportServiceSubMethod) {
+            // 주문 상태 변경(주문 취소)
+            Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
+            findOrder.cancel(SafeKingPaymentConst.PAYMENT_CANCEL_ADMIN_WEBHOOK);
+
+            // 배송 상태 변경(배송 취소)
+            Delivery findDelivery = iamportServiceSubMethod.cancelDelivery(findOrder.getDelivery().getId());
+
+            // 결제 상태 변경(결제 취소)
+            findSafekingPayment.changeSafekingPaymentStatus(CANCEL);
+
+            // 연관관계 반영
+            findOrder.changeSafekingPayment(findSafekingPayment);
+            findOrder.changeDelivery(findDelivery);
         }
     },
     failed {
@@ -65,6 +89,7 @@ public enum WebhookResponseType {
             Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
             findOrder.changeOrderStatus(OrderStatus.CANCEL);
             findOrder.changeOrderCancelReason(response.getCancelReason());
+
             findOrder.changeSafekingPayment(findSafekingPayment);
         }
     };

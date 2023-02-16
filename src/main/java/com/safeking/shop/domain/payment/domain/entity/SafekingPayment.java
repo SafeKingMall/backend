@@ -198,4 +198,8 @@ public class SafekingPayment extends BaseTimeEntity {
     public void changeCanceledRequestDate(LocalDateTime now) {
         this.canceledRequestDate = now;
     }
+
+    public void changeSafekingPaymentStatus(PaymentStatus status) {
+        this.status = status;
+    }
 }
