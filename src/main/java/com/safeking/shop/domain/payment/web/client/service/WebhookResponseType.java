@@ -31,18 +31,18 @@ public enum WebhookResponseType {
      * failed: 결제실패 = ['ready', 'paid', 'cancelled', 'failed'],
      */
     // 가상계좌 비지니스 현재 없음
-//    ready {
-//        @Override
-//        public void changePaymentAndOrderByWebhook(PaymentWebhookRequest request, Payment response, SafekingPayment findSafekingPayment, IamportServiceSubMethod iamportServiceSubMethod) {
-//            // 결제 상태 변경(미결제)
-//            findSafekingPayment.changeSafekingPayment(READY, response);
-//
-//            // 주문 상태 변경(주문대기)
-//            Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
-//            findOrder.changeOrderStatus(OrderStatus.READY);
-//            findOrder.changeSafekingPayment(findSafekingPayment);
-//        }
-//    },
+    ready {
+        @Override
+        public void changePaymentAndOrderByWebhook(PaymentWebhookRequest request, Payment response, SafekingPayment findSafekingPayment, IamportServiceSubMethod iamportServiceSubMethod) {
+            // 결제 상태 변경(미결제)
+            findSafekingPayment.changeSafekingPayment(READY, response);
+
+            // 주문 상태 변경(주문대기)
+            Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
+            findOrder.changeOrderStatus(OrderStatus.READY);
+            findOrder.changeSafekingPayment(findSafekingPayment);
+        }
+    },
     paid {
         @Override
         public void changePaymentAndOrderByWebhook(PaymentWebhookRequest request, Payment response, SafekingPayment findSafekingPayment, IamportServiceSubMethod iamportServiceSubMethod) {
