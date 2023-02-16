@@ -9,6 +9,7 @@ import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.DeliveryRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderItemRepository;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
+import com.safeking.shop.domain.payment.constant.SafeKingPaymentConst;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
@@ -185,11 +186,56 @@ public class IamportServiceImpl implements IamportService {
 
             // 관리자 콘솔에서 결제 취소되었을 때 - (status : cancelled)
             // 아임포트에서 부분취소 금액에 대한 정보를 얻을 수 없음.
-            /**
-             * enum을 활용하여 if-else 줄이기
-             */
-            WebhookResponseType webhookResponseType = WebhookResponseType.valueOf(request.getStatus());
-            webhookResponseType.changePaymentAndOrderByWebhook(request, response, findSafekingPayment, iamportServiceSubMethod);
+//            /**
+//             * enum을 활용하여 if-else 줄이기
+//             */
+//            WebhookResponseType webhookResponseType = WebhookResponseType.valueOf(request.getStatus());
+//            webhookResponseType.changePaymentAndOrderByWebhook(request, response, findSafekingPayment, iamportServiceSubMethod);
+
+            // ['ready', 'paid', 'cancelled', 'failed'],
+            if(request.equals("ready")) {
+                // 결제 상태 변경(미결제)
+                findSafekingPayment.changeSafekingPayment(READY, response);
+
+                // 주문 상태 변경(주문대기)
+                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
+                findOrder.changeOrderStatus(OrderStatus.READY);
+
+                findOrder.changeSafekingPayment(findSafekingPayment);
+            } else if(request.equals("paid")) {
+                // 결제 상태 변경(결제 완료)
+                findSafekingPayment.changeSafekingPayment(PAID, response);
+
+                // 주문 상태 변경(주문 완료)
+                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
+                findOrder.changeOrderStatus(OrderStatus.COMPLETE);
+
+                findOrder.changeSafekingPayment(findSafekingPayment);
+            } else if(request.equals("cancelled")) {
+                // 주문 상태 변경(주문 취소)
+                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
+                findOrder.cancel(SafeKingPaymentConst.PAYMENT_CANCEL_ADMIN_WEBHOOK);
+
+                // 배송 상태 변경(배송 취소)
+                Delivery findDelivery = iamportServiceSubMethod.cancelDelivery(findOrder.getDelivery().getId());
+
+                // 결제 상태 변경(결제 취소)
+                findSafekingPayment.changeSafekingPaymentStatus(CANCEL);
+
+                // 연관관계 반영
+                findOrder.changeSafekingPayment(findSafekingPayment);
+                findOrder.changeDelivery(findDelivery);
+            } else if(request.equals("failed")) {
+                // 결제 상태 변경(결제 실패)
+                findSafekingPayment.changeSafekingPayment(FAILED, response);
+
+                // 주문 상태 변경(주문 취소)
+                Order findOrder = iamportServiceSubMethod.getOrder(request.getMerchantUid());
+                findOrder.changeOrderStatus(OrderStatus.CANCEL);
+                findOrder.changeOrderCancelReason(response.getCancelReason());
+
+                findOrder.changeSafekingPayment(findSafekingPayment);
+            }
 
         } catch (IamportResponseException e) {
             log.error("[IamportResponseException] {}", e.getMessage());
