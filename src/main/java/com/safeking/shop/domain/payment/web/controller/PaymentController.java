@@ -70,11 +70,11 @@ public class PaymentController {
      * 관리자 콘솔에서 결제 취소되었을 때 - (status : cancelled)
      */
     @PostMapping("/payment/webhook")
-    public ResponseEntity<?> paymentWebhook(@Valid @RequestBody PaymentWebhookRequest request) {
+    public ResponseEntity<String> paymentWebhook(@Valid @RequestBody PaymentWebhookRequest request) {
 
         iamportService.paymentByWebhook(request);
 
-        return new ResponseEntity<>(OK);
+        return new ResponseEntity<>("웹훅 이벤트 수신 완료!", OK);
     }
 
     /**
