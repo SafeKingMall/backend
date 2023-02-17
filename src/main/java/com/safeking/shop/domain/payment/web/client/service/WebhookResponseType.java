@@ -70,17 +70,16 @@ public enum WebhookResponseType {
             if(!findOrder.getStatus().equals(OrderStatus.CANCEL)) {
                 // 주문 상태 변경(주문 취소)
                 findOrder.cancel(SafeKingPaymentConst.PAYMENT_CANCEL_ADMIN_WEBHOOK);
-
-                // 배송 상태 변경(배송 취소)
-                Delivery findDelivery = iamportServiceSubMethod.cancelDelivery(findOrder.getDelivery().getId());
-
-                // 결제 상태 변경(결제 취소)
-                findSafekingPayment.changeSafekingPaymentStatus(CANCEL);
-
-                // 연관관계 반영
-                findOrder.changeSafekingPayment(findSafekingPayment);
-                findOrder.changeDelivery(findDelivery);
             }
+            // 배송 상태 변경(배송 취소)
+            Delivery findDelivery = iamportServiceSubMethod.cancelDelivery(findOrder.getDelivery().getId());
+
+            // 결제 상태 변경(결제 취소)
+            findSafekingPayment.changeSafekingPaymentStatus(CANCEL);
+
+            // 연관관계 반영
+            findOrder.changeSafekingPayment(findSafekingPayment);
+            findOrder.changeDelivery(findDelivery);
         }
     },
     failed {
