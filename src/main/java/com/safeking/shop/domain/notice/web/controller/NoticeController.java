@@ -92,6 +92,9 @@ public class NoticeController {
             if(createDate.length() == 10){
                 s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                 s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            }else if(createDate.length() == 4){
+                s1 = LocalDateTime.parse(createDate+"-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                s2 = LocalDateTime.parse(createDate+"-12-31 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             }else{
                 s1 = LocalDateTime.parse(createDate+"-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                 s2 = LocalDateTime.parse(createDate+"-31 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -152,6 +155,9 @@ public class NoticeController {
             if(createDate.length() == 10){
                 s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                 s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            }else if(createDate.length() == 4){
+                s1 = LocalDateTime.parse(createDate+"-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                s2 = LocalDateTime.parse(createDate+"-12-31 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             }else{
                 s1 = LocalDateTime.parse(createDate+"-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                 s2 = LocalDateTime.parse(createDate+"-31 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
