@@ -87,8 +87,15 @@ public class NoticeController {
                     .build()
             );
         }else if(!"".equals(createDate)){
-            LocalDateTime s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            LocalDateTime s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime s1 = null;
+            LocalDateTime s2 = null;
+            if(createDate.length() == 10){
+                s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            }else{
+                s1 = LocalDateTime.parse(createDate+"-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                s2 = LocalDateTime.parse(createDate+"-31 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            }
             log.debug(s1.toString());
             log.debug(s2.toString());
             page = noticeService.listAndCreateDate(pageable, s1, s2).map(m->NoticeListResponse.builder()
@@ -140,8 +147,16 @@ public class NoticeController {
                     .build()
             );
         }else if(!"".equals(createDate)){
-            LocalDateTime s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            LocalDateTime s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime s1 = null;
+            LocalDateTime s2 = null;
+            if(createDate.length() == 10){
+                s1 = LocalDateTime.parse(createDate+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                s2 = LocalDateTime.parse(createDate+" 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            }else{
+                s1 = LocalDateTime.parse(createDate+"-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                s2 = LocalDateTime.parse(createDate+"-31 23:59:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            }
+
             log.debug(s1.toString());
             log.debug(s2.toString());
             page = noticeService.listAndCreateDate(pageable, s1, s2).map(m->NoticeListResponse.builder()
