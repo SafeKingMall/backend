@@ -31,8 +31,8 @@ public class InitDB_dev {
 
     @PostConstruct
     public void init(){
-        initService.initAdminTestV1();
-        initService.initMemberTestV1();
+//        initService.initAdminTestV1();
+//        initService.initMemberTestV1();
 //        initService.initItemTestV1();
 //        initService.initCategory();
 //        initService.clearRedis();
