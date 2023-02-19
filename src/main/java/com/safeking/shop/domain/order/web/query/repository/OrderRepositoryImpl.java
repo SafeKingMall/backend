@@ -67,7 +67,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
                         safekingPayment.status.ne(PaymentStatus.CANCEL),
-                        order.status.ne(OrderStatus.CANCEL)
+                        safekingPayment.status.ne(PaymentStatus.READY),
+                        order.status.ne(OrderStatus.CANCEL),
+                        order.status.ne(OrderStatus.READY)
                 )
                 .orderBy(order.createDate.desc())
                 .offset(pageable.getOffset())
@@ -84,7 +86,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderBetweenDate(condition.getFromDate(), condition.getToDate()),
                         deliveryStatusEq(condition.getDeliveryStatus()),
                         safekingPayment.status.ne(PaymentStatus.CANCEL),
-                        order.status.ne(OrderStatus.CANCEL)
+                        safekingPayment.status.ne(PaymentStatus.READY),
+                        order.status.ne(OrderStatus.CANCEL),
+                        order.status.ne(OrderStatus.READY)
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
