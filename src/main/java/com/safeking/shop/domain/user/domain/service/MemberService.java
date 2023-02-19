@@ -7,6 +7,7 @@ import com.safeking.shop.domain.cart.domain.service.CartService;
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
 import com.safeking.shop.domain.file.domain.service.FileService;
 import com.safeking.shop.domain.file.web.response.FileListResponse;
+import com.safeking.shop.domain.item.domain.entity.ItemAnswer;
 import com.safeking.shop.domain.item.domain.entity.ItemQuestion;
 import com.safeking.shop.domain.item.domain.repository.ItemAnswerRepository;
 import com.safeking.shop.domain.item.domain.repository.ItemQuestionRepository;
@@ -296,6 +297,7 @@ public class MemberService {
         cartRepository.delete(cart);
 
         // 2. qna 관련 삭제
+        List<ItemAnswer> itemAnswerList = answerRepository.findByMember(member);
         List<ItemQuestion> questionList = questionRepository.findByMember(member);
 
         // 2-1. qna 관련 첨부파일 삭제
@@ -312,6 +314,7 @@ public class MemberService {
         });
 
         // 2-1. answer 삭제 question 삭제
+        answerRepository.deleteByBatch(itemAnswerList);
         answerRepository.deleteByTargetBatch(questionList);
         questionRepository.deleteByTargetBatch(questionList);
 
