@@ -26,13 +26,13 @@ public class SMSService {
     public String sendCodeToClient(String clientPhoneNumber) throws CoolsmsException {
         String code = createCode(clientPhoneNumber).getCode();
 
-        sendInformation(clientPhoneNumber, code, "code");
+//        sendInformation(clientPhoneNumber, code, "code");
         return code;
     }
 
     public void sendErrorMessage(String clientPhoneNumber) throws CoolsmsException {
 
-        sendInformation(clientPhoneNumber, "ERROR", "error");
+//        sendInformation(clientPhoneNumber, "ERROR", "error");
     }
 
     public void sendTemporaryPW(String clientPhoneNumber, String temporaryPW) throws CoolsmsException {
@@ -43,7 +43,7 @@ public class SMSService {
         params.put("from", "01082460887");
         params.put("type", "sms");
         params.put("text", text + "[" + temporaryPW + "] 입니다.");
-        COOLSMS.send(params);
+//        COOLSMS.send(params);
     }
 
     public boolean checkCode(String clientCode, String clientPhoneNumber) {
