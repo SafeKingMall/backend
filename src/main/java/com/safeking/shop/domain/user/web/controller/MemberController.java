@@ -79,6 +79,10 @@ public class MemberController {
         log.info("dormantRepository size= "+size1);
         log.info("memoryMemberRepository size= "+size2);
     }
+    @GetMapping("/test/with/{username}")
+    public void with(@PathVariable String username) {
+        memberService.withdrawal(username);
+    }
 
     @GetMapping("/logout")
     public void logout(HttpServletRequest request){
