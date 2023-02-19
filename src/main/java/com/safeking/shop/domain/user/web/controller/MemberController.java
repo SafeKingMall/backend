@@ -65,24 +65,24 @@ public class MemberController {
     private final RedisService redisService;
     private final SMSMemoryRepository smsMemoryRepository;
 
-    @GetMapping("/test/kill")
-    public void kill(){
-        redisService.deleteAll();
-    }
-    @GetMapping("/test/check")
-    public void check(){
-        int size = smsMemoryRepository.findAll().size();
-        int size1 = dormantRepository.findAll().size();
-        int size2 = memoryMemberRepository.findAll().size();
-
-        log.info("smsMemoryRepository size= "+size);
-        log.info("dormantRepository size= "+size1);
-        log.info("memoryMemberRepository size= "+size2);
-    }
-    @GetMapping("/test/with/{username}")
-    public void with(@PathVariable String username) {
-        memberService.withdrawal(username);
-    }
+//    @GetMapping("/test/kill")
+//    public void kill(){
+//        redisService.deleteAll();
+//    }
+//    @GetMapping("/test/check")
+//    public void check(){
+//        int size = smsMemoryRepository.findAll().size();
+//        int size1 = dormantRepository.findAll().size();
+//        int size2 = memoryMemberRepository.findAll().size();
+//
+//        log.info("smsMemoryRepository size= "+size);
+//        log.info("dormantRepository size= "+size1);
+//        log.info("memoryMemberRepository size= "+size2);
+////    }
+//    @GetMapping("/test/with/{username}")
+//    public void with(@PathVariable String username) {
+//        memberService.withdrawal(username);
+//    }
 
     @GetMapping("/logout")
     public void logout(HttpServletRequest request){
