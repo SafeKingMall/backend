@@ -43,7 +43,7 @@ public class SMSService {
         params.put("from", "01082460887");
         params.put("type", "sms");
         params.put("text", text + "[" + temporaryPW + "] 입니다.");
-//        COOLSMS.send(params);
+        COOLSMS.send(params);
     }
 
     public boolean checkCode(String clientCode, String clientPhoneNumber) {
