@@ -75,7 +75,7 @@ public enum WebhookResponseType {
             Delivery findDelivery = iamportServiceSubMethod.cancelDelivery(findOrder.getDelivery().getId());
 
             // 결제 상태 변경(결제 취소)
-            findSafekingPayment.changeSafekingPaymentStatus(CANCEL);
+            findSafekingPayment.changeSafekingPayment(CANCEL, response);
 
             // 연관관계 반영
             findOrder.changeSafekingPayment(findSafekingPayment);
