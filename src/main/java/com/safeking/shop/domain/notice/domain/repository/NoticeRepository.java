@@ -40,7 +40,7 @@ public interface NoticeRepository extends JpaRepository<Notice,Long> {
     @Query(value = "SELECT @num\\:=@num+1 AS rownum, a.notice_id as id, a.title, a.contents, a.member_id as memberId" +
             ", a.create_date as createDate, a.last_modified_date as lastModifiedDate\n" +
             "   FROM (SELECT @num\\:=0) AS n, notice a\n"+
-            "   WHERE DATE_FORMAT(create_date, '%Y %m %d') = DATE_FORMAT(:createDate, '%Y %m %d')\n"
+            "   WHERE a.create_date like CONCAT(:createDate,'%')\n"
             , nativeQuery = true)
     ArrayList<NoticeRownumDto> findRownumByIdAndCreateDateBetween(@Param("createDate") String createDate, Pageable pageable);
 }
