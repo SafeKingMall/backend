@@ -72,36 +72,12 @@ public class InitDB_dev {
             //일반 회원 30명 넣기
             char[] chars = {'A', 'B', 'C', 'D', 'E'};
 
-//            for (int i = 40; i <=60 ; i++) {
-//                Member user = GeneralMember.builder()
-//                        .name("user"+chars[i%5])
-//                        .birth("971202")
-//                        .username("testUser"+i)
-//                        .password(encoder.encode("testUser"+i+"*"))
-//                        .email("kms199719@naver.com")
-//                        .roles("ROLE_USER")
-//                        .phoneNumber("01082460887")
-//                        .companyName("safeking")
-//                        .companyRegistrationNumber("111")
-//                        .corporateRegistrationNumber("222")
-//                        .representativeName("MS")
-//                        .address(new Address("서울시","마포대로","111"))
-//                        .agreement(true)
-//                        .accountNonLocked(true)
-//                        .status(MemberStatus.COMMON)
-//                        .build();
-//                user.addLastLoginTime();
-//                em.persist(user);
-//                cartService.createCart(user);
-//
-//            }
-//
-            for (int i = 100; i <=130 ; i++) {
+            for (int i = 1; i <= 30 ; i++) {
                 Member user = GeneralMember.builder()
-                        .name("Withdrawal"+chars[i%5])
+                        .name("user"+chars[i%5])
                         .birth("971202")
-                        .username("Withdrawal"+i)
-                        .password(encoder.encode("Withdrawal"+i+"*"))
+                        .username("testUser"+i)
+                        .password(encoder.encode("testUser"+i+"*"))
                         .email("kms199719@naver.com")
                         .roles("ROLE_USER")
                         .phoneNumber("01082460887")
@@ -111,14 +87,38 @@ public class InitDB_dev {
                         .representativeName("MS")
                         .address(new Address("서울시","마포대로","111"))
                         .agreement(true)
-                        .accountNonLocked(false)
-                        .status(MemberStatus.WITHDRAWAL)
+                        .accountNonLocked(true)
+                        .status(MemberStatus.COMMON)
                         .build();
-
                 user.addLastLoginTime();
                 em.persist(user);
                 cartService.createCart(user);
+
             }
+//
+//            for (int i = 100; i <=130 ; i++) {
+//                Member user = GeneralMember.builder()
+//                        .name("Withdrawal"+chars[i%5])
+//                        .birth("971202")
+//                        .username("Withdrawal"+i)
+//                        .password(encoder.encode("Withdrawal"+i+"*"))
+//                        .email("kms199719@naver.com")
+//                        .roles("ROLE_USER")
+//                        .phoneNumber("01082460887")
+//                        .companyName("safeking")
+//                        .companyRegistrationNumber("111")
+//                        .corporateRegistrationNumber("222")
+//                        .representativeName("MS")
+//                        .address(new Address("서울시","마포대로","111"))
+//                        .agreement(true)
+//                        .accountNonLocked(false)
+//                        .status(MemberStatus.WITHDRAWAL)
+//                        .build();
+//
+//                user.addLastLoginTime();
+//                em.persist(user);
+//                cartService.createCart(user);
+//            }
 //
 //            Member user = GeneralMember.builder()
 //                    .username("dormant1234")

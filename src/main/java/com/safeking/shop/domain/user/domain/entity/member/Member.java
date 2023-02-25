@@ -20,7 +20,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
 public abstract class Member extends BaseMemberEntity {
-    public static long MEMBER_HUMAN_TIME=60l;
+    public static long MEMBER_HUMAN_TIME=360l;
     public static long MEMBER_WITHDRAWAL_TIME=30l;
 //    public static long MEMBER_WITHDRAWAL_TIME=15l;
 //    public static long MEMBER_HUMAN_TIME=15l;

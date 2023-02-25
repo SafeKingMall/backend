@@ -524,7 +524,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         PaymentCancelListResponse response = PaymentCancelListResponse.builder()
-                .totalElement(ordersPage.getTotalElements())
+                .totalElements(ordersPage.getTotalElements())
                 .totalPages(ordersPage.getTotalPages())
                 .size(ordersPage.getSize())
                 .message(PAYMENT_CANCEL_LIST_FIND_SUCCESS)
