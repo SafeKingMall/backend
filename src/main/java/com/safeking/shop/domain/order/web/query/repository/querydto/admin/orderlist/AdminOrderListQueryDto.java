@@ -1,13 +1,10 @@
-package com.safeking.shop.domain.order.web.query.repository.querydto;
+package com.safeking.shop.domain.order.web.query.repository.querydto.admin.orderlist;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data
@@ -17,12 +14,12 @@ public class AdminOrderListQueryDto {
     private String status;
     private int price;
     private LocalDateTime date;
+    private String merchantUid;
     private int orderItemCount;
     private List<AdminOrderListOrderItemQueryDto> orderItems;
     private AdminOrderListPaymentQueryDto payment;
     private AdminOrderListMemberQueryDto member;
     private AdminOrderListDeliveryQueryDto delivery;
-    private String merchantUid;
 
     @QueryProjection
     public AdminOrderListQueryDto(Long id, String status, int price, LocalDateTime date, String merchantUid,

@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.query.repository.querydto;
+package com.safeking.shop.domain.order.web.query.repository.querydto.admin.orderlist;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

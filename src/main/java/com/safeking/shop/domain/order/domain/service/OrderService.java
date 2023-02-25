@@ -1,6 +1,5 @@
 package com.safeking.shop.domain.order.domain.service;
 
-import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.web.dto.request.admin.modify.AdminModifyInfoRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.cancel.CancelRequest;
 import com.safeking.shop.domain.order.web.dto.request.user.order.OrderRequest;
@@ -10,23 +9,18 @@ import com.safeking.shop.domain.order.web.dto.response.admin.orderdetail.AdminOr
 import com.safeking.shop.domain.order.web.dto.response.admin.search.AdminOrderListResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.OrderDetailResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListResponse;
-import com.safeking.shop.domain.order.web.query.repository.querydto.AdminOrderListQueryDto;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
 import com.safeking.shop.domain.payment.web.client.dto.response.askcancel.PaymentAskCancelResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.canceldetail.PaymentCancelDetailResponse;
-import com.safeking.shop.domain.payment.web.client.dto.response.cancellist.PaymentCancelListOrderResponse;
 import com.safeking.shop.domain.payment.web.client.dto.response.cancellist.PaymentCancelListResponse;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.siot.IamportRestClient.exception.IamportResponseException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.io.IOException;
 
 public interface OrderService {
 
-    Order searchOrder(Long id, Long memberId); //주문 단건 조회
+    OrderInfoResponse searchOrder(Long id, Long memberId); //주문 단건 조회
     OrderDetailResponse searchOrderDetailByUser(Long id, Long memberId); //주문 상세 조회(유저)
     AdminOrderDetailResponse searchOrderDetailByAdmin(Long id); //주문 상세 조회(어드민)
     OrderListResponse searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId); //주문 다건 조회

@@ -12,9 +12,12 @@ import com.safeking.shop.domain.order.web.dto.response.admin.search.*;
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderOrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
+import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoDeliveryResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoOrderResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.search.*;
-import com.safeking.shop.domain.order.web.query.repository.querydto.AdminOrderListOrderItemQueryDto;
-import com.safeking.shop.domain.order.web.query.repository.querydto.AdminOrderListQueryDto;
+import com.safeking.shop.domain.order.web.query.repository.querydto.admin.orderlist.AdminOrderListQueryDto;
+import com.safeking.shop.domain.order.web.query.repository.querydto.user.orderlist.UserOrderListQueryDto;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
@@ -110,11 +113,36 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Order searchOrder(Long orderId, Long memberId) {
+    public OrderInfoResponse searchOrder(Long orderId, Long memberId) {
         Optional<Order> orderOptional = orderRepository.findOrderByUser(orderId, memberId);
         Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_FIND_FAIL));
 
-        return findOrder;
+        return getOrderResponse(findOrder);
+    }
+
+    private OrderInfoResponse getOrderResponse(Order findOrder) {
+
+        //주문(배송) 조회 응답 데이터
+        OrderInfoDeliveryResponse delivery = OrderInfoDeliveryResponse.builder()
+                .receiver(findOrder.getDelivery().getReceiver())
+                .address(findOrder.getDelivery().getAddress())
+                .phoneNumber(findOrder.getDelivery().getPhoneNumber())
+                .memo(findOrder.getDelivery().getMemo())
+                .build();
+
+        OrderInfoOrderResponse order = OrderInfoOrderResponse.builder()
+                .id(findOrder.getId())
+                .memo(findOrder.getMemo())
+                .merchantUid(findOrder.getMerchantUid())
+                .build();
+
+        OrderInfoResponse orderInfoResponse = OrderInfoResponse.builder()
+                .message(ORDER_FIND_SUCCESS)
+                .order(order)
+                .delivery(delivery)
+                .build();
+
+        return orderInfoResponse;
     }
 
     /**
@@ -204,9 +232,6 @@ public class OrderServiceImpl implements OrderService {
                         .build())
                 .collect(Collectors.toList());
 
-        /**
-         * 추후, 결제 API에서 데이터 수집해야함.
-         */
         AdminOrderDetailDeliveryResponse delivery = AdminOrderDetailDeliveryResponse.builder()
                 .id(findOrderDetail.getDelivery().getId())
                 .status(findOrderDetail.getDelivery().getStatus().getDescription())
@@ -255,7 +280,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public OrderListResponse searchOrders(Pageable pageable, OrderSearchCondition condition, Long memberId) {
-        Page<Order> findOrdersPage = orderRepository.findOrdersByUser(pageable, condition, memberId);
+        Page<UserOrderListQueryDto> findOrdersPage = orderRepository.findOrdersByUser(pageable, condition, memberId);
 //        if(!findOrdersPage.hasContent()) {
 //            throw new OrderException(ORDER_LIST_FIND_FAIL);
 //        }
@@ -263,34 +288,33 @@ public class OrderServiceImpl implements OrderService {
         return getOrderListResponse(findOrdersPage);
     }
 
-    private OrderListResponse getOrderListResponse(Page<Order> ordersPage) {
+    private OrderListResponse getOrderListResponse(Page<UserOrderListQueryDto> ordersPage) {
 
-        List<Order> findOrders = ordersPage.getContent();
         List<OrderListOrdersResponse> orders = new ArrayList<>();
 
-        for(Order o : findOrders) {
+        for(UserOrderListQueryDto o : ordersPage) {
             OrderListPaymentResponse payment = OrderListPaymentResponse.builder()
-                    .status(o.getSafeKingPayment().getStatus().getDescription())
-                    .canceledDate(o.getSafeKingPayment().getCancelledAt())
-                    .paidDate(o.getSafeKingPayment().getPaidAt())
+                    .status(o.getPayment().getStatus())
+                    .canceledDate(o.getPayment().getCanceledDate())
+                    .paidDate(o.getPayment().getPaidDate())
                     .build();
 
             OrderListOrderItemResponse orderItem = OrderListOrderItemResponse.builder()
-                    .id(o.getOrderItems().get(0).getItem().getId())
-                    .name(o.getOrderItems().get(0).getItem().getName())
-                    .thumbnail(o.getOrderItems().get(0).getItem().getFileName())
+                    .id(o.getOrderItems().get(0).getId())
+                    .name(o.getOrderItems().get(0).getName())
+                    .thumbnail(o.getOrderItems().get(0).getThumbnail())
                     .build();
 
             OrderListDeliveryResponse delivery = OrderListDeliveryResponse.builder()
-                    .status(o.getDelivery().getStatus().getDescription())
+                    .status(o.getDelivery().getStatus())
                     .build();
 
             OrderListOrdersResponse order = OrderListOrdersResponse.builder()
                     .id(o.getId())
                     .merchantUid(o.getMerchantUid())
-                    .status(o.getStatus().getDescription())
-                    .price(o.getSafeKingPayment().getAmount())
-                    .date(o.getCreateDate())
+                    .status(o.getStatus())
+                    .price(o.getPrice())
+                    .date(o.getDate())
                     .count(o.getOrderItems().size())
                     .orderItem(orderItem)
                     .payment(payment)
@@ -387,12 +411,12 @@ public class OrderServiceImpl implements OrderService {
         return getAdminOrderListResponse(ordersPage);
     }
 
-    private AdminOrderListResponse getAdminOrderListResponse(Page<AdminOrderListQueryDto> findOrders) {
+    private AdminOrderListResponse getAdminOrderListResponse(Page<AdminOrderListQueryDto> ordersPage) {
 
         List<AdminOrderListOrderResponse> orders = new ArrayList<>();
         //List<AdminOrderListQueryDto> findOrders = ordersPage.getContent();
 
-        for(AdminOrderListQueryDto o : findOrders) {
+        for(AdminOrderListQueryDto o : ordersPage) {
 
             AdminOrderListPaymentResponse payment = AdminOrderListPaymentResponse.builder()
                     .status(o.getPayment().getStatus())
@@ -450,9 +474,9 @@ public class OrderServiceImpl implements OrderService {
         return AdminOrderListResponse.builder()
                 .message(ADMIN_ORDER_LIST_FIND_SUCCESS)
                 .orders(orders)
-                .totalElements(findOrders.getTotalElements())
-                .totalPages(findOrders.getTotalPages())
-                .size(findOrders.getSize())
+                .totalElements(ordersPage.getTotalElements())
+                .totalPages(ordersPage.getTotalPages())
+                .size(ordersPage.getSize())
                 .build();
     }
 

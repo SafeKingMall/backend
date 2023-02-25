@@ -95,34 +95,7 @@ public class OrderController {
         Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         //주문(배송) 정보 조회(단건)
-        Order findOrder = orderService.searchOrder(orderId, member.getId());
-
-        return new ResponseEntity<>(getOrderResponse(findOrder), OK);
-    }
-
-    private OrderInfoResponse getOrderResponse(Order findOrder) {
-
-        //주문(배송) 조회 응답 데이터
-        OrderInfoDeliveryResponse delivery = OrderInfoDeliveryResponse.builder()
-                .receiver(findOrder.getDelivery().getReceiver())
-                .address(findOrder.getDelivery().getAddress())
-                .phoneNumber(findOrder.getDelivery().getPhoneNumber())
-                .memo(findOrder.getDelivery().getMemo())
-                .build();
-
-        OrderInfoOrderResponse order = OrderInfoOrderResponse.builder()
-                .id(findOrder.getId())
-                .memo(findOrder.getMemo())
-                .merchantUid(findOrder.getMerchantUid())
-                .build();
-
-        OrderInfoResponse orderInfoResponse = OrderInfoResponse.builder()
-                .message(ORDER_FIND_SUCCESS)
-                .order(order)
-                .delivery(delivery)
-                .build();
-
-        return orderInfoResponse;
+        return new ResponseEntity<>(orderService.searchOrder(orderId, member.getId()), OK);
     }
 
     /**
