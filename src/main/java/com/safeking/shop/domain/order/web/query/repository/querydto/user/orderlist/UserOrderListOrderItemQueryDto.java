@@ -1,4 +1,4 @@
-package com.safeking.shop.domain.order.web.query.repository.querydto;
+package com.safeking.shop.domain.order.web.query.repository.querydto.user.orderlist;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,17 +8,18 @@ import net.minidev.json.annotate.JsonIgnore;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class AdminOrderListOrderItemQueryDto {
-
+public class UserOrderListOrderItemQueryDto {
     @JsonIgnore
     private Long orderId;
     private Long id;
     private String name;
+    private String thumbnail;
 
     @QueryProjection
-    public AdminOrderListOrderItemQueryDto(Long orderId, Long id, String name) {
+    public UserOrderListOrderItemQueryDto(Long orderId, Long id, String name, String thumbnail) {
         this.orderId = orderId;
         this.id = id;
         this.name = name;
+        this.thumbnail = thumbnail;
     }
 }
