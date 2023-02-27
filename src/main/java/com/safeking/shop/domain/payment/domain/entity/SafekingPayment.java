@@ -199,7 +199,15 @@ public class SafekingPayment extends BaseTimeEntity {
         this.canceledRequestDate = now;
     }
 
-    public void changeSafekingPaymentStatus(PaymentStatus status) {
-        this.status = status;
+    public void changeSafekingPaymentStatus(String dbStatus) {
+        if (dbStatus == "readu") {
+            status = READY;
+        } else if (dbStatus == "paid") {
+            status = PAID;
+        }  else if (dbStatus == "cancelled") {
+            status = CANCEL;
+        }  else {
+            status = FAILED;
+        }
     }
 }

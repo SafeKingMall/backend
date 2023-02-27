@@ -8,6 +8,8 @@ import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.entity.QOrderItem;
 import com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus;
 import com.safeking.shop.domain.order.domain.entity.status.OrderStatus;
+import com.safeking.shop.domain.order.web.query.repository.querydto.QStatusAndImpUid;
+import com.safeking.shop.domain.order.web.query.repository.querydto.StatusAndImpUid;
 import com.safeking.shop.domain.order.web.query.repository.querydto.admin.orderlist.*;
 import com.safeking.shop.domain.order.web.query.repository.querydto.user.orderlist.*;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
@@ -99,7 +101,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
         return getCutomPageImpl(pageable, resultContent);
     }
-
     @NotNull
     private Map<Long, List<UserOrderListOrderItemQueryDto>> findOrderItemMap(OrderSearchCondition condition, List<Long> orderIds) {
         // 상품명 조건 조회
@@ -367,4 +368,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         // toIndex exclusive
         return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
     }
+
+
+
 }

@@ -74,6 +74,7 @@ public class PaymentController {
         if (response.getAmount() != null) sb.append("getAmount = ").append(response.getAmount()).append('\n');
         if (response.getApplyNum() != null) sb.append("getApplyNum = ").append(response.getApplyNum()).append('\n');
 
+
         return sb.toString();
     }
 
