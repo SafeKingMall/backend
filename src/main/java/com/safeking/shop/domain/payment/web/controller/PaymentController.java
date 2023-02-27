@@ -12,6 +12,10 @@ import com.safeking.shop.domain.payment.web.client.dto.response.canceldetail.Pay
 import com.safeking.shop.domain.payment.web.client.dto.response.cancellist.PaymentCancelListResponse;
 import com.safeking.shop.domain.payment.web.client.service.IamportService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
+import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import java.io.IOException;
 
 import static com.safeking.shop.global.jwt.TokenUtils.AUTH_HEADER;
 import static org.springframework.http.HttpStatus.*;
@@ -33,6 +39,8 @@ public class PaymentController {
     private final IamportService iamportService;
     private final OrderService orderService;
     private final ValidationOrderService validationOrderService;
+    private final IamportClient client;
+
 
     /**
      * 결제 인증 취소(결제 취소 상태임)
@@ -42,6 +50,31 @@ public class PaymentController {
         validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         return new ResponseEntity<>(iamportService.authCancel(paymentAuthCancelRequest), OK);
+    }
+
+    @GetMapping("/payment/test/{imp}")
+    public String test(@PathVariable String imp) {
+        StringBuilder sb = new StringBuilder();
+
+        IamportResponse<Payment> paymentIamportResponse;
+        try {
+            paymentIamportResponse= client.paymentByImpUid(imp);
+        } catch (IamportResponseException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        sb.append("code = ").append(paymentIamportResponse.getCode()).append('\n');
+        sb.append("message = ").append(paymentIamportResponse.getMessage()).append('\n');
+        Payment response = paymentIamportResponse.getResponse();
+        if (response.getStatus() != null) sb.append("getStatus = ").append(response.getStatus()).append('\n');
+        if (response.getMerchantUid() != null) sb.append("getMerchantUid = ").append(response.getMerchantUid()).append('\n');
+        if (response.getCustomerUid() != null) sb.append("getCustomerUid = ").append(response.getCustomerUid()).append('\n');
+        if (response.getAmount() != null) sb.append("getAmount = ").append(response.getAmount()).append('\n');
+        if (response.getApplyNum() != null) sb.append("getApplyNum = ").append(response.getApplyNum()).append('\n');
+
+        return sb.toString();
     }
 
     /**
