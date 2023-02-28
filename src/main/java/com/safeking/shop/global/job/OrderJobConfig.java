@@ -5,7 +5,6 @@ import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.domain.repository.OrderRepository;
 import com.safeking.shop.domain.order.web.query.repository.OrderRepositoryCustom;
 import com.safeking.shop.domain.order.web.query.repository.OrderRepositoryImpl;
-import com.safeking.shop.domain.order.web.query.repository.querydto.StatusAndImpUid;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
@@ -39,7 +38,7 @@ import java.util.List;
 @Slf4j
 public class OrderJobConfig {
     /**
-     * 30 일 후에 탈퇴
+     * 아임포트 db 와 가맹점 db 를 동기화
      **/
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -75,7 +74,7 @@ public class OrderJobConfig {
     }
     @JobScope
     @Bean
-    public Step conditionalFailStepForWithdrawal() {
+    public Step conditionalFailStepForOrderJob() {
         return stepBuilderFactory.get("conditionalFailStepForWithdrawal")
                 .tasklet((contribution, chunkContext) -> {
                     log.error("conditional Fail Step");
@@ -86,7 +85,7 @@ public class OrderJobConfig {
     }
     @JobScope
     @Bean
-    public Step conditionalCompletedStepForWithdrawal() {
+    public Step conditionalCompletedStepForOrderJob() {
         return stepBuilderFactory.get("conditionalCompletedStep")
                 .tasklet((contribution, chunkContext) -> {
                     log.info("conditional Completed Step");

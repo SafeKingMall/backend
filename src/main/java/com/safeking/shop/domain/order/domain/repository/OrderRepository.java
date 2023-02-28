@@ -67,7 +67,4 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " and o.safeKingPayment.status = 'CANCEL'" +
             " and o.status = 'CANCEL'")
     Optional<Order> findOrderPaymentCancelDetailByUser(@Param("orderId") Long orderId, @Param("memberId") Long memberId); // 환불 상세 내역
-
-    @EntityGraph(attributePaths = {"safeKingPayment"})
-    List<Order> findOrder();
 }

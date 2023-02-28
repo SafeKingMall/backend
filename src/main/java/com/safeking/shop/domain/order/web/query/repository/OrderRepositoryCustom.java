@@ -2,7 +2,6 @@ package com.safeking.shop.domain.order.web.query.repository;
 
 import com.safeking.shop.domain.order.domain.entity.Order;
 import com.safeking.shop.domain.order.web.dto.request.user.search.OrderSearchCondition;
-import com.safeking.shop.domain.order.web.query.repository.querydto.StatusAndImpUid;
 import com.safeking.shop.domain.order.web.query.repository.querydto.admin.orderlist.AdminOrderListQueryDto;
 import com.safeking.shop.domain.order.web.query.repository.querydto.user.orderlist.UserOrderListQueryDto;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
