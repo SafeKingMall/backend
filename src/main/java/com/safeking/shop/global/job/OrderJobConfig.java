@@ -45,7 +45,6 @@ public class OrderJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final SMSService smsService;
     private final IamportClient client;
-
     private final SafekingPaymentRepository safekingPaymentRepository;
 
     @Bean
@@ -106,15 +105,19 @@ public class OrderJobConfig {
             List<SafekingPayment> result = safekingPaymentRepository.findAll();
 
             for (SafekingPayment safekingPayment : result) {
-                String iamPortStatus = client
+                Payment response = client
                         .paymentByImpUid(safekingPayment.getImpUid())
-                        .getResponse()
-                        .getStatus();
+                        .getResponse();
+
+                String iamPortStatus = response.getStatus();
 
                 String dbStatus = safekingPayment.getStatus().getDescription();
                 String DBStatus = changeStatus(dbStatus);
 
-                if (iamPortStatus != DBStatus) safekingPayment.changeSafekingPaymentStatus(DBStatus);
+                if (iamPortStatus != DBStatus) {
+
+                    safekingPayment.changeSafekingPayment(changeIamPortStatus(iamPortStatus) , response);
+                }
             }
 
             return RepeatStatus.FINISHED;
@@ -122,14 +125,26 @@ public class OrderJobConfig {
     }
 
     private String changeStatus(String dbStatus) {
-        if (dbStatus == "READY") {
-            return "readu";
-        } else if (dbStatus == "PAID") {
+        if (dbStatus.equals("READY")) {
+            return "ready";
+        } else if (dbStatus.equals("PAID")) {
             return "paid";
-        }  else if (dbStatus == "CANCEL") {
+        }  else if (dbStatus.equals("CANCEL")) {
             return "cancelled";
         }  else {
             return "failed";
+        }
+    }
+
+    private PaymentStatus changeIamPortStatus(String iamPortStatus) {
+        if (iamPortStatus.equals("ready")) {
+            return PaymentStatus.READY;
+        } else if (iamPortStatus.equals("paid")) {
+            return PaymentStatus.PAID;
+        }  else if (iamPortStatus.equals("cancelled")) {
+            return PaymentStatus.CANCEL;
+        }  else {
+            return PaymentStatus.FAILED;
         }
     }
 }
