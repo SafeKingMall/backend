@@ -36,6 +36,9 @@ public class BasicScheduler {
     private final Job redisClearJobJob;
     @Qualifier("withdrawalJob")
     private final Job withdrawalJob;
+    @Qualifier("OrderJob")
+    private final Job OrderJob;
+
     private final JobLauncher jobLauncher;
 
 
@@ -93,6 +96,20 @@ public class BasicScheduler {
         );
         jobLauncher.run(withdrawalJob,jobParameters);
         log.info("success withdrawalJobRun");
+    }
+
+    @Scheduled(cron = "0 35 4 ? * *")
+    public void OrderJobRun()
+            throws JobInstanceAlreadyCompleteException
+            , JobExecutionAlreadyRunningException
+            , JobParametersInvalidException
+            , JobRestartException {
+        log.info("OrderJob BATCH");
+        JobParameters jobParameters = new JobParameters(
+                Collections.singletonMap("requestTime", new JobParameter(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
+        );
+        jobLauncher.run(OrderJob,jobParameters);
+        log.info("success OrderJob");
     }
 
 
