@@ -1,19 +1,10 @@
 package com.safeking.shop.global.job;
 
 import com.safeking.shop.domain.coolsms.web.query.service.SMSService;
-import com.safeking.shop.domain.order.domain.entity.Order;
-import com.safeking.shop.domain.order.domain.repository.OrderRepository;
-import com.safeking.shop.domain.order.web.query.repository.OrderRepositoryCustom;
-import com.safeking.shop.domain.order.web.query.repository.OrderRepositoryImpl;
 import com.safeking.shop.domain.payment.domain.entity.PaymentStatus;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
 import com.safeking.shop.domain.payment.domain.repository.SafekingPaymentRepository;
-import com.safeking.shop.domain.user.domain.entity.MemberStatus;
-import com.safeking.shop.domain.user.domain.entity.member.Member;
-import com.safeking.shop.domain.user.domain.repository.MemberRepository;
-import com.safeking.shop.domain.user.domain.service.MemberService;
 import com.siot.IamportRestClient.IamportClient;
-import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -104,17 +95,20 @@ public class OrderJobConfig {
             List<SafekingPayment> result = safekingPaymentRepository.findAll();
 
             for (SafekingPayment safekingPayment : result) {
+                if(safekingPayment.getImpUid() == null) continue;
+
                 Payment response = client
                         .paymentByImpUid(safekingPayment.getImpUid())
                         .getResponse();
-
+                // 포트원 상태 값
                 String iamPortStatus = response.getStatus();
 
+                // 가맹점 상태 값
                 String dbStatus = safekingPayment.getStatus().getDescription();
                 String DBStatus = changeStatus(dbStatus);
 
                 if (iamPortStatus != DBStatus) {
-
+                    // 가맹점 상태 값과 정보로 가맹점 db 동기화
                     safekingPayment.changeSafekingPayment(changeIamPortStatus(iamPortStatus) , response);
                 }
             }
