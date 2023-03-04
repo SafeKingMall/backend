@@ -6,6 +6,7 @@ import com.safeking.shop.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,8 +18,10 @@ import java.util.Random;
 @Transactional
 public class SMSService {
     private final SMSMemoryRepository coolSmsRepository;
-    private static final String API_KEY = "NCSWYFY3FRFMGNRG";
-    private static final String API_SECRET = "ZHMV0IR2M5L0V5E0K6PJKQ8FOUGPRWIN";
+    @Value("${CoolSms.API_KEY}")
+    private static String API_KEY;
+    @Value("${CoolSms.API_SECRET}")
+    private static String API_SECRET;
 
     private static final Message COOLSMS = new Message(API_KEY, API_SECRET);
 
