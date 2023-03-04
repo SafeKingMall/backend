@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.safeking.shop.global.auth.PrincipalDetails;
 import com.safeking.shop.global.jwt.exception.TokenNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,8 @@ public class TokenUtils {
     public static final String AUTH_HEADER = "Authorization";
     public static final String REFRESH_HEADER = "refresh-token";
     public static final String BEARER = "Bearer ";
-    private static final String PRIVATE_KEY="safeKing";
+    @Value("${Tokens.PRIVATE_KEY}")
+    private static String PRIVATE_KEY;
 
     public static enum TokenType {
         access,
