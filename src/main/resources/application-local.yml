@@ -29,3 +29,10 @@ spring:
     port: 6379
   upload:
     path: /home/ec2-user/www
+
+CoolSms:
+  API_KEY: NCSWYFY3FRFMGNRG
+  API_SECRET: ZHMV0IR2M5L0V5E0K6PJKQ8FOUGPRWIN
+
+Tokens:
+  PRIVATE_KEY: safeKing
