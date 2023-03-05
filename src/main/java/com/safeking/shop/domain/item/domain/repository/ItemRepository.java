@@ -19,4 +19,6 @@ public interface ItemRepository extends JpaRepository<Item,Long> {
     Page<Item> findByNameContaining(Pageable pageable, String itemName);
 
     Page<Item> findByCategoryNameContaining(Pageable pageable, String categoryName);
+
+    Page<Item> findByCategoryNameContainingAndNameContaining(Pageable pageable, String categoryName, String itemName);
 }
