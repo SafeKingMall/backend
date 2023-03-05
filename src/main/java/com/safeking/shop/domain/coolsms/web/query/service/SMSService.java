@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -18,12 +20,17 @@ import java.util.Random;
 @Transactional
 public class SMSService {
     private final SMSMemoryRepository coolSmsRepository;
-    @Value("${CoolSms.API_KEY}")
-    private static String API_KEY;
-    @Value("${CoolSms.API_SECRET}")
-    private static String API_SECRET;
+    private final static String API_KEY = "NCSWYFY3FRFMGNRG";
+    private final static String API_SECRET = "ZHMV0IR2M5L0V5E0K6PJKQ8FOUGPRWIN";
+
+
 
     private static final Message COOLSMS = new Message(API_KEY, API_SECRET);
+
+//    @Value("${CoolSms.API_KEY}")
+//    public static void setApiKey(String apiKey) { API_KEY = apiKey; }
+//    @Value("${CoolSms.API_SECRET}")
+//    public static void setApiSecret(String apiSecret) { API_SECRET = apiSecret; }
 
 
     public String sendCodeToClient(String clientPhoneNumber) throws CoolsmsException {

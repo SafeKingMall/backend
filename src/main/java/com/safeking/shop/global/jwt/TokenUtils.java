@@ -21,8 +21,12 @@ public class TokenUtils {
     public static final String AUTH_HEADER = "Authorization";
     public static final String REFRESH_HEADER = "refresh-token";
     public static final String BEARER = "Bearer ";
+    private static  String PRIVATE_KEY;
+
     @Value("${Tokens.PRIVATE_KEY}")
-    private static String PRIVATE_KEY;
+    public void setPrivateKey(String privateKey) {
+        PRIVATE_KEY = privateKey;
+    }
 
     public static enum TokenType {
         access,
