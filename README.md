@@ -1,5 +1,15 @@
 # Backend Application
 
+## 목차
+
+1. 개요
+2. 포트원(결제 API, 구 아임포트) 결제 건
+3. 적용 기술
+4. Application Structure
+5. Spring Rest Docs(REST API 개발 문서)
+
+## 개요 : 안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발
+
 ## ERD
 
 ![KakaoTalk_Photo_2023-01-31-16-32-24](https://user-images.githubusercontent.com/108928206/223897859-2167dbb4-fd96-435d-b97e-7361c054f8cf.png)
@@ -9,6 +19,18 @@ ERDCloud : https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK
 ## 포트원(결제 API, 구 아임포트) 결제 건
 
 ![Untitled-3](https://user-images.githubusercontent.com/108928206/223898550-d13cd74e-9794-4750-ad50-b6dd56cac919.png)
+
+## 적용 기술
+
+| Back-End | Java 11, Spring Framework 2.7.7, Spring boot, RESTFUL API, QueryDsl 5.0.0, Spring Data Jpa 2.7.6, JPQL, Spring Security 5.7.6, Spring Batch  |
+| --- | --- |
+| Server | Apache, Apache Tomcat 9.0.7, cafe24 가상서버 |
+| DB | MySQL, MariaDB 3.0.6, H2 2.1.214 |
+| Test | junit5, AssertJ Library |
+| Build 자동화 도구 | Gradle 7.6 |
+| Tools | IntelliJ IDEA, Post Man, putty |
+| OS | Centos |
+| DevOps | AWS EC2, RDS, Route53 |
 
 
 ## Application Structure
