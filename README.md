@@ -8,7 +8,9 @@
 4. Application Structure
 5. Spring Rest Docs(REST API 개발 문서)
 
-## 개요 : 안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발
+## 개요 
+
+: 안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발
 
 ## ERD
 
