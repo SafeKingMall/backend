@@ -8,21 +8,21 @@
 4. Application Structure
 5. Spring Rest Docs(REST API 개발 문서)
 
-## 개요 
+## 1. 개요 
 
-: 안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발
+: 안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발 github, 운영 github는 보안 상의 이유로 별도 존재
 
-## ERD
+## 2. ERD
 
 ![KakaoTalk_Photo_2023-01-31-16-32-24](https://user-images.githubusercontent.com/108928206/223897859-2167dbb4-fd96-435d-b97e-7361c054f8cf.png)
 
 ERDCloud : https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK
 
-## 포트원(결제 API, 구 아임포트) 결제 건
+## 3. 포트원(결제 API, 구 아임포트) 결제 건
 
 ![Untitled-3](https://user-images.githubusercontent.com/108928206/223898550-d13cd74e-9794-4750-ad50-b6dd56cac919.png)
 
-## 적용 기술
+## 4. 적용 기술
 
 | Back-End | Java 11, Spring Framework 2.7.7, Spring boot, RESTFUL API, QueryDsl 5.0.0, Spring Data Jpa 2.7.6, JPQL, Spring Security 5.7.6, Spring Batch  |
 | --- | --- |
@@ -35,7 +35,7 @@ ERDCloud : https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK
 | DevOps | AWS EC2, RDS, Route53 |
 
 
-## Application Structure
+## 5. Application Structure
 
 <img width="773" alt="image" src="https://user-images.githubusercontent.com/108928206/223898062-3d750be1-25b2-49c0-b56c-1fc3dcbe013b.png">
 
@@ -52,7 +52,7 @@ ERDCloud : https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK
     - 따라서 controller 단에서는 지연 로딩이 일어나지 않도록 설계한다.
     
 
-## Spring Rest Docs(REST API 개발 문서)
+## 6. Spring Rest Docs(REST API 개발 문서)
 
 [장바구니]
 
