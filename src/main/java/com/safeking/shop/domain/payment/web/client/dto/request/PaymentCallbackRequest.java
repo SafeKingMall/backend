@@ -22,7 +22,6 @@ public class PaymentCallbackRequest {
     @NotBlank(message = "주문 번호가 빈 값 입니다.")
     @Size(min = 25, max = 25, message = "주문번호 양식이 맞지 않습니다.") // SFK-230205155215-f62ee0cb
     private String merchantUid; //주문 번호
-    @NotNull(message = "결제 금액이 null 입니다.")
     private Integer paidAmount; // 결제 금액
     private String errorMsg; // 결제실패 메시지
 }

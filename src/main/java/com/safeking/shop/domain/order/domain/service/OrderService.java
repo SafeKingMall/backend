@@ -10,6 +10,7 @@ import com.safeking.shop.domain.order.web.dto.response.admin.search.AdminOrderLi
 import com.safeking.shop.domain.order.web.dto.response.user.order.OrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.OrderDetailResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderitems.OrderItemsResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.search.OrderListResponse;
 import com.safeking.shop.domain.payment.web.client.dto.request.PaymentSearchCondition;
 import com.safeking.shop.domain.payment.web.client.dto.response.askcancel.PaymentAskCancelResponse;
@@ -34,4 +35,6 @@ public interface OrderService {
     void deleteByMemberBatch(Member member);
     PaymentAskCancelResponse searchPaymentByCancel(Long orderId, Long memberId); // 환불신청 단건 조회
     PaymentCancelDetailResponse searchPaymentCancelDetailByUser(Long orderId, Long memberId); // 환불 상세내역
+
+    OrderItemsResponse searchOrderItemIds(String merchantUid, Long memberId);
 }

@@ -12,6 +12,7 @@ import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoR
 import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoDeliveryResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoOrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
+import com.safeking.shop.domain.order.web.dto.response.user.orderitems.OrderItemsResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.search.*;
 import com.safeking.shop.domain.order.web.query.service.ValidationOrderService;
 import com.safeking.shop.domain.user.domain.entity.member.Member;
@@ -121,6 +122,16 @@ public class OrderController {
 
         //주문 다건 조회
         return new ResponseEntity<>(orderService.searchOrders(pageable, condition, member.getId()), OK);
+    }
+
+    /**
+     * 주문 상품 id 목록 조회
+     */
+    @GetMapping("/order/orderItemIds/{merchantUid}")
+    public ResponseEntity<OrderItemsResponse> searchOrderItemIds(@PathVariable String merchantUid, HttpServletRequest request) {
+        Member member = validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+
+        return new ResponseEntity<>(orderService.searchOrderItemIds(merchantUid, member.getId()), OK);
     }
 
 }

@@ -26,6 +26,8 @@ public class OrderConst {
     public static final String ORDER_LIST_FIND_FAIL_ORDER_STATUS = "주문 상태가 올바르지 않습니다.";
     public static final String ORDER_LIST_FIND_FAIL_ORDER_STATUS_IS_CANCEL = "주문이 취소된 항목은 조회할수 없습니다.";
     public static final String ORDER_LIST_FIND_FAIL_PAYMENT_STATUS_IS_CANCEL = "결제가 취소된 항목은 조회할수 없습니다.";
+    public static final String ORDER_ITEM_IDS_SUCCESS = "주문 상품 id 목록 조회 성공";
+    public static final String ORDER_ITEM_IDS_FAIL = "주문 상품 id 목록이 존재하지 않습니다.";
 
 
     /* 관리자 */
