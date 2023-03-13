@@ -14,7 +14,7 @@
 
 ## 2. ERD
 
-<img width="1440" alt="image" src="https://user-images.githubusercontent.com/108928206/224703927-00fd220d-9257-4096-a924-1a0c8a6f547a.png">
+![Uploading image.png…]()
 
 ERDCloud : https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK
 
