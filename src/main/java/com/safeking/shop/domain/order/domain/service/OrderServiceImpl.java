@@ -15,7 +15,9 @@ import com.safeking.shop.domain.order.web.dto.response.user.orderdetail.*;
 import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoDeliveryResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoOrderResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.orderinfo.OrderInfoResponse;
+import com.safeking.shop.domain.order.web.dto.response.user.orderitems.OrderItemsResponse;
 import com.safeking.shop.domain.order.web.dto.response.user.search.*;
+import com.safeking.shop.domain.order.web.query.repository.querydto.admin.orderlist.AdminOrderListOrderItemQueryDto;
 import com.safeking.shop.domain.order.web.query.repository.querydto.admin.orderlist.AdminOrderListQueryDto;
 import com.safeking.shop.domain.order.web.query.repository.querydto.user.orderlist.UserOrderListQueryDto;
 import com.safeking.shop.domain.payment.domain.entity.SafekingPayment;
@@ -44,10 +46,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.safeking.shop.domain.order.domain.entity.status.DeliveryStatus.COMPLETE;
@@ -681,6 +680,22 @@ public class OrderServiceImpl implements OrderService {
         return PaymentCancelDetailResponse.builder()
                 .message(PAYMENT_CANCEL_DETAIL_FIND_SUCCESS)
                 .order(order)
+                .build();
+    }
+
+    /**
+     * 주문 상품 id 목록
+     */
+    @Override
+    public OrderItemsResponse searchOrderItemIds(String merchantUid, Long id) {
+        Optional<Order> orderOptional = orderRepository.findOrderItemIdsByMerchantUidAndMemberId(merchantUid, id);
+        Order findOrder = orderOptional.orElseThrow(() -> new OrderException(ORDER_ITEM_IDS_FAIL));
+
+        return OrderItemsResponse.builder()
+                .message(ORDER_ITEM_IDS_SUCCESS)
+                .orderItems(findOrder.getOrderItems().stream()
+                        .map(oi -> new OrderItemsResponse.OrderItemsId(oi.getItem().getId()))
+                        .collect(Collectors.toList()))
                 .build();
     }
 

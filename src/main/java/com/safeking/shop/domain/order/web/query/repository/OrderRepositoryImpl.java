@@ -365,7 +365,4 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         // toIndex exclusive
         return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
     }
-
-
-
 }
