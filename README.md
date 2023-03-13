@@ -14,7 +14,7 @@
 
 ## 2. ERD
 
-![KakaoTalk_Photo_2023-01-31-16-32-24](https://user-images.githubusercontent.com/108928206/223897859-2167dbb4-fd96-435d-b97e-7361c054f8cf.png)
+<img width="1395" alt="image" src="https://user-images.githubusercontent.com/108928206/224702395-c3d14671-d20e-4e59-aad0-e1f6e2d652df.png">
 
 ERDCloud : https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK
 
