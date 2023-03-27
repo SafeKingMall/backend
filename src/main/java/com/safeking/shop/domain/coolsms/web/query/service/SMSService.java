@@ -2,13 +2,17 @@ package com.safeking.shop.domain.coolsms.web.query.service;
 
 import com.safeking.shop.domain.coolsms.domain.entity.CoolSMS;
 import com.safeking.shop.domain.coolsms.domain.respository.SMSMemoryRepository;
+import com.safeking.shop.domain.coolsms.vo.ApiConfigVo;
 import com.safeking.shop.global.exception.MemberNotFoundException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,19 +23,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 @Transactional
 public class SMSService {
+    private final ApiConfigVo vo;
     private final SMSMemoryRepository coolSmsRepository;
-    private final static String API_KEY = "NCSWYFY3FRFMGNRG";
-    private final static String API_SECRET = "ZHMV0IR2M5L0V5E0K6PJKQ8FOUGPRWIN";
-
-
-
-    private static final Message COOLSMS = new Message(API_KEY, API_SECRET);
-
-//    @Value("${CoolSms.API_KEY}")
-//    public static void setApiKey(String apiKey) { API_KEY = apiKey; }
-//    @Value("${CoolSms.API_SECRET}")
-//    public static void setApiSecret(String apiSecret) { API_SECRET = apiSecret; }
-
 
     public String sendCodeToClient(String clientPhoneNumber) throws CoolsmsException {
         String code = createCode(clientPhoneNumber).getCode();
@@ -53,7 +46,10 @@ public class SMSService {
         params.put("from", "01082460887");
         params.put("type", "sms");
         params.put("text", text + "[" + temporaryPW + "] 입니다.");
-        COOLSMS.send(params);
+
+        Message message = new Message(vo.getKey(), vo.getPassword());
+
+        message.send(params);
     }
 
     public boolean checkCode(String clientCode, String clientPhoneNumber) {
@@ -91,7 +87,7 @@ public class SMSService {
     }
 
 
-    private static void sendInformation(String clientPhoneNumber, String information, String type) throws CoolsmsException {
+    private void sendInformation(String clientPhoneNumber, String information, String type) throws CoolsmsException {
         String text = type.equals("code") ? "SAFEKING의 인증번호는 " : "지금 배치 과정중의  ";
 
         HashMap<String, String> params = new HashMap<String, String>();
@@ -99,7 +95,9 @@ public class SMSService {
         params.put("from", "01082460887");
         params.put("type", "sms");
         params.put("text", text + "[" + information + "] 입니다.");
-        COOLSMS.send(params);
+        Message message = new Message(vo.getKey(), vo.getPassword());
+
+        message.send(params);
     }
 
 
