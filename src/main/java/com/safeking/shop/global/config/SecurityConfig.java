@@ -34,12 +34,6 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-//        //테스트
-//        httpSecurity
-//                .authorizeRequests()
-//                .antMatchers("/**")
-//                .permitAll();
-
         httpSecurity.csrf().disable().cors();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -51,8 +45,8 @@ public class SecurityConfig{
                 .and()
                 .authorizeRequests()
 
-                // 아임포트 웹훅(결제내역 동기화)
-                .antMatchers("/api/v1/user/payment/webhook")
+                // 아임포트 웹훅(결제내역 동기화, 모바일 결제 검증시 토큰 이슈(선우님 요청사항))
+                .antMatchers("/api/v1/user/payment/webhook", "/api/v1/user/payment")
                 .permitAll()
 
                 .antMatchers("/api/v1/user/**")

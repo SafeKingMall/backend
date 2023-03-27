@@ -84,8 +84,8 @@ public class PaymentController {
     @PostMapping("/payment")
     public ResponseEntity<PaymentResponse> payment(@Valid @RequestBody PaymentCallbackRequest paymentCallbackRequest, HttpServletRequest request) {
 
-        // 회원 검증
-        validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
+        // 회원 검증(모바일에서 결제시 토큰 전송 문제 발생)
+        // validationOrderService.validationMember(request.getHeader(AUTH_HEADER));
 
         PaymentResponse<PaymentCallbackResponse> response = iamportService.paymentByCallback(paymentCallbackRequest);
 
