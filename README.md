@@ -30,10 +30,10 @@ ERDCloud : https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK
 ## 3. 포트원(결제 API, 구 아임포트) 결제 건
 ### 포트원 결제 로직
 
-![unknown](https://user-images.githubusercontent.com/42672362/233081051-fcf3c099-add6-4794-a1ad-9125ce4f9fe0.png)
+<img width="730" alt="image" src="https://user-images.githubusercontent.com/42672362/233083505-a38b8962-2cb9-4944-b904-a98ed6304249.png">
 
 ### 안전왕몰 주문/결제 로직
-<img width="832" alt="image" src="https://user-images.githubusercontent.com/42672362/233082098-2015ed81-b765-48c6-b51a-df5c4b3f986c.png">
+<img width="802" alt="image" src="https://user-images.githubusercontent.com/42672362/233083436-d316b9f1-b364-43b4-a02f-b6372b5cf3db.png">
 
 
 
