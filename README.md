@@ -12,6 +12,15 @@
 
 : 안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발 github, 운영 github는 보안 상의 이유로 별도 존재
 
+[도메인] 
+
+- https://safekingmall.com 
+
+[시연영상]
+
+- 결제 시연영상 : [https://www.youtube.com/watch?v=X25CrNLl5fg](https://www.youtube.com/watch?v=X25CrNLl5fg)
+- 유저 시연영상 : https://www.youtube.com/watch?v=3gPJGSg73Po
+
 ## 2. ERD
 
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/108928206/224705604-2b64c0cb-2762-4ede-9887-9a03ef08ddd7.png">
