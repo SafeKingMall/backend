@@ -10,9 +10,15 @@
 
 ## 1. 개요 
 
-안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발 github, 운영 github는 보안 상의 이유로 별도 존재
+안전관리 솔루션을 제공하는 플랫폼 `Backend HTTP API github` 입니다.
+[Fontend github](https://github.com/SafeKingMall/frontend)가 궁금하신 분은 여기를 클릭해주세요.
+
+**참고**
+`운영 github`는 보안 상의 이유로 별도 존재
 
 <img width="1855" alt="image" src="https://user-images.githubusercontent.com/42672362/233237853-b355829f-b458-414c-90bf-fdf80453d9e5.png">
+<br>
+<img width="1847" alt="image" src="https://user-images.githubusercontent.com/42672362/233238263-28744b89-b4d3-448d-99c6-eed2029dfca2.png">
 
 
 [도메인] 
@@ -112,3 +118,5 @@
 
 [https://safekingmall.com/docs/admin.html](https://safekingmall.com/docs/admin.html)
 
+## API Doc
+노션을 이용하여 [API 문서](https://first-parakeet-792.notion.site/SafeKing-API-ab0719f0e30645f69a9da6e8ee1db209)를 작성했습니다.
