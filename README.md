@@ -6,35 +6,40 @@
 2. 포트원(결제 API, 구 아임포트) 결제 건
 3. 적용 기술
 4. Application Structure
-5. Spring Rest Docs(REST API 개발 문서)
+5. API 개발 문서
 
 ## 1. 개요 
 
 안전관리 솔루션을 제공하는 플랫폼 `Backend HTTP API github` 입니다.
-[Fontend github](https://github.com/SafeKingMall/frontend)가 궁금하신 분은 여기를 클릭해주세요.
+
+`Frontend github`가 궁금하신 분은 [👉 여기](https://github.com/SafeKingMall/frontend)를 클릭해주세요.
+
+* [🛍️ 안전왕몰](https://safekingmall.com)
+* [💳 결제 시연 영상](https://www.youtube.com/watch?v=X25CrNLl5fg)
+* [🖥️ 사용 시연 영상](https://www.youtube.com/watch?v=3gPJGSg73Po)
+
+<br>
 
 **참고**
-`운영 github`는 보안 상의 이유로 별도 존재
 
-<img width="1855" alt="image" src="https://user-images.githubusercontent.com/42672362/233237853-b355829f-b458-414c-90bf-fdf80453d9e5.png">
+`운영 github`는 보안 상의 이유로 별도 존재 합니다.
+
 <br>
-<img width="1847" alt="image" src="https://user-images.githubusercontent.com/42672362/233238263-28744b89-b4d3-448d-99c6-eed2029dfca2.png">
 
+### 메인 페이지
+<img width="1855" alt="메인페이지" src="https://user-images.githubusercontent.com/42672362/233237853-b355829f-b458-414c-90bf-fdf80453d9e5.png">
 
-[도메인] 
+### 상품 상세 페이지
+<img width="1847" alt="상품상세페이지" src="https://user-images.githubusercontent.com/42672362/233238263-28744b89-b4d3-448d-99c6-eed2029dfca2.png">
 
-- [안전왕몰](https://safekingmall.com)
-
-[시연영상]
-
-- [결제 시연 영상](https://www.youtube.com/watch?v=X25CrNLl5fg)
-- [사용 시연 영상](https://www.youtube.com/watch?v=3gPJGSg73Po)
+### 결제 페이지
+<img width="1850" alt="결제페이지" src="https://user-images.githubusercontent.com/42672362/233239555-fc8397f0-1669-4cc9-9214-4d88ec1917e4.png">
 
 ## 2. ERD
+[💾 데이터베이스](https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK)
 
-<img width="1440" alt="image" src="https://user-images.githubusercontent.com/108928206/224705604-2b64c0cb-2762-4ede-9887-9a03ef08ddd7.png">
+<img width="1440" alt="데이터베이스_전체이미지" src="https://user-images.githubusercontent.com/108928206/224705604-2b64c0cb-2762-4ede-9887-9a03ef08ddd7.png">
 
-[데이터베이스](https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK)
 
 ## 3. 포트원(결제 API, 구 아임포트) 결제 건
 ### 포트원 결제 로직
@@ -76,7 +81,9 @@
     - 따라서 controller 단에서는 지연 로딩이 일어나지 않도록 설계한다.
     
 
-## 6. Spring Rest Docs(REST API 개발 문서)
+## 6. API 개발 문서
+
+### Spring Rest Docs
 
 [장바구니]
 
@@ -118,5 +125,6 @@
 
 [https://safekingmall.com/docs/admin.html](https://safekingmall.com/docs/admin.html)
 
-## API Doc
-노션을 이용하여 [API 문서](https://first-parakeet-792.notion.site/SafeKing-API-ab0719f0e30645f69a9da6e8ee1db209)를 작성했습니다.
+### API Doc
+
+그외는 노션을 이용하여 [📗 API 개발 문서](https://first-parakeet-792.notion.site/SafeKing-API-ab0719f0e30645f69a9da6e8ee1db209)를 작성했습니다.
