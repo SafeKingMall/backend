@@ -3,10 +3,11 @@
 ## 목차
 
 1. 개요
-2. 포트원(결제 API, 구 아임포트) 결제 건
-3. 적용 기술
-4. Application Structure
-5. API 개발 문서
+2. DB
+3. 포트원(결제 API, 구 아임포트) 결제 건
+4. 적용 기술
+5. Application Structure
+6. API 개발 문서
 
 ## 1. 개요 
 
@@ -35,7 +36,7 @@
 ### 결제 페이지
 <img width="1850" alt="결제페이지" src="https://user-images.githubusercontent.com/42672362/233239555-fc8397f0-1669-4cc9-9214-4d88ec1917e4.png">
 
-## 2. ERD
+## 2. DB
 [💾 데이터베이스](https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK)
 
 <img width="1440" alt="데이터베이스_전체이미지" src="https://user-images.githubusercontent.com/108928206/224705604-2b64c0cb-2762-4ede-9887-9a03ef08ddd7.png">
