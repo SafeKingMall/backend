@@ -19,7 +19,7 @@
 [시연영상]
 
 - [결제 시연 영상](https://www.youtube.com/watch?v=X25CrNLl5fg)
-- [사용 시연 영상]https://www.youtube.com/watch?v=3gPJGSg73Po
+- [사용 시연 영상](https://www.youtube.com/watch?v=3gPJGSg73Po)
 
 ## 2. ERD
 
