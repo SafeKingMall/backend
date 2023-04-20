@@ -10,7 +10,10 @@
 
 ## 1. 개요 
 
-: 안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발 github, 운영 github는 보안 상의 이유로 별도 존재
+안전관리 솔루션을 제공하는 플랫폼 Backend Application 개발 github, 운영 github는 보안 상의 이유로 별도 존재
+
+<img width="1855" alt="image" src="https://user-images.githubusercontent.com/42672362/233237853-b355829f-b458-414c-90bf-fdf80453d9e5.png">
+
 
 [도메인] 
 
