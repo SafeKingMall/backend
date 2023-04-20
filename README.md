@@ -14,18 +14,18 @@
 
 [도메인] 
 
-- https://safekingmall.com 
+- [안전왕몰](https://safekingmall.com)
 
 [시연영상]
 
-- 결제 시연영상 : [https://www.youtube.com/watch?v=X25CrNLl5fg](https://www.youtube.com/watch?v=X25CrNLl5fg)
-- 유저 시연영상 : https://www.youtube.com/watch?v=3gPJGSg73Po
+- [결제 시연 영상](https://www.youtube.com/watch?v=X25CrNLl5fg)
+- [사용 시연 영상]https://www.youtube.com/watch?v=3gPJGSg73Po
 
 ## 2. ERD
 
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/108928206/224705604-2b64c0cb-2762-4ede-9887-9a03ef08ddd7.png">
 
-ERDCloud : https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK
+[데이터베이스](https://www.erdcloud.com/d/xZqG8nnoHb6RaSoRK)
 
 ## 3. 포트원(결제 API, 구 아임포트) 결제 건
 ### 포트원 결제 로직
