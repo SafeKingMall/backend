@@ -82,6 +82,9 @@
     
 
 ## 6. API 개발 문서
+### API Doc
+
+노션을 이용하여 [📗 API 개발 문서](https://first-parakeet-792.notion.site/SafeKing-API-ab0719f0e30645f69a9da6e8ee1db209)를 작성했습니다.
 
 ### Spring Rest Docs
 
@@ -125,6 +128,3 @@
 
 [https://safekingmall.com/docs/admin.html](https://safekingmall.com/docs/admin.html)
 
-### API Doc
-
-그외는 노션을 이용하여 [📗 API 개발 문서](https://first-parakeet-792.notion.site/SafeKing-API-ab0719f0e30645f69a9da6e8ee1db209)를 작성했습니다.
